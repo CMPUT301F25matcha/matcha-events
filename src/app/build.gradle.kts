@@ -1,13 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.matcha_events"
+    namespace = "com.example.lotterysystemproject"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.matcha_events"
+        applicationId = "com.example.lotterysystemproject"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -40,4 +41,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Firebase BOM
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+
 }
