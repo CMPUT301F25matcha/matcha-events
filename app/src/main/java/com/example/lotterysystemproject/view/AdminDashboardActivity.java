@@ -1,4 +1,4 @@
-package view;
+package com.example.lotterysystemproject.view;
 
 import android.os.Bundle;
 
