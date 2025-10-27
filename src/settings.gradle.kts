@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "matcha-events"
+rootProject.name = "LotterySystemProject"
 include(":app")
+ 
