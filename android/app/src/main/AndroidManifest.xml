@@ -11,16 +11,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
+
+        <!-- ✅ Use TestActivity as your launcher for now -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.LotterySystemProject">
+            android:name=".TestActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Regular main activity (will be launcher later) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LotterySystemProject" />
+
+    </application>
 </manifest>
