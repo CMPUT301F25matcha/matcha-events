@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context=".AdminBrowseProfiles">
+    tools:context=".Views.Admin.AdminBrowseProfilesView">
 
     <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,8 +18,8 @@
 
         <ImageButton
             android:id="@+id/buttonSecond"
-            android:layout_width="35dp"
-            android:layout_height="30dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back_arrow"
             app:layout_constraintStart_toStartOf="parent"
