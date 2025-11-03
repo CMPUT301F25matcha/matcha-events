@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject;
+package com.example.lotterysystemproject.controller;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.databinding.AdminDashboardBinding;
 
 public class AdminDashboard extends Fragment {

@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject;
+package com.example.lotterysystemproject.controller;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.databinding.AdminBrowseProfilesBinding;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,6 +55,12 @@ public class AdminBrowseProfiles extends Fragment {
         adapter = new ProfilesAdapter(getContext(), userList);
 
         binding.recyclerProfiles.setAdapter(adapter);
+
+        // Handle back arrow
+        binding.backArrow.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminBrowseProfiles.this).navigateUp()
+        );
+
 
         // Setup search bar
         TextInputEditText searchInput = binding.searchInput;

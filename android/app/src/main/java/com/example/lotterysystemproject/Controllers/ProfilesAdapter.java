@@ -1,7 +1,6 @@
-package com.example.lotterysystemproject;
+package com.example.lotterysystemproject.controller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,11 @@ import java.util.List;
 
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.lotterysystemproject.User;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.models.User;
 
 
 public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.ProfileViewHolder> {
@@ -60,6 +59,12 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
         viewHolder.name.setText(user.getName());
         viewHolder.email.setText(user.getEmail());
 
+        // Handle "View Details" button click
+        viewHolder.viewDetails.setOnClickListener(v -> {
+            // Show UserProfileDialog
+            UserProfileDialog dialog = new UserProfileDialog(user);
+            dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "UserProfileDialog");
+        });
 
     }
 
