@@ -11,8 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
-
-        <!-- ✅ Use TestActivity as your launcher for now -->
+        
         <activity
             android:name=".TestActivity"
             android:exported="true">
@@ -22,7 +21,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Regular main activity (will be launcher later) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
