@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject;
+package com.example.lotterysystemproject.Controllers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.databinding.AdminDashboardBinding;
 
 public class AdminDashboard extends Fragment {
@@ -22,7 +23,14 @@ public class AdminDashboard extends Fragment {
     ) {
 
         binding = AdminDashboardBinding.inflate(inflater, container, false);
+
+
+        binding.backArrow.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboard.this).navigateUp()
+        );
+
         return binding.getRoot();
+
 
     }
 
@@ -31,7 +39,7 @@ public class AdminDashboard extends Fragment {
 
         binding.btnBrowseProfiles.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminDashboard.this)
-                        .navigate(R.id.action_SecondFragment_to_thirdFragment)
+                        .navigate(R.id.action_adminDashboard_to_adminBrowseProfiles)
         );
     }
 

@@ -51,4 +51,7 @@
     <string name="browse_images">Browse Images</string>
     <string name="browse_events">Browse Events</string>
     <string name="browse_profiles">Browse Profiles</string>
+    <string name="search_label">Browse Events</string>
+    <string name="search_hint">Bowling\\</string>
+    <string name="settings_description">help</string>
 </resources>

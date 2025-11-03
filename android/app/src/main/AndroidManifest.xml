@@ -11,16 +11,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".Views.Entrant.UserInfoView"
             android:exported="true"
             android:theme="@style/Theme.LotterySystemProject">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".Views.Entrant.SearchableActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
+
+        <activity android:name=".Views.Entrant.EntrantMainActivity">
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".SearchableActivity" />
+        </activity>
+        <activity android:name=".Views.Entrant.SearchResultsActivity" />
+        <activity android:name=".Views.Admin.AdminLoginActivity" />
+
     </application>
 
 </manifest>
