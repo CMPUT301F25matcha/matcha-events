@@ -1,9 +1,7 @@
 package com.example.lotterysystemproject.Views.Entrant;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +9,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.Controllers.UserInfoController;
 import com.example.lotterysystemproject.databinding.UserInfoBinding;
 
 public class UserInfoView extends Fragment {
 
-    private static final String TAG = "UserInfoView";
     private UserInfoBinding binding;
+    private final UserInfoController controller = new UserInfoController();
 
     @Override
     public View onCreateView(
@@ -37,29 +34,9 @@ public class UserInfoView extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (binding != null) {
-            binding.buttonFirst.setOnClickListener(v -> {
-                if (getActivity() == null) {
-                    Log.e(TAG, "Cannot start activity: Fragment not attached to activity.");
-                    return;
-                }
-
-                // Create the Intent
-                Intent intent = new Intent(getActivity(), EntrantMainActivity.class);
-
-                // Use the flags to clear the back stack
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                try {
-                    startActivity(intent);
-
-                    // Finish the hosting activity ONLY if the startActivity succeeded
-                    getActivity().finish();
-
-                } catch (ActivityNotFoundException e) {
-                    // This is the error we are diagnosing!
-                    Log.e(TAG, "CRASH DIAGNOSIS: EntrantMainActivity not found in Manifest!", e);
-                }
-            });
+            binding.buttonContinue.setOnClickListener(v -> controller.handleContinue(this, binding));
+            binding.buttonSkip.setOnClickListener(v -> controller.handleSkip(this, binding));
+            binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
         }
     }
 

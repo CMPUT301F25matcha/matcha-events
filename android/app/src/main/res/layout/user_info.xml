@@ -45,7 +45,20 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <EditText
-            android:id="@+id/editTextTextEmailAddress"
+            android:id="@+id/userName"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:fontFamily="sans-serif-light"
+            android:inputType="text"
+            android:paddingStart="8dp"
+            android:text="Name"
+            android:textColor="#B6ACAC" />
+
+        <EditText
+            android:id="@+id/userEmail"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/rounded_edit_text"
@@ -60,7 +73,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
-            android:id="@+id/editTextPhone"
+            android:id="@+id/userPhone"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
@@ -75,26 +88,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
 
-        <EditText
-            android:id="@+id/editTextText2"
+        <TextView
+            android:id="@+id/errorMessage"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:paddingStart="8dp"
-            android:background="@drawable/rounded_edit_text"
-            android:ems="10"
-            android:fontFamily="sans-serif-light"
-            android:inputType="text"
-            android:text="Name"
-            android:textColor="#B6ACAC" />
+            android:gravity="center"
+            android:text="Invalid input!"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone" />
 
         <Button
-            android:id="@+id/buttonFirst"
+            android:id="@+id/buttonContinue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:backgroundTint="#262424"
-            android:text="Continue/Skip"
+            android:text="Continue"
+            app:cornerRadius="12dp" />
+
+        <Button
+            android:id="@+id/buttonSkip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="#262424"
+            android:text="Skip"
             app:cornerRadius="12dp" />
 
     </LinearLayout>
@@ -146,7 +166,7 @@
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/adminLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

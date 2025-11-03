@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.recyclerview)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

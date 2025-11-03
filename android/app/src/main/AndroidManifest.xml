@@ -36,6 +36,7 @@
                 android:value=".SearchableActivity" />
         </activity>
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
+        <activity android:name=".Views.Admin.AdminLoginActivity" />
 
     </application>
 
