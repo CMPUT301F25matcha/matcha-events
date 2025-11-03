@@ -11,6 +11,8 @@ navigationUi = "2.9.5"
 recyclerview = "1.4.0"
 testCore = "1.5.0"
 robolectric = "4.11.1"
+firebaseFirestore = "26.0.2"
+activity = "1.11.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,6 +26,8 @@ navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "testCore" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

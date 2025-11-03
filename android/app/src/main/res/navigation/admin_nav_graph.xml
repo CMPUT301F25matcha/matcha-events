@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_nav_graph"
+    app:startDestination="@id/adminDashboardFragment">
+
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.lotterysystemproject.Controllers.AdminDashboard"
+        android:label="AdminDashboard"
+        tools:layout="@layout/admin_dashboard">
+        <action
+            android:id="@+id/action_adminDashboard_to_adminBrowseProfiles"
+            app:destination="@id/adminBrowseProfilesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminBrowseProfilesFragment"
+        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
+        android:label="AdminBrowseProfiles"
+        tools:layout="@layout/admin_browse_profiles" />
+</navigation>

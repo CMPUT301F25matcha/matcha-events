@@ -11,13 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
+
         <activity
-            android:name=".Views.Admin.AdminMainActivity"
+            android:name=".Views.Entrant.UserInfoView"
             android:exported="true"
             android:theme="@style/Theme.LotterySystemProject">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -3,42 +3,42 @@ package com.example.lotterysystemproject;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.example.lotterysystemproject.Controllers.UserInfoController;
-import com.example.lotterysystemproject.Models.UserModel;
+import com.example.lotterysystemproject.Controllers.UserInfo;
+import com.example.lotterysystemproject.Models.User;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class UserInfoTest {
 
-    private UserInfoController controller;
+    private UserInfo controller;
 
     @Before
     public void setUp() {
-        controller = new UserInfoController();
+        controller = new UserInfo();
     }
 
     @Test
     public void validation_fails_when_name_missing() {
-        UserModel model = new UserModel("", "user@example.com", "1234567890");
+        User model = new User("", "", "user@example.com", "1234567890");
         assertFalse(controller.validate(model));
     }
 
     @Test
     public void validation_fails_when_email_missing() {
-        UserModel model = new UserModel("Alice", "", "1234567890");
+        User model = new User("", "Alice", "", "1234567890");
         assertFalse(controller.validate(model));
     }
 
     @Test
     public void validation_passes_when_phone_missing_optional() {
-        UserModel model = new UserModel("Alice", "user@example.com", "");
+        User model = new User("", "Alice", "user@example.com", "");
         assertTrue(controller.validate(model));
     }
 
     @Test
     public void validation_passes_with_all_fields_present() {
-        UserModel model = new UserModel("Alice", "user@example.com", "1234567890");
+        User model = new User("", "Alice", "user@example.com", "1234567890");
         assertTrue(controller.validate(model));
     }
 }
