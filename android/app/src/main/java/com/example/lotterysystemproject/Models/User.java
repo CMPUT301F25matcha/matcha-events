@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject;
+package com.example.lotterysystemproject.Models;
 
 public class User {
     private String id;

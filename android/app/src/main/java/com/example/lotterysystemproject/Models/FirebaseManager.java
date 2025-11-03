@@ -1,6 +1,5 @@
-package com.example.lotterysystemproject.controller;
+package com.example.lotterysystemproject.Models;
 
-import com.example.lotterysystemproject.models.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;

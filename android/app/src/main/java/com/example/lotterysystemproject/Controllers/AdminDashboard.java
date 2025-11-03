@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.controller;
+package com.example.lotterysystemproject.Controllers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +23,14 @@ public class AdminDashboard extends Fragment {
     ) {
 
         binding = AdminDashboardBinding.inflate(inflater, container, false);
+
+
+        binding.backArrow.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboard.this).navigateUp()
+        );
+
         return binding.getRoot();
+
 
     }
 

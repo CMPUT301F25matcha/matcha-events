@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.example.lotterysystemproject.UserInfo"
+        android:name="com.example.lotterysystemproject.Controllers.UserInfo"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/user_info">
 
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.lotterysystemproject.AdminDashboard"
+        android:name="com.example.lotterysystemproject.Controllers.AdminDashboard"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/admin_dashboard">
         <action
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/thirdFragment"
-        android:name="com.example.lotterysystemproject.AdminBrowseProfiles"
+        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
         android:label="fragment_third"
         tools:layout="@layout/admin_browse_profiles" >
         <action

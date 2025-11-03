@@ -6,6 +6,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.Models.User;
+
 public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.controller;
+package com.example.lotterysystemproject.Controllers;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.models.User;
+import com.example.lotterysystemproject.Models.User;
 
 
 public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.ProfileViewHolder> {

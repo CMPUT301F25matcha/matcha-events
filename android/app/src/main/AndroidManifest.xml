@@ -12,21 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
 
-        <!-- ✅ Use TestActivity as your launcher for now -->
         <activity
-            android:name=".TestActivity"
-            android:exported="true">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LotterySystemProject">
+
+            <!-- This intent-filter tells Android this is the entry point -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <!-- Regular main activity (will be launcher later) -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.LotterySystemProject" />
+        </activity>
 
     </application>
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views;
+package com.example.lotterysystemproject.Controllers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
