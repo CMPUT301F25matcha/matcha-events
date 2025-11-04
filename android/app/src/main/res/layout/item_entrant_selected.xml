@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/entrant_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✓ John Smith"
+            android:textSize="16sp"
+            android:fontFamily="@font/anuphan_semibold"
+            android:textColor="#262424" />
+
+        <TextView
+            android:id="@+id/entrant_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="john.smith@email.com"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#B6ACAC"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status: Enrolled"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#262424"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/status_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2 hours ago"
+            android:textSize="12sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#B6ACAC"
+            android:layout_marginTop="4dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="✗ Cancel Entrant"
+                android:textSize="12sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF5722"
+                android:visibility="gone"
+                app:cornerRadius="8dp"
+                style="@style/Widget.Material3.Button" />
+
+            <Button
+                android:id="@+id/replacement_button"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="🔄 Draw Replacement"
+                android:textSize="12sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#000000"
+                android:backgroundTint="#EDE9E9"
+                android:visibility="gone"
+                app:cornerRadius="8dp"
+                style="@style/Widget.Material3.Button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

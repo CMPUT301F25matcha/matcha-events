@@ -29,9 +29,16 @@ public class UserInfo extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Existing: Continue/Skip -> Admin Dashboard
         binding.buttonFirst.setOnClickListener(v ->
                 NavHostFragment.findNavController(UserInfo.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
+        );
+
+        // NEW: Organizer button -> Organizer Dashboard
+        binding.buttonOrganizer.setOnClickListener(v ->
+                NavHostFragment.findNavController(UserInfo.this)
+                        .navigate(R.id.action_FirstFragment_to_OrganizerDashboard)
         );
     }
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/entrant_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lisa Wong"
+        android:textSize="16sp"
+        android:fontFamily="@font/anuphan_semibold"
+        android:textColor="#262424" />
+
+    <TextView
+        android:id="@+id/entrant_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="lisa.wong@email.com"
+        android:textSize="14sp"
+        android:fontFamily="@font/anuphan"
+        android:textColor="#B6ACAC"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/joined_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Joined: 3 days ago"
+        android:textSize="12sp"
+        android:fontFamily="@font/anuphan"
+        android:textColor="#B6ACAC"
+        android:layout_marginTop="4dp" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EDE9E9"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>
