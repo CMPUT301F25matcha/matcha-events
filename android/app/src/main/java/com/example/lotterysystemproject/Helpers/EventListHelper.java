@@ -140,20 +140,20 @@ public class EventListHelper {
         button.setEnabled(false);
         button.setText("Joining...");
 
-        firebaseManager.joinWaitingList(event.getId(), userId, 
-            () -> {
-                // Success
+        firebaseManager.joinWaitingList(event.getId(), userId, new FirebaseManager.FirebaseCallback() {
+            @Override
+            public void onSuccess() {
                 button.setText("On Waiting List");
                 button.setEnabled(false);
                 Toast.makeText(context, "Successfully joined waiting list!", Toast.LENGTH_SHORT).show();
-            },
-            error -> {
-                // Error
+            }
+            @Override
+            public void onError(Exception error) {
                 button.setEnabled(true);
                 button.setText("Join Waiting List");
                 Toast.makeText(context, "Failed to join waiting list: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        );
+        });
     }
 
     /**
