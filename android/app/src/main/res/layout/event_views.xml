@@ -6,491 +6,374 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/main_content_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_container">
 
-        <View
-            android:id="@+id/status_bar_spacer"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@android:color/transparent" />
-
-        <View
-            android:id="@+id/status_bar_spacer"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@android:color/transparent" />
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/event_search_bar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/rounded_search_bg"
-            app:iconifiedByDefault="false"
-            app:queryHint="Search events..." />
+            android:orientation="vertical">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbars="none"
-            android:fadeScrollbars="false">
+            <View
+                android:id="@+id/status_bar_spacer"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:background="@android:color/transparent" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/quick_actions_chip_group"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/event_search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/rounded_search_bg"
+                app:iconifiedByDefault="false"
+                app:queryHint="Search events..." />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:scrollbars="none"
+                android:fadeScrollbars="false">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/quick_actions_chip_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:chipSpacing="8dp"
+                    app:chipSpacingHorizontal="8dp"
+                    app:singleLine="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_favorites"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Favorites"
+                        android:checkable="true"
+                        app:chipIcon="@android:drawable/btn_star_big_on"
+                        app:chipIconVisible="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_history"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="History"
+                        android:checkable="true"
+                        app:chipIcon="@android:drawable/ic_menu_recent_history"
+                        app:chipIconVisible="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_following"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Following"
+                        android:checkable="true"
+                        app:chipIcon="@android:drawable/ic_menu_myplaces"
+                        app:chipIconVisible="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_upcoming"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Upcoming"
+                        android:checkable="true"
+                        app:chipIcon="@android:drawable/ic_menu_today"
+                        app:chipIconVisible="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_nearby"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nearby"
+                        android:checkable="true"
+                        app:chipIcon="@android:drawable/ic_menu_mylocation"
+                        app:chipIconVisible="true" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/featured_events_card"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/featured_events_viewpager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/page_indicator" />
+
+                    <LinearLayout
+                        android:id="@+id/page_indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:background="@android:color/transparent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/categories_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:chipSpacing="8dp"
-                app:chipSpacingHorizontal="8dp"
-                app:singleLine="true">
+                android:text="Categories"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_favorites"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Favorites"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/btn_star_big_on"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_history"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="History"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_recent_history"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_following"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Following"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_myplaces"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_upcoming"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Upcoming"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_today"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_nearby"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nearby"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_mylocation"
-                    app:chipIconVisible="true" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-        </HorizontalScrollView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/featured_events_card"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@android:color/white">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <HorizontalScrollView
+                android:id="@+id/categories_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/featured_events_viewpager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/page_indicator" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:scrollbars="none"
+                android:fadeScrollbars="false">
 
                 <LinearLayout
-                    android:id="@+id/page_indicator"
+                    android:id="@+id/categories_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal"
-                    android:gravity="center"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-            app:queryHint="Search events..." />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:gravity="center_vertical">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbars="none"
-            android:fadeScrollbars="false">
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_music"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/quick_actions_chip_group"
+                        <ImageView
+                            android:id="@+id/category_music_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Music category"
+                            android:src="@android:drawable/ic_media_play" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_sports"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <ImageView
+                            android:id="@+id/category_sports_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Sports category"
+                            android:src="@android:drawable/ic_menu_more" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_food"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <ImageView
+                            android:id="@+id/category_food_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Food category"
+                            android:src="@android:drawable/ic_menu_myplaces" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_art"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <ImageView
+                            android:id="@+id/category_art_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Art category"
+                            android:src="@android:drawable/ic_menu_gallery" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_tech"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <ImageView
+                            android:id="@+id/category_tech_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Tech category"
+                            android:src="@android:drawable/ic_menu_manage" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_education"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <ImageView
+                            android:id="@+id/category_education_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="Education category"
+                            android:src="@android:drawable/ic_menu_agenda" />
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/recent_events_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:chipSpacing="8dp"
-                app:chipSpacingHorizontal="8dp"
-                app:singleLine="true">
+                android:text="Recent Events"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_favorites"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Favorites"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/btn_star_big_on"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_history"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="History"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_recent_history"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_following"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Following"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_myplaces"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_upcoming"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Upcoming"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_today"
-                    app:chipIconVisible="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_nearby"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nearby"
-                    android:checkable="true"
-                    app:chipIcon="@android:drawable/ic_menu_mylocation"
-                    app:chipIconVisible="true" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-        </HorizontalScrollView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/featured_events_card"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@android:color/white">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <HorizontalScrollView
+                android:id="@+id/recent_events_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/featured_events_viewpager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/page_indicator" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:scrollbars="none"
+                android:fadeScrollbars="false">
 
                 <LinearLayout
-                    android:id="@+id/page_indicator"
+                    android:id="@+id/recent_events_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal"
-                    android:gravity="center"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:gravity="center_vertical">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <include
+                        android:id="@+id/recent_event_1"
+                        layout="@layout/item_recent_event" />
 
-        </com.google.android.material.card.MaterialCardView>
+                    <include
+                        android:id="@+id/recent_event_2"
+                        layout="@layout/item_recent_event" />
 
-        <TextView
-            android:id="@+id/categories_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Categories"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            android:drawableEnd="@drawable/ic_chevron_right"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
+                    <include
+                        android:id="@+id/recent_event_3"
+                        layout="@layout/item_recent_event" />
 
-        <HorizontalScrollView
-            android:id="@+id/categories_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:scrollbars="none"
-            android:fadeScrollbars="false">
+                    <include
+                        android:id="@+id/recent_event_4"
+                        layout="@layout/item_recent_event" />
 
-            <LinearLayout
-                android:id="@+id/categories_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:gravity="center_vertical">
+                    <include
+                        android:id="@+id/recent_event_5"
+                        layout="@layout/item_recent_event" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_music"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
+                </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/category_music_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Music category"
-                        android:src="@android:drawable/ic_media_play" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_sports"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/category_sports_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Sports category"
-                        android:src="@android:drawable/ic_menu_more" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_food"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/category_food_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Food category"
-                        android:src="@android:drawable/ic_menu_myplaces" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_art"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/category_art_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Art category"
-                        android:src="@android:drawable/ic_menu_gallery" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_tech"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/category_tech_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Tech category"
-                        android:src="@android:drawable/ic_menu_manage" />
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/category_education"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginEnd="12dp"
-                    android:clipToPadding="false"
-                    android:clipChildren="true"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@android:color/white">
-
-                    <ImageView
-                        android:id="@+id/category_education_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Education category"
-                        android:src="@android:drawable/ic_menu_agenda" />
-
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/recent_events_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recent Events"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            android:drawableEnd="@drawable/ic_chevron_right"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical" />
-
-        <HorizontalScrollView
-            android:id="@+id/recent_events_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:scrollbars="none"
-            android:fadeScrollbars="false">
-
-            <LinearLayout
-                android:id="@+id/recent_events_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:gravity="center_vertical">
-
-                <include
-                    android:id="@+id/recent_event_1"
-                    layout="@layout/item_recent_event" />
-
-                <include
-                    android:id="@+id/recent_event_2"
-                    layout="@layout/item_recent_event" />
-
-                <include
-                    android:id="@+id/recent_event_3"
-                    layout="@layout/item_recent_event" />
-
-                <include
-                    android:id="@+id/recent_event_4"
-                    layout="@layout/item_recent_event" />
-
-                <include
-                    android:id="@+id/recent_event_5"
-                    layout="@layout/item_recent_event" />
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
-
-        <ScrollView
-            android:id="@+id/events_list_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            android:scrollbars="none">
+            </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/events_list_container"
@@ -499,18 +382,23 @@
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="16dp"
-                android:paddingBottom="8dp">
+                android:paddingBottom="8dp"/>
 
-                <!-- Events will be added here programmatically -->
-                <!-- Each event will be a MaterialCardView with:
-                     - cardCornerRadius="16dp"
-                     - cardElevation="4dp"
-                     - cardBackgroundColor="@android:color/white"
-                     - layout_marginBottom="12dp" -->
+        </LinearLayout>
+    </ScrollView>
 
-            </LinearLayout>
+    <LinearLayout
+        android:id="@+id/bottom_navigation_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical">
 
-        </ScrollView>
+        <include
+            android:id="@+id/bottom_navigation"
+            layout="@layout/bottom_navigation_bar" />
 
     </LinearLayout>
 
