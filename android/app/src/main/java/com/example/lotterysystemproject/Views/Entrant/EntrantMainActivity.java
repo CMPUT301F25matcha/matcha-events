@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.lotterysystemproject.Helpers.EventListHelper;
 import com.example.lotterysystemproject.databinding.EventViewsBinding;
 import android.view.View;
+import android.util.Log;
 
 public class EntrantMainActivity extends AppCompatActivity {
     private EventViewsBinding binding;
@@ -33,31 +34,46 @@ public class EntrantMainActivity extends AppCompatActivity {
 
         // Launch details on featured_events_card click
         binding.featuredEventsCard.setOnClickListener(v -> {
+            Log.d("EntrantMainActivity", "Featured card clicked");
             Object tag = binding.featuredEventsCard.getTag();
-            // If tag is set as Event, extract event id
+            Log.d("EntrantMainActivity", "Featured card tag: " + tag);
             String eventId = (tag instanceof String) ? (String) tag : null;
             launchEventDetails(eventId);
         });
 
-        // Launch details on recent_events_container children
-        for (int i = 0; i < binding.recentEventsContainer.getChildCount(); i++) {
-            View child = binding.recentEventsContainer.getChildAt(i);
-            child.setOnClickListener(v -> {
+        // Setup events list with callback to set up listeners
+        eventListHelper = new EventListHelper(this, binding.eventsListContainer, this::setupEventCardListeners);
+        eventListHelper.loadEvents();
+    }
+
+    /**
+     * Sets up click listeners for event cards in the events list.
+     * Called after EventListHelper finishes populating the container.
+     */
+    private void setupEventCardListeners() {
+        Log.d("EntrantMainActivity", "Setting up event card listeners");
+        for (int i = 0; i < binding.eventsListContainer.getChildCount(); i++) {
+            View card = binding.eventsListContainer.getChildAt(i);
+            int finalI = i;
+            card.setOnClickListener(v -> {
+                Log.d("EntrantMainActivity", "Event card clicked at index " + finalI);
                 Object tag = v.getTag();
+                Log.d("EntrantMainActivity", "Card tag: " + tag);
                 String eventId = (tag instanceof String) ? (String) tag : null;
                 launchEventDetails(eventId);
             });
         }
-
-        // Setup events list
-        eventListHelper = new EventListHelper(this, binding.eventsListContainer, this::launchEventDetails);
-        eventListHelper.loadEvents();
     }
 
     // Utility method to start details activity
     private void launchEventDetails(String eventId) {
+        Log.d("EntrantMainActivity", "launchEventDetails called with ID: " + eventId);
+        if (eventId == null || eventId.isEmpty()) {
+            Log.w("EntrantMainActivity", "Event ID is null or empty, cannot launch details");
+            return;
+        }
         Intent intent = new Intent(this, EventDetailsActivity.class);
-        if (eventId != null) intent.putExtra("eventId", eventId);
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 

@@ -30,11 +30,44 @@ public class EventListHelper {
     private final FirebaseManager firebaseManager;
     private final SimpleDateFormat dateFormat;
 
-    public EventListHelper(Context context, LinearLayout container) {
+    public EventListHelper(Context context, LinearLayout container, Runnable onEventsLoaded) {
         this.context = context;
         this.container = container;
+        this.onEventsLoaded = onEventsLoaded;
         this.firebaseManager = FirebaseManager.getInstance();
         this.dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
+    }
+
+    private Runnable onEventsLoaded;
+
+    /**
+     * Loads all events from Firestore and populates the container.
+     */
+    public void loadEvents() {
+        firebaseManager.getAllEvents(
+                events -> {
+                    container.removeAllViews();
+
+                    if (events == null || events.isEmpty()) {
+                        showEmptyState();
+                        if (onEventsLoaded != null) onEventsLoaded.run();
+                        return;
+                    }
+
+                    for (Event event : events) {
+                        View eventCardView = createEventCard(event);
+                        eventCardView.setTag(event.getId());  // SET TAG HERE
+                        container.addView(eventCardView);
+                    }
+
+                    if (onEventsLoaded != null) onEventsLoaded.run();
+                },
+                error -> {
+                    container.removeAllViews();
+                    showErrorState(error.getMessage());
+                    if (onEventsLoaded != null) onEventsLoaded.run();
+                }
+        );
     }
 
     /**
@@ -43,33 +76,6 @@ public class EventListHelper {
     private String getCurrentUserId() {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(KEY_USER_ID, null);
-    }
-
-    /**
-     * Loads all events from Firestore and populates the container.
-     */
-    public void loadEvents() {
-        firebaseManager.getAllEvents(
-            events -> {
-                // Clear existing views
-                container.removeAllViews();
-                
-                if (events == null || events.isEmpty()) {
-                    showEmptyState();
-                    return;
-                }
-
-                // Add each event as a card
-                for (Event event : events) {
-                    View eventCardView = createEventCard(event);
-                    container.addView(eventCardView);
-                }
-            },
-            error -> {
-                container.removeAllViews();
-                showErrorState(error.getMessage());
-            }
-        );
     }
 
     /**
