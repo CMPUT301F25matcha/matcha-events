@@ -95,7 +95,7 @@ public class FirebaseManager {
      */
     private void initializeMockData() {
         Calendar cal = Calendar.getInstance();
-        
+
         // Event 1: Music Concert
         cal.set(2024, Calendar.DECEMBER, 20, 19, 0);
         Event event1 = new Event("event1", "Winter Music Festival", "Music Promoters Inc", "host1", cal.getTime(), "Downtown Concert Hall");
@@ -197,7 +197,7 @@ public class FirebaseManager {
     //                 if (callback != null) callback.onError(e);
     //             });
     // }
-    
+
     // Mock implementation for demo
     public void addUser(User user, FirebaseCallback callback) {
         // Simulate async operation with a delay
@@ -229,7 +229,7 @@ public class FirebaseManager {
     //                 if (callback != null) callback.onError(e);
     //             });
     // }
-    
+
     // Mock implementation for demo
     public void updateUser(String userId, Map<String, Object> updates, FirebaseCallback callback){
         new Thread(() -> {
@@ -274,7 +274,7 @@ public class FirebaseManager {
     //                 }
     //             });
     // }
-    
+
     // Mock implementation for demo
     public void getUser(String userId, Consumer<User> onSuccess, Consumer<Exception> onError) {
         new Thread(() -> {
@@ -329,7 +329,7 @@ public class FirebaseManager {
     //                 }
     //             });
     // }
-    
+
     // Mock implementation for demo - returns local mock events
     public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         // Simulate async operation with a delay
@@ -432,7 +432,7 @@ public class FirebaseManager {
     //                 }
     //             });
     // }
-    
+
     // Mock implementation for demo - uses local mock events
     public void joinWaitingList(String eventId, String userId, FirebaseCallback callback) {
         if (eventId == null || eventId.isEmpty() || userId == null || userId.isEmpty()) {
@@ -446,7 +446,7 @@ public class FirebaseManager {
         new Thread(() -> {
             try {
                 Thread.sleep(500); // Simulate network delay
-                
+
                 Event event = mockEvents.get(eventId);
                 if (event == null) {
                     mainHandler.post(() -> {
@@ -482,7 +482,7 @@ public class FirebaseManager {
                     event.setWaitingList(waitingList);
                 }
                 waitingList.add(userId);
-                
+
                 // Update the mock event
                 mockEvents.put(eventId, event);
 
@@ -519,7 +519,7 @@ public class FirebaseManager {
     //                 if (callback != null) callback.onError(e);
     //             });
     // }
-    
+
     // Mock implementation for demo
     public void deleteUser(String userId, FirebaseCallback callback) {
         if (userId == null || userId.isEmpty()) {
@@ -538,9 +538,20 @@ public class FirebaseManager {
         }).start();
     }
 
-
-
-
+    public static void leaveWaitingList(Event event, String userId, FirebaseCallback callback) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (event == null || userId == null) {
+                if (callback != null) callback.onError(new IllegalArgumentException("event/userId is null"));
+                return;
+            }
+            if (event.getWaitingList() != null && event.getWaitingList().contains(userId)) {
+                event.getWaitingList().remove(userId);
+                if (callback != null) callback.onSuccess();
+            } else {
+                if (callback != null) callback.onError(new Exception("User not in waiting list"));
+            }
+        }, 400);
+    }
 
 
 }

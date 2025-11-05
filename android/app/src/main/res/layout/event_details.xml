@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- Top App Bar -->
+    <LinearLayout
+        android:id="@+id/top_app_bar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Back Arrow in Circle -->
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_white"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back"
+            android:scaleType="center"
+            android:elevation="2dp"
+            app:tint="#222" />
+
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+        <!-- Favorite Heart in Circle -->
+        <ImageButton
+            android:id="@+id/btn_favorite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_white"
+            android:src="@drawable/ic_favorite_border"
+            android:contentDescription="Favorite"
+            android:scaleType="center"
+            android:elevation="2dp"
+            android:layout_marginEnd="8dp"
+            app:tint="#222" />
+
+        <!-- Dots menu in Circle -->
+        <ImageButton
+            android:id="@+id/btn_more"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_white"
+            android:src="@drawable/ic_more_vert"
+            android:contentDescription="More options"
+            android:scaleType="center"
+            android:elevation="2dp"
+            app:tint="#222" />
+    </LinearLayout>
+
+    <!-- Event Image (top 1/5) -->
+    <ImageView
+        android:id="@+id/event_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Event image"
+        app:layout_constraintTop_toBottomOf="@id/top_app_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/map_container"
+        app:layout_constraintDimensionRatio="16:5"
+        android:background="#DDDDDD" />
+
+    <!-- Map Placeholder (next 2/5) -->
+    <FrameLayout
+        android:id="@+id/map_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#E3E9EF"
+        app:layout_constraintTop_toBottomOf="@id/event_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/event_drawer"
+        app:layout_constraintDimensionRatio="16:8" />
+
+    <!-- Bottom Drawer (Only top corners rounded) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/event_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-36dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="12dp"
+        app:cardPreventCornerOverlap="false"
+        android:backgroundTint="#FFF"
+        app:strokeColor="#FFF"
+        app:strokeWidth="0dp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="#FFF"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="32dp">
+
+            <!-- Event Name, Location, Date -->
+            <TextView
+                android:id="@+id/event_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event Name"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111" />
+            <TextView
+                android:id="@+id/event_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textSize="15sp"
+                android:textColor="#4B4B4B"
+                android:layout_marginTop="2dp" />
+            <TextView
+                android:id="@+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date and Time"
+                android:textSize="15sp"
+                android:textColor="#4B4B4B"
+                android:layout_marginTop="2dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ECECEC"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <!-- Notification row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/notification_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Receive notifications"
+                    android:textSize="15sp"
+                    android:textColor="#343434" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/notifications_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="#0E6AFF"
+                    android:trackTint="#CCE1FF"
+                    android:scaleX="0.8"
+                    android:scaleY="0.8"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <!-- Join waiting list button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/join_waiting_list_button"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:text="Join Waiting List (12)"
+                android:textSize="18sp"
+                android:textAllCaps="false"
+                android:backgroundTint="#0E6AFF"
+                android:textColor="#FFF"
+                app:cornerRadius="32dp"
+                app:iconGravity="textStart"
+                android:elevation="2dp"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

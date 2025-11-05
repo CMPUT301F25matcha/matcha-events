@@ -24,9 +24,6 @@ public class Event {
     private boolean isActive;
     private Date createdAt;
 
-    // Default constructor required for Firestore
-    public Event() {}
-
     public Event(String id, String name, String hostName, String hostId, Date date, String location) {
         this.id = id;
         this.name = name;
