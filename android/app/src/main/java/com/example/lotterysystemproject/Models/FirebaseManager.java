@@ -3,6 +3,10 @@ package com.example.lotterysystemproject.Models;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.Timestamp;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -155,40 +159,6 @@ public class FirebaseManager {
                 });
     }
 
-    /**
-     * Retrieve all documents from "events" collection in Firestore,
-     * and converts them into a list of Event objects.
-     * @param onSuccess a callback with the list of events if successful
-     * @param onError a callback with an exception if operation fails
-     */
-
-    /*
-    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
-        db.collection("events")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    // Create a list to store all Event objects
-                    List<Event> eventList = new ArrayList<>();
-
-                    // Loop through all documents in the collection
-                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        // Convert each document to an Event object
-                        Event event = doc.toObject(Event.class);
-                        eventList.add(event);
-                    }
-
-                    if (onSuccess != null) {
-                        onSuccess.accept(eventList);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    if (onError != null) {
-                        onError.accept(e);
-                    }
-                });
-
-    }
-    */
 
     public void deleteUser(String userId, FirebaseCallback callback) {
         if (userId == null || userId.isEmpty()) {
@@ -207,7 +177,33 @@ public class FirebaseManager {
                 });
     }
 
+    /** Anonymize all registrations for a user (but keeps event stats, just removes personal linkage). */
+    public void anonymizeRegistrationsForUser(String userId, FirebaseCallback callback) {
+        db.collection("registrations")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(q -> {
+                    WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot d : q) {
+                        batch.update(d.getReference(), new java.util.HashMap<String, Object>() {{
+                            put("userId", "DELETED");          // break linkage
+                            put("userDeleted", true);          // deletion marker
+                            put("updatedAt", Timestamp.now());
+                        }});
+                    }
+                    batch.commit()
+                            .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
+                            .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+                })
+                .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+    }
 
+    /** Best-effort FCM token revoke. Call from Activity. */
+    public void revokeFcmToken(FirebaseCallback callback) {
+        FirebaseMessaging.getInstance().deleteToken()
+                .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
+                .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+    }
 
 
 
