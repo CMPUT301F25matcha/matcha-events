@@ -20,4 +20,5 @@
         android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
         android:label="AdminBrowseProfiles"
         tools:layout="@layout/admin_browse_profiles" />
+
 </navigation>

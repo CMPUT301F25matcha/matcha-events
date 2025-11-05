@@ -5,34 +5,20 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/FirstFragment">
 
+    <!-- 🧩 Login/User info screen -->
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.lotterysystemproject.Controllers.UserInfo"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/user_info">
 
+        <!-- 👇 Navigate from UserInfo to the admin graph -->
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_FirstFragment_to_admin_nav_graph"
+            app:destination="@id/admin_nav_graph" />
     </fragment>
 
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminDashboard"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/admin_dashboard">
-        <action
-            android:id="@+id/action_SecondFragment_to_thirdFragment"
-            app:destination="@id/thirdFragment" />
-    </fragment>
+    <!-- 👇 Include the admin navigation graph -->
+    <include app:graph="@navigation/admin_nav_graph" />
 
-    <fragment
-        android:id="@+id/thirdFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
-        android:label="fragment_third"
-        tools:layout="@layout/admin_browse_profiles" >
-        <action
-            android:id="@+id/action_thirdFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
 </navigation>

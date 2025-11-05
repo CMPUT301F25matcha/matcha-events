@@ -83,13 +83,7 @@ public class AdminBrowseProfiles extends Fragment {
         });
 
         loadProfiles();
-        /*
-        binding.buttonSecond.setOnClickListener(v ->
-                NavHostFragment.findNavController(AdminBrowseProfiles.this)
-                        .navigate(R.id.action_thirdFragment_to_SecondFragment)
-        );
 
-         */
 
     }
 

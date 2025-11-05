@@ -38,6 +38,7 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
             profileImage = itemView.findViewById(R.id.profile_image);
             name = itemView.findViewById(R.id.profile_name);
             email = itemView.findViewById(R.id.profile_email);
+            //role = itemView.findViewById(R.id.dialog_role);
             viewDetails = itemView.findViewById(R.id.btn_view_details);
         }
     }
@@ -58,6 +59,7 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
 
         viewHolder.name.setText(user.getName());
         viewHolder.email.setText(user.getEmail());
+        //viewHolder.role.setText(user.getRole());
 
         // Handle "View Details" button click
         viewHolder.viewDetails.setOnClickListener(v -> {

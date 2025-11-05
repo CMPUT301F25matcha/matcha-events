@@ -1,0 +1,71 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/dialog_event_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Event poster" />
+
+        <TextView
+            android:id="@+id/dialog_event_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Name"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:id="@+id/dialog_event_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nov 10, 2025 • 6:00 PM"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/dialog_organizer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Organized by Alice Johnson"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/dialog_event_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full event description goes here..."
+            android:layout_marginTop="12dp" />
+
+
+        <Button
+            android:id="@+id/dialog_event_remove_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remove Event"
+            android:backgroundTint="@color/red"/>
+
+        <Button
+            android:id="@+id/dialog_event_close_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/black"/>
+
+
+    </LinearLayout>
+
+
+</ScrollView>
