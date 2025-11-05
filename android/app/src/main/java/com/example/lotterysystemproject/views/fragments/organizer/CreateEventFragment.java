@@ -26,7 +26,7 @@ import java.util.Locale;
 public class CreateEventFragment extends Fragment {
 
     // UI Components
-    private EditText eventNameInput, descriptionInput, locationInput, capacityInput, priceInput;
+    private EditText eventNameInput, descriptionInput, locationInput, capacityInput, priceInput, maxWaitingListInput;
     private Button dateButton, timeButton, regStartButton, regEndButton;
     private Button uploadPosterButton, createEventButton, backButton;
 
@@ -68,6 +68,7 @@ public class CreateEventFragment extends Fragment {
         descriptionInput = view.findViewById(R.id.description_input);
         locationInput = view.findViewById(R.id.location_input);
         capacityInput = view.findViewById(R.id.capacity_input);
+        maxWaitingListInput = view.findViewById(R.id.max_waiting_list_input);
         priceInput = view.findViewById(R.id.price_input);
 
         // Date/Time buttons
@@ -200,6 +201,7 @@ public class CreateEventFragment extends Fragment {
         String location = locationInput.getText().toString().trim();
         String capacityStr = capacityInput.getText().toString().trim();
         String priceStr = priceInput.getText().toString().trim();
+        String maxWaitingListStr = maxWaitingListInput.getText().toString().trim();
 
         // Validate capacity
         int capacity;
@@ -208,6 +210,13 @@ public class CreateEventFragment extends Fragment {
         } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Invalid capacity", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        int maxWaitingList = 0;
+        try {
+            maxWaitingList = Integer.parseInt(maxWaitingListStr);
+        } catch (NumberFormatException e) {
+            maxWaitingList = 100;
         }
 
         // Create Event object
@@ -221,6 +230,7 @@ public class CreateEventFragment extends Fragment {
         newEvent.setDescription(description);
         newEvent.setRegistrationStart(regStartDate.getTime());
         newEvent.setRegistrationEnd(regEndDate.getTime());
+        newEvent.setMaxWaitingList(maxWaitingList);
 
         // Parse price if provided
         if (!priceStr.isEmpty()) {

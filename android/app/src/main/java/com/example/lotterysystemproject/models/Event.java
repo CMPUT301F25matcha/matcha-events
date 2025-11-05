@@ -20,7 +20,7 @@ public class Event {
     private String qrCodePromo;
     private String qrCodeCheckin;
     private String posterUrl;
-
+    private int maxWaitingList;
     // Empty constructor for Firebase
     public Event() {}
 
@@ -81,6 +81,8 @@ public class Event {
         this.registrationEnd = registrationEnd;
     }
 
+    public int getMaxWaitingList() { return maxWaitingList; }
+    public void setMaxWaitingList(int maxWaitingList) { this.maxWaitingList = maxWaitingList; }
     public String getQrCodePromo() { return qrCodePromo; }
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;

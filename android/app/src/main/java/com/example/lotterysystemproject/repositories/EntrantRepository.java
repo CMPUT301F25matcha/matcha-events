@@ -76,7 +76,13 @@ public class EntrantRepository {
 
         for (int i = 0; i < selected; i++) {
             Entrant winner = waitingList.get(i);
-            winner.setStatus(Entrant.Status.INVITED);
+
+            if (i < selected / 4) {
+                winner.setStatus(Entrant.Status.ENROLLED);
+            } else {
+                winner.setStatus(Entrant.Status.INVITED);
+            }
+
             winners.add(winner);
         }
 

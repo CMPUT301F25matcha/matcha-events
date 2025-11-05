@@ -197,6 +197,29 @@
                 android:paddingEnd="12dp"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Max Waiting List -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Max Waiting List"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/max_waiting_list_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="100 entrants"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:inputType="number"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
             <!-- Registration Period -->
             <TextView
                 android:layout_width="match_parent"

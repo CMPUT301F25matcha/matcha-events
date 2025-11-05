@@ -41,6 +41,7 @@ public class EventRepository {
         event1.setEnrolled(0);  // No one enrolled yet
         event1.setStatus("open");
         event1.setDescription("Beginner swimming for kids ages 6-12");
+        event1.setMaxWaitingList(130);
         eventsList.add(event1);
 
         eventsLiveData.setValue(new ArrayList<>(eventsList));
