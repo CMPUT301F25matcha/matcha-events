@@ -45,6 +45,11 @@ public class AdminDashboard extends Fragment {
                 NavHostFragment.findNavController(AdminDashboard.this)
                         .navigate(R.id.action_adminDashboard_to_adminBrowseProfiles)
         );
+        binding.btnBrowseEvents.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminBrowseEvents);
+
+        });
     }
 
     @Override

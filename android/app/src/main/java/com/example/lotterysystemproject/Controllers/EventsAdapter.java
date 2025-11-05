@@ -8,17 +8,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.recyclerview.widget.RecyclerView;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.NonNull;
+
 import com.example.lotterysystemproject.Models.Event;
+import com.example.lotterysystemproject.Models.User;
 
 import com.example.lotterysystemproject.R;
 
 import java.util.List;
 
-import java.util.List;
+
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
     private final Context context;
@@ -31,14 +33,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     public class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView eventImage;
-        TextView eventName, organizerName;
+        TextView eventName;
         Button viewEventButton;
 
         public EventViewHolder(View itemView) {
             super(itemView);
             eventImage = itemView.findViewById(R.id.event_image);
             eventName = itemView.findViewById(R.id.event_name);
-            organizerName = itemView.findViewById(R.id.organizer_name);
+            //organizerName = itemView.findViewById(R.id.organizer_name);
             viewEventButton = itemView.findViewById(R.id.btn_view_event);
         }
 
@@ -56,17 +58,25 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         Event event = events.get(position);
 
         viewHolder.eventName.setText(event.getName());
-        viewHolder.organizerName.setText(event.get);
+        //viewHolder.organizerName.setText(user.);
 
 
         // Handle "View Event" button click
         viewHolder.viewEventButton.setOnClickListener(v -> {
             // Show Event Dialog
-            EventsDialog dialog =
+            EventsDialog dialog = new EventsDialog(event);
+            dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "EventsDialog");
 
         });
 
     }
+
+    @Override
+    public int getItemCount() {
+        return events != null ? events.size() : 0;
+    }
+
+
 
 
 

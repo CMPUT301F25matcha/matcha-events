@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.lotterysystemproject.Models.Event;
@@ -46,17 +47,29 @@ public class AdminBrowseEvents extends Fragment {
 
         binding.recyclerEvents.setAdapter(adapter);
 
+        // Search bar
 
 
+        // Handle back arrow
+        binding.backArrow.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminBrowseEvents.this).navigateUp()
+        );
 
-
-
-
-
+        // Fetch events
+        firebaseManager.getAllEvents(events -> {
+            eventList.clear();
+            eventList.addAll(events);
+            adapter.notifyDataSetChanged();
+        }, e -> {
+            e.printStackTrace();
+        });
     }
 
 
 
 
-
 }
+
+
+
+

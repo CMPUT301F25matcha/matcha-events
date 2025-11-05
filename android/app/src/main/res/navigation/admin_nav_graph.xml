@@ -10,9 +10,14 @@
         android:name="com.example.lotterysystemproject.Controllers.AdminDashboard"
         android:label="AdminDashboard"
         tools:layout="@layout/admin_dashboard">
+
         <action
             android:id="@+id/action_adminDashboard_to_adminBrowseProfiles"
             app:destination="@id/adminBrowseProfilesFragment" />
+
+        <action
+            android:id="@+id/action_adminDashboard_to_adminBrowseEvents"
+            app:destination="@id/adminBrowseEventsFragment" />
     </fragment>
 
     <fragment
@@ -20,5 +25,11 @@
         android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
         android:label="AdminBrowseProfiles"
         tools:layout="@layout/admin_browse_profiles" />
+
+    <fragment
+        android:id="@+id/adminBrowseEventsFragment"
+        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseEvents"
+        android:label="AdminBrowseEvents"
+        tools:layout="@layout/admin_browse_events" />
 
 </navigation>

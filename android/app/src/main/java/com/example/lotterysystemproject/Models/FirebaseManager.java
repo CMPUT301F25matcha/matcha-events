@@ -1,9 +1,12 @@
 package com.example.lotterysystemproject.Models;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -162,7 +165,7 @@ public class FirebaseManager {
      * @param onError a callback with an exception if operation fails
      */
 
-    /*
+
     public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
                 .get()
@@ -188,7 +191,7 @@ public class FirebaseManager {
                 });
 
     }
-    */
+
 
     public void deleteUser(String userId, FirebaseCallback callback) {
         if (userId == null || userId.isEmpty()) {
@@ -201,6 +204,24 @@ public class FirebaseManager {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onError(e);
+                });
+    }
+
+    public void deleteEvent(String eventId, FirebaseCallback callback) {
+        if (eventId == null || eventId.isEmpty()) {
+            if(callback != null) {
+                callback.onError(new IllegalArgumentException("Event ID cannot be null or empty"));
+            }
+            return;
+        }
+        db.collection("events").document(eventId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    if
+                    (callback != null) callback.onSuccess();
                 })
                 .addOnFailureListener(e -> {
                     if (callback != null) callback.onError(e);

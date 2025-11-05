@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.models;
+package com.example.lotterysystemproject.Models;
 
 public class Entrant {
 
