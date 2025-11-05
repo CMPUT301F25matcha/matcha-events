@@ -35,6 +35,10 @@
             <meta-data android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
         </activity>
+        <activity
+            android:name=".Views.Entrant.DeleteProfileActivity"
+            android:exported="false"
+            android:label="Delete Profile" />
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
         <activity android:name=".Views.Admin.AdminLoginActivity" />
 

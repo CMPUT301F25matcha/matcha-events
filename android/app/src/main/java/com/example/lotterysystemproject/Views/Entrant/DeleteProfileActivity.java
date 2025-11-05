@@ -1,0 +1,88 @@
+package com.example.lotterysystemproject.Views.Entrant;
+
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.R;
+
+public class DeleteProfileActivity extends AppCompatActivity {
+
+    public static final String EXTRA_USER_ID = "EXTRA_USER_ID";
+
+    private ProgressBar progress;
+    private Button btnDelete, btnCancel;
+    private FirebaseManager fm;
+    private String userId;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_delete_profile);
+
+        fm = FirebaseManager.getInstance();
+        userId = getIntent().getStringExtra(EXTRA_USER_ID);
+
+        progress = findViewById(R.id.progress);
+        btnDelete = findViewById(R.id.btn_delete);
+        btnCancel = findViewById(R.id.btn_cancel);
+
+        btnDelete.setOnClickListener(v -> confirmThenDelete());
+        btnCancel.setOnClickListener(v -> finish());
+    }
+
+    private void confirmThenDelete() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete profile?")
+                .setMessage("This will anonymize your registrations, revoke notifications, and delete your profile. This can’t be undone.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (d, w) -> performDeletion())
+                .show();
+    }
+
+    private void performDeletion() {
+        setLoading(true);
+
+        // 1) Revoke FCM token (best-effort)
+        fm.revokeFcmToken(new FirebaseManager.FirebaseCallback() {
+            @Override public void onSuccess() { step2Anonymize(); }
+            @Override public void onError(Exception e) { step2Anonymize(); } // proceed anyway
+        });
+    }
+
+    private void step2Anonymize() {
+        // 2) Anonymize registrations
+        fm.anonymizeRegistrationsForUser(userId, new FirebaseManager.FirebaseCallback() {
+            @Override public void onSuccess() { step3DeleteUser(); }
+            @Override public void onError(Exception e) { step3DeleteUser(); } // proceed anyway
+        });
+    }
+
+    private void step3DeleteUser() {
+        // 3) Delete user document
+        fm.deleteUser(userId, new FirebaseManager.FirebaseCallback() {
+            @Override public void onSuccess() {
+                setLoading(false);
+                Toast.makeText(DeleteProfileActivity.this, "Profile deleted", Toast.LENGTH_LONG).show();
+                // Optionally: clear local state / navigate out
+                finish();
+            }
+            @Override public void onError(Exception e) {
+                setLoading(false);
+                Toast.makeText(DeleteProfileActivity.this, "Delete failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void setLoading(boolean loading) {
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        btnDelete.setEnabled(!loading);
+        btnCancel.setEnabled(!loading);
+    }
+}
