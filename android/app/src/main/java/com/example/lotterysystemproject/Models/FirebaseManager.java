@@ -1,10 +1,17 @@
 package com.example.lotterysystemproject.Models;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
@@ -155,14 +162,14 @@ public class FirebaseManager {
                 });
     }
 
+
+
     /**
      * Retrieve all documents from "events" collection in Firestore,
      * and converts them into a list of Event objects.
      * @param onSuccess a callback with the list of events if successful
      * @param onError a callback with an exception if operation fails
      */
-
-    /*
     public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
                 .get()
@@ -188,7 +195,7 @@ public class FirebaseManager {
                 });
 
     }
-    */
+
 
     public void deleteUser(String userId, FirebaseCallback callback) {
         if (userId == null || userId.isEmpty()) {
@@ -206,6 +213,137 @@ public class FirebaseManager {
                     if (callback != null) callback.onError(e);
                 });
     }
+
+    public void addEvent(Event event, FirebaseCallback callback) {
+        if (event == null || event.getId() == null || event.getId().isEmpty()) {
+            if (callback != null) {
+                callback.onError(new IllegalArgumentException("Event or EventID cannot be null"));
+            }
+            return;
+        }
+        db.collection("events").document(event.getId())
+                .set(event)
+                .addOnSuccessListener(aVoid -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onError(e);
+                });
+    }
+
+    public void deleteEvent(String eventId, FirebaseCallback callback) {
+        if (eventId == null || eventId.isEmpty()) {
+            if(callback != null) {
+                callback.onError(new IllegalArgumentException("Event ID cannot be null or empty"));
+            }
+            return;
+        }
+        db.collection("events").document(eventId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    if
+                    (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onError(e);
+                });
+    }
+
+
+    public void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        db.collection("events").addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (e != null) {
+                if (onError != null) onError.accept(e);
+                return;
+            }
+
+            List<Event> eventList = new ArrayList<>();
+            if (queryDocumentSnapshots != null) {
+                for (DocumentSnapshot doc: queryDocumentSnapshots) {
+                    Event event = doc.toObject(Event.class);
+                    if (event != null) {
+
+                        eventList.add(event);
+
+                    }
+
+                }
+            }
+
+            if (onSuccess != null) onSuccess.accept(eventList);
+
+        });
+    }
+
+    public void getAllImages(Consumer<List<String>> onSuccess, Consumer<Exception> onError) {
+        storage.getReference().child("images")
+                .listAll()
+                .addOnSuccessListener(listResult -> {
+                    List<String> urls = new ArrayList<>();
+                    List<StorageReference> items = listResult.getItems();
+
+                    if (items.isEmpty()) {
+                        if (onSuccess != null) onSuccess.accept(urls);
+                        return;
+                    }
+
+                    for (StorageReference item: items) {
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            urls.add(uri.toString());
+                            if (urls.size() == items.size() && onSuccess != null) {
+                                onSuccess.accept(urls);
+                            }
+                        }).addOnFailureListener(e -> {
+                            if (onError != null) onError.accept(e);
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept(e);
+                });
+    }
+
+    public void deleteImage(String imageUrl, FirebaseCallback callback) {
+        try {
+            StorageReference imageRef = storage.getReferenceFromUrl(imageUrl);
+            imageRef.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        if (callback != null) callback.onSuccess();
+                    })
+                    .addOnFailureListener(e -> {
+                        if (callback != null) callback.onError(e);
+                    });
+        } catch (Exception e) {
+            if (callback != null) callback.onError(e);
+        }
+    }
+
+
+    public void deleteMultipleImages(List<String> imageUrls, BiConsumer<Integer, Exception> onComplete) {
+
+        int[] remaining = {imageUrls.size()};
+        int[] deleteCount = {0};
+
+        for (String url: imageUrls) {
+            deleteImage(url, new FirebaseCallback() {
+                @Override
+                public void onSuccess() {
+                    deleteCount[0]++;
+                    if (--remaining[0] == 0 && onComplete != null) {
+                        onComplete.accept(deleteCount[0], null);
+                    }
+                }
+                @Override
+                public void onError(Exception e) {
+                    if (--remaining[0] == 0 && onComplete != null) {
+                        onComplete.accept(deleteCount[0], e);
+                    }
+                }
+            });
+        }
+    }
+
+
 
 
 

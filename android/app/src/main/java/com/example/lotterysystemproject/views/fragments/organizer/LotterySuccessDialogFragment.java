@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.models.Entrant;
+import com.example.lotterysystemproject.Models.Entrant;
 import java.util.ArrayList;
 import java.util.List;
 

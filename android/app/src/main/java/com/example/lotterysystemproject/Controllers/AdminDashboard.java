@@ -25,9 +25,7 @@ public class AdminDashboard extends Fragment {
         binding = AdminDashboardBinding.inflate(inflater, container, false);
 
 
-        binding.backArrow.setOnClickListener(v ->
-                NavHostFragment.findNavController(AdminDashboard.this).navigateUp()
-        );
+
 
         return binding.getRoot();
 
@@ -36,11 +34,24 @@ public class AdminDashboard extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        binding.backArrow.setOnClickListener(v -> {
+            if (!NavHostFragment.findNavController(AdminDashboard.this).navigateUp()) {
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
         binding.btnBrowseProfiles.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminDashboard.this)
                         .navigate(R.id.action_adminDashboard_to_adminBrowseProfiles)
         );
+        binding.btnBrowseEvents.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminBrowseEvents);
+
+        });
+        binding.btnBrowseImages.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminBrowseImages);
+        });
     }
 
     @Override

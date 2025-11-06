@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

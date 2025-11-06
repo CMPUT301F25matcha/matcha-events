@@ -18,12 +18,12 @@ import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.User;
 
 
-public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.ProfileViewHolder> {
+public class AdminProfilesAdapter extends RecyclerView.Adapter<AdminProfilesAdapter.ProfileViewHolder> {
 
     private final Context context;
     private List<User> users;
 
-    public ProfilesAdapter(Context context, List<User> users) {
+    public AdminProfilesAdapter(Context context, List<User> users) {
         this.context = context;
         this.users = users;
     }
@@ -38,6 +38,7 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
             profileImage = itemView.findViewById(R.id.profile_image);
             name = itemView.findViewById(R.id.profile_name);
             email = itemView.findViewById(R.id.profile_email);
+            //role = itemView.findViewById(R.id.dialog_role);
             viewDetails = itemView.findViewById(R.id.btn_view_details);
         }
     }
@@ -58,11 +59,12 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
 
         viewHolder.name.setText(user.getName());
         viewHolder.email.setText(user.getEmail());
+        //viewHolder.role.setText(user.getRole());
 
         // Handle "View Details" button click
         viewHolder.viewDetails.setOnClickListener(v -> {
             // Show UserProfileDialog
-            UserProfileDialog dialog = new UserProfileDialog(user);
+            AdminUserProfileDialog dialog = new AdminUserProfileDialog(user);
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "UserProfileDialog");
         });
 

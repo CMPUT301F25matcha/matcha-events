@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.models;
+package com.example.lotterysystemproject.Models;
 
 import java.util.Date;
 

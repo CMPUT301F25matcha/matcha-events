@@ -1,0 +1,103 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="?android:attr/windowBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Event Poster -->
+        <ImageView
+            android:id="@+id/dialog_event_image"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:background="@drawable/bg_image_rounded"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Event Title -->
+        <TextView
+            android:id="@+id/dialog_event_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Name"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Event Date -->
+        <TextView
+            android:id="@+id/dialog_event_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nov 10, 2025"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray" />
+
+        <!-- Event Time -->
+        <TextView
+            android:id="@+id/dialog_event_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6:00 PM – 10:00 PM"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="2dp" />
+
+        <!-- Event Location -->
+        <TextView
+            android:id="@+id/dialog_event_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location of Event"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="12dp" />
+
+        <!-- Event Description -->
+        <TextView
+            android:id="@+id/dialog_event_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full event description goes here..."
+            android:textSize="15sp"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- Buttons Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/dialog_event_remove_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Remove"
+                android:backgroundTint="@color/red"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/dialog_event_close_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Close"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
