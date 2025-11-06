@@ -41,7 +41,7 @@
             android:label="Delete Profile" />
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
         <activity android:name=".Views.Admin.AdminLoginActivity" />
-
+        <activity android:name=".Views.Entrant.EventDetailsActivity" />
     </application>
 
 </manifest>
