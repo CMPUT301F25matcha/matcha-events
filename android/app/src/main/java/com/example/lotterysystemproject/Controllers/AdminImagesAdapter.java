@@ -86,7 +86,6 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
             selectionListener.onSelectionChanged(selectedImages.size());
         }
 
-
         notifyDataSetChanged();
 
     }
