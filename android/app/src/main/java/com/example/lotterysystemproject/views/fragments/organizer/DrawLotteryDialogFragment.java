@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.views.fragments.organizer;
+package com.example.lotterysystemproject.Views.fragments.organizer;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -123,8 +123,8 @@ public class DrawLotteryDialogFragment extends DialogFragment {
     }
 
     private void showSuccessDialog(List<Entrant> winners) {
-        LotterySuccessDialogFragment successDialog =
-                LotterySuccessDialogFragment.newInstance(winners);
+        com.example.lotterysystemproject.Views.fragments.organizer.LotterySuccessDialogFragment successDialog =
+                com.example.lotterysystemproject.Views.fragments.organizer.LotterySuccessDialogFragment.newInstance(winners);
         successDialog.show(getParentFragmentManager(), "lottery_success");
     }
 }

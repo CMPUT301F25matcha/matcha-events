@@ -8,9 +8,11 @@ import android.view.View;
 import com.example.lotterysystemproject.Models.User;
 import com.example.lotterysystemproject.Views.Admin.AdminLoginActivity;
 import com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity;
+import com.example.lotterysystemproject.Views.Organizer.OrganizerMainActivity;  // ✅ Add this import
 import com.example.lotterysystemproject.databinding.UserInfoBinding;
 
 public class UserInfo {
+
     public User collectUserInfo(UserInfoBinding binding) {
         String name = binding.userName.getText() != null ? binding.userName.getText().toString().trim() : "";
         String email = binding.userEmail.getText() != null ? binding.userEmail.getText().toString().trim() : "";
@@ -19,7 +21,6 @@ public class UserInfo {
     }
 
     public boolean validate(User model) {
-        // Phone is optional; only require name and email
         return !isNullOrBlank(model.getName())
                 && !isNullOrBlank(model.getEmail());
     }
@@ -37,7 +38,7 @@ public class UserInfo {
     }
 
     public void persistInMemory(Context context, User model) {
-        // Placeholder for persistence (e.g., SharedPreferences/DB)
+        // Placeholder for persistence
     }
 
     public void navigateToEntrantHome(Activity activity) {
@@ -48,6 +49,22 @@ public class UserInfo {
     public void navigateToAdminLogin(Activity activity) {
         Intent intent = new Intent(activity, AdminLoginActivity.class);
         activity.startActivity(intent);
+    }
+
+    public void navigateToOrganizerHome(Activity activity) {
+        Intent intent = new Intent(activity, OrganizerMainActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public void handleOrganizer(Activity activity, UserInfoBinding binding) {
+        hideValidationError(binding);
+        User model = collectUserInfo(binding);
+        if (!validate(model)) {
+            showValidationError(binding);
+            return;
+        }
+        persistInMemory(activity, model);
+        navigateToOrganizerHome(activity);
     }
 
     public void handleContinue(Activity activity, UserInfoBinding binding) {

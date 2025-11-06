@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/organizer_nav_graph"
+    app:startDestination="@id/OrganizerDashboardFragment">
+
+    <!-- Dashboard -->
+    <fragment
+        android:id="@+id/OrganizerDashboardFragment"
+        android:name="com.example.lotterysystemproject.Views.fragments.organizer.OrganizerDashboardFragment"
+        android:label="My Events"
+        tools:layout="@layout/fragment_organizer_dashboard">
+
+        <action
+            android:id="@+id/action_dashboard_to_createEvent"
+            app:destination="@id/createEventFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_eventManagement"
+            app:destination="@id/EventManagementFragment" />
+    </fragment>
+
+    <!-- Create Event -->
+    <fragment
+        android:id="@+id/createEventFragment"
+        android:name="com.example.lotterysystemproject.Views.fragments.organizer.CreateEventFragment"
+        android:label="Create Event"
+        tools:layout="@layout/fragment_create_event" />
+
+    <!-- Event Management -->
+    <fragment
+        android:id="@+id/EventManagementFragment"
+        android:name="com.example.lotterysystemproject.Views.fragments.organizer.EventManagementFragment"
+        android:label="Event Management"
+        tools:layout="@layout/fragment_event_management">
+
+        <action
+            android:id="@+id/action_eventManagement_to_qrCodeDisplay"
+            app:destination="@id/QRCodeDisplayFragment" />
+    </fragment>
+
+    <!-- QR Code Display -->
+    <fragment
+        android:id="@+id/QRCodeDisplayFragment"
+        android:name="com.example.lotterysystemproject.Views.fragments.organizer.QRCodeDisplayFragment"
+        android:label="QR Codes"
+        tools:layout="@layout/fragment_qr_code_display" />
+
+</navigation>

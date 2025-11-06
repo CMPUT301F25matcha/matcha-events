@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.views.fragments.organizer;
+package com.example.lotterysystemproject.Views.fragments.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -91,47 +91,84 @@ public class CreateEventFragment extends Fragment {
         backButton.setOnClickListener(v -> requireActivity().onBackPressed());
 
         // Event Date picker
-        dateButton.setOnClickListener(v -> showDatePicker(eventDateTime, (year, month, day) -> {
-            eventDateTime.set(year, month, day);
-            updateDateTimeButtons();
-            validateForm();
-        }));
+        dateButton.setOnClickListener(v -> {
+            DatePickerDialog picker = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        eventDateTime.set(year, month, dayOfMonth);
+                        updateDateTimeButtons();
+                        validateForm();
+                    },
+                    eventDateTime.get(Calendar.YEAR),
+                    eventDateTime.get(Calendar.MONTH),
+                    eventDateTime.get(Calendar.DAY_OF_MONTH)
+            );
+            picker.show();
+        });
 
         // Event Time picker
-        timeButton.setOnClickListener(v -> showTimePicker(eventDateTime, (hour, minute) -> {
-            eventDateTime.set(Calendar.HOUR_OF_DAY, hour);
-            eventDateTime.set(Calendar.MINUTE, minute);
-            updateDateTimeButtons();
-            validateForm();
-        }));
+        timeButton.setOnClickListener(v -> {
+            TimePickerDialog picker = new TimePickerDialog(
+                    requireContext(),
+                    (view, hourOfDay, minute) -> {
+                        eventDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        eventDateTime.set(Calendar.MINUTE, minute);
+                        updateDateTimeButtons();
+                        validateForm();
+                    },
+                    eventDateTime.get(Calendar.HOUR_OF_DAY),
+                    eventDateTime.get(Calendar.MINUTE),
+                    false
+            );
+            picker.show();
+        });
 
         // Registration Start Date picker
-        regStartButton.setOnClickListener(v -> showDatePicker(regStartDate, (year, month, day) -> {
-            regStartDate.set(year, month, day);
-            updateDateTimeButtons();
-            validateForm();
-        }));
+        regStartButton.setOnClickListener(v -> {
+            DatePickerDialog picker = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        regStartDate.set(year, month, dayOfMonth);
+                        updateDateTimeButtons();
+                        validateForm();
+                    },
+                    regStartDate.get(Calendar.YEAR),
+                    regStartDate.get(Calendar.MONTH),
+                    regStartDate.get(Calendar.DAY_OF_MONTH)
+            );
+            picker.show();
+        });
 
         // Registration End Date picker
-        regEndButton.setOnClickListener(v -> showDatePicker(regEndDate, (year, month, day) -> {
-            regEndDate.set(year, month, day);
-            updateDateTimeButtons();
-            validateForm();
-        }));
+        regEndButton.setOnClickListener(v -> {
+            DatePickerDialog picker = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        regEndDate.set(year, month, dayOfMonth);
+                        updateDateTimeButtons();
+                        validateForm();
+                    },
+                    regEndDate.get(Calendar.YEAR),
+                    regEndDate.get(Calendar.MONTH),
+                    regEndDate.get(Calendar.DAY_OF_MONTH)
+            );
+            picker.show();
+        });
 
-        // Upload Poster button (US 02.04.01 - will implement later)
+        // Upload Poster button
         uploadPosterButton.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Upload Poster - Coming soon!", Toast.LENGTH_SHORT).show();
         });
 
-        // Create Event button (US 02.01.01)
+        // Create Event button
         createEventButton.setOnClickListener(v -> createEvent());
     }
 
     private void setupValidation() {
         TextWatcher validationWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -139,7 +176,8 @@ public class CreateEventFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         };
 
         eventNameInput.addTextChangedListener(validationWatcher);
@@ -163,28 +201,6 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setAlpha(isValid ? 1.0f : 0.5f);
     }
 
-    private void showDatePicker(Calendar calendar, DateSetListener listener) {
-        DatePickerDialog picker = new DatePickerDialog(
-                requireContext(),
-                (view, year, month, dayOfMonth) -> listener.onDateSet(year, month, dayOfMonth),
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-        picker.show();
-    }
-
-    private void showTimePicker(Calendar calendar, TimeSetListener listener) {
-        TimePickerDialog picker = new TimePickerDialog(
-                requireContext(),
-                (view, hourOfDay, minute) -> listener.onTimeSet(hourOfDay, minute),
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                false
-        );
-        picker.show();
-    }
-
     private void updateDateTimeButtons() {
         dateButton.setText("📅 " + dateFormat.format(eventDateTime.getTime()));
         timeButton.setText("🕐 " + timeFormat.format(eventDateTime.getTime()));
@@ -193,8 +209,6 @@ public class CreateEventFragment extends Fragment {
     }
 
     private void createEvent() {
-        // US 02.01.01: Create event and generate QR code
-
         // Collect form data
         String name = eventNameInput.getText().toString().trim();
         String description = descriptionInput.getText().toString().trim();
@@ -242,7 +256,7 @@ public class CreateEventFragment extends Fragment {
             }
         }
 
-        // Generate QR codes (US 02.01.01)
+        // Generate QR codes
         String promoQR = generateQRCode(name, "PROMO");
         String checkinQR = generateQRCode(name, "CHECKIN");
         newEvent.setQrCodePromo(promoQR);
@@ -261,16 +275,6 @@ public class CreateEventFragment extends Fragment {
     }
 
     private String generateQRCode(String eventName, String type) {
-        // Simple QR code data format (real implementation would generate actual QR image)
         return type + "_" + eventName.replaceAll(" ", "_") + "_" + System.currentTimeMillis();
-    }
-
-    // Listener interfaces
-    private interface DateSetListener {
-        void onDateSet(int year, int month, int day);
-    }
-
-    private interface TimeSetListener {
-        void onTimeSet(int hour, int minute);
     }
 }

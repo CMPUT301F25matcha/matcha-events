@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.views.fragments.organizer;
+package com.example.lotterysystemproject.Views.fragments.organizer;
 
 import android.os.Bundle;
 import android.text.Editable;
