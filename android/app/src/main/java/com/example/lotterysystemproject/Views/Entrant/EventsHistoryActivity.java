@@ -2,6 +2,7 @@ package com.example.lotterysystemproject.Views.Entrant;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class EventsHistoryActivity extends AppCompatActivity {
                 empty.setVisibility(View.VISIBLE);
             }
         });
+
     }
 
     private void render(List<Registration> items) {
@@ -62,13 +64,19 @@ public class EventsHistoryActivity extends AppCompatActivity {
         for (Registration r : items) {
             View card = getLayoutInflater().inflate(R.layout.item_recent_event, container, false);
 
-            TextView title  = card.findViewById(R.id.item_title);
-            TextView status = card.findViewById(R.id.item_subtitle);
-            TextView meta   = card.findViewById(R.id.item_meta);
+            TextView title  = card.findViewById(R.id.history_event_name);    // was item_title
+            TextView status = card.findViewById(R.id.history_event_status);  // was item_subtitle
+            TextView time   = card.findViewById(R.id.history_event_time);    // was item_meta
 
-            if (title  != null)  title.setText(r.getEventTitleSnapshot() == null ? "(untitled)" : r.getEventTitleSnapshot());
-            if (status != null)  status.setText(r.getStatus() == null ? "—" : r.getStatus());
-            if (meta   != null)  meta.setText(r.getUpdatedAt() == null ? "" : df.format(r.getUpdatedAt().toDate()));
+            if (title  != null) title.setText(
+                    r.getEventTitleSnapshot() == null ? "(untitled)" : r.getEventTitleSnapshot()
+            );
+            if (status != null) status.setText(
+                    "Status: " + (r.getStatus() == null ? "—" : r.getStatus())
+            );
+            if (time   != null) time.setText(
+                    r.getUpdatedAt() == null ? "" : "Invited: " + df.format(r.getUpdatedAt().toDate())
+            );
 
             container.addView(card);
         }

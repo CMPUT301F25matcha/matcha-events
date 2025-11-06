@@ -35,7 +35,7 @@
                 android:id="@+id/profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="June Hu"
+                android:text="John Doe"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:layout_marginTop="12dp"/>
@@ -44,7 +44,7 @@
                 android:id="@+id/profile_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="june@example.com"
+                android:text="john@example.com"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"/>
 
@@ -60,15 +60,17 @@
                 android:id="@+id/btn_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/black"
                 android:text="Settings"
-                android:textAllCaps="false"
-                android:layout_marginTop="24dp" />
+                android:textAllCaps="false" />
 
             <Button
                 android:id="@+id/btn_events_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:backgroundTint="@color/black"
                 android:text="Events History" />
 
 
@@ -77,6 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
+                android:backgroundTint="@color/black"
                 android:text="Edit Profile" />
 
             <Button
@@ -84,6 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:backgroundTint="@color/red"
                 android:text="Delete Profile"
                 android:textAllCaps="false" />
         </LinearLayout>

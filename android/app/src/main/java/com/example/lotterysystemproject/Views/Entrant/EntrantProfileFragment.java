@@ -66,6 +66,14 @@ public class EntrantProfileFragment extends Fragment {
         });
 
         bindProfileToViews(v);   // <- load saved data to UI
+
+        View historyBtn = v.findViewById(R.id.btn_events_history);
+        if (historyBtn != null) {
+            historyBtn.setOnClickListener(click ->
+                    androidx.navigation.Navigation.findNavController(v)
+                            .navigate(R.id.action_profile_to_eventHistory)
+            );
+        }
     }
 
     @Override
