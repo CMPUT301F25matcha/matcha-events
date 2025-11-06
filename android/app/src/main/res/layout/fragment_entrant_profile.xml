@@ -60,19 +60,35 @@
                 android:id="@+id/btn_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/black"
                 android:text="Settings"
-                android:textAllCaps="false"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="@color/black"/>
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btn_events_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/black"
+                android:text="Events History" />
+
+
+            <Button
+                android:id="@+id/btn_edit_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="@color/black"
+                android:text="Edit Profile" />
 
             <Button
                 android:id="@+id/btn_delete_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/red"
                 android:text="Delete Profile"
                 android:textAllCaps="false"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="@color/red"/>
+                android:layout_marginTop="12dp" />
         </LinearLayout>
     </ScrollView>
 

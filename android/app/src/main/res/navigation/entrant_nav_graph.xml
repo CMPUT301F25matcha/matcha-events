@@ -13,6 +13,10 @@
         <action
             android:id="@+id/action_profile_to_settings"
             app:destination="@id/settingsFragment" />
+        <!-- NEW: navigate to history -->
+        <action
+            android:id="@+id/action_profile_to_eventHistory"
+            app:destination="@id/eventHistoryFragment" />
     </fragment>
 
     <fragment
@@ -20,4 +24,11 @@
         android:name="com.example.lotterysystemproject.Views.Entrant.EntrantSettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_entrant_settings" />
+
+    <!-- NEW destination -->
+    <fragment
+        android:id="@+id/eventHistoryFragment"
+        android:name="com.example.lotterysystemproject.Views.Entrant.EventRegistrationHistoryFragment"
+        android:label="Event History"
+        tools:layout="@layout/fragment_event_registration_history" />
 </navigation>

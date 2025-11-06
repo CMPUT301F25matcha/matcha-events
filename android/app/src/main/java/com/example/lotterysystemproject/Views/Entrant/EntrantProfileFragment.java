@@ -67,6 +67,14 @@ public class EntrantProfileFragment extends Fragment {
                 androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_profile_to_settings)
         );
 
+        // ✅ NEW: Edit Profile button
+        Button editBtn = v.findViewById(R.id.btn_edit_profile);
+        editBtn.setOnClickListener(click -> {
+            Intent i = new Intent(requireContext(), EditProfileActivity.class);
+            i.putExtra(EditProfileActivity.EXTRA_USER_ID, resolveUserId());
+            startActivity(i);
+        });
+
         Button deleteBtn = v.findViewById(R.id.btn_delete_profile);
         deleteBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), DeleteProfileActivity.class);
@@ -75,6 +83,15 @@ public class EntrantProfileFragment extends Fragment {
         });
 
         bindProfileToViews(v);   // load saved data to UI
+        bindProfileToViews(v);   // <- load saved data to UI
+
+        View historyBtn = v.findViewById(R.id.btn_events_history);
+        if (historyBtn != null) {
+            historyBtn.setOnClickListener(click ->
+                    androidx.navigation.Navigation.findNavController(v)
+                            .navigate(R.id.action_profile_to_eventHistory)
+            );
+        }
     }
 
     /**
@@ -122,6 +139,9 @@ public class EntrantProfileFragment extends Fragment {
         } catch (Exception e) {
             return "device-123";
         }
+        android.content.SharedPreferences prefs =
+                requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
+        return prefs.getString("userId", "unknown");
     }
 }
 
