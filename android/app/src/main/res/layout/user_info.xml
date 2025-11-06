@@ -54,7 +54,7 @@
             android:fontFamily="sans-serif-light"
             android:inputType="text"
             android:paddingStart="8dp"
-            android:text="Name"
+            android:hint="Name"
             android:textColor="#B6ACAC" />
 
         <EditText
@@ -66,7 +66,7 @@
             android:fontFamily="sans-serif-light"
             android:inputType="textEmailAddress"
             android:paddingStart="8dp"
-            android:text="Enter your email"
+            android:hint="Enter your email"
             android:textColor="#B6ACAC"
             android:typeface="normal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +81,7 @@
             android:ems="10"
             android:fontFamily="sans-serif-light"
             android:inputType="phone"
-            android:text="Enter your phone number"
+            android:hint="Enter your phone number"
             android:background="@drawable/rounded_edit_text"
             android:textColor="#B6ACAC"
             app:layout_constraintEnd_toEndOf="parent"
