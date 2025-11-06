@@ -15,7 +15,6 @@ import com.google.android.material.button.MaterialButton;
 import android.content.SharedPreferences;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -83,7 +82,7 @@ public class EventListHelper {
      */
     private View createEventCard(Event event) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View cardView = inflater.inflate(R.layout.item_event_card, container, false);
+        View cardView = inflater.inflate(R.layout.entrant_item_event_card, container, false);
 
         // Get views
         TextView eventName = cardView.findViewById(R.id.event_name);

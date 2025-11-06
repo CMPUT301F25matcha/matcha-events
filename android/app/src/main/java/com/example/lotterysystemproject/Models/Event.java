@@ -1,5 +1,6 @@
 
 
+
 package com.example.lotterysystemproject.Models;
 
 import java.util.Date;
@@ -94,4 +95,3 @@ public class Event {
         return participants != null && participants.contains(userId);
     }
 }
-
