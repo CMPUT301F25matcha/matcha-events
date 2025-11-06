@@ -39,6 +39,7 @@
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
 
         <activity android:name=".Views.Admin.AdminLoginActivity" />
+        <activity android:name=".Views.Entrant.EventDetailsActivity" />
 
         <!-- Organizer Main Activity -->
         <activity

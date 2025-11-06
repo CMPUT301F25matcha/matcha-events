@@ -31,6 +31,14 @@ import java.util.UUID;
  */
 public class UserInfo {
 
+    /**
+     * Collects user information from the input fields in the binding.
+     * Creates a new User object with a generated unique ID and the
+     * information entered by the user.
+     *
+     * @param binding The view binding containing the input fields
+     * @return A User object populated with the collected information
+     */
     public User collectUserInfo(UserInfoBinding binding) {
         String name = binding.userName.getText() != null ? binding.userName.getText().toString().trim() : "";
         String email = binding.userEmail.getText() != null ? binding.userEmail.getText().toString().trim() : "";
@@ -149,7 +157,19 @@ public class UserInfo {
      * @param model   The User object to persist
      */
     public void persistInMemory(Context context, User model) {
-        // Placeholder for persistence
+        // Save to SharedPreferences for local session management
+        android.content.SharedPreferences prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        prefs.edit()
+                .putString("userId", model.getId())
+                .putString("userName", model.getName())
+                .putString("userEmail", model.getEmail())
+                .putString("userPhone", model.getPhone())
+                .putString("userRole", model.getRole())
+                .putBoolean("signedUp", model.getSignedUp())
+                .apply();
+
+        // TODO: Sync with Firebase Firestore when implemented
+        // FirebaseManager.getInstance().saveUser(model, callback);
     }
 
     /**
@@ -180,9 +200,20 @@ public class UserInfo {
         activity.startActivity(intent);
     }
 
+    /**
+     * Handles the "Continue" button click.
+     * Validates user input, persists data if valid, and navigates to home screen.
+     * If validation fails, displays an error message.
+     *
+     * Related User Story: US 01.02.01 - Providing personal information
+     *
+     * @param activity The current activity
+     * @param binding  The view binding containing user input fields
+     */
     public void handleOrganizer(Activity activity, UserInfoBinding binding) {
         hideValidationError(binding);
         User model = collectUserInfo(binding);
+
         if (!validate(model)) {
             showValidationError(binding);
             return;
