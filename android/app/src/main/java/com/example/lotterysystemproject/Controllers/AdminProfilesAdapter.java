@@ -18,12 +18,12 @@ import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.User;
 
 
-public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.ProfileViewHolder> {
+public class AdminProfilesAdapter extends RecyclerView.Adapter<AdminProfilesAdapter.ProfileViewHolder> {
 
     private final Context context;
     private List<User> users;
 
-    public ProfilesAdapter(Context context, List<User> users) {
+    public AdminProfilesAdapter(Context context, List<User> users) {
         this.context = context;
         this.users = users;
     }
@@ -64,7 +64,7 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
         // Handle "View Details" button click
         viewHolder.viewDetails.setOnClickListener(v -> {
             // Show UserProfileDialog
-            UserProfileDialog dialog = new UserProfileDialog(user);
+            AdminUserProfileDialog dialog = new AdminUserProfileDialog(user);
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "UserProfileDialog");
         });
 

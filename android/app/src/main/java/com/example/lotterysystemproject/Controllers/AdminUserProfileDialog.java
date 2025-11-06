@@ -16,11 +16,11 @@ import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.Models.User;
 
-public class UserProfileDialog extends DialogFragment {
+public class AdminUserProfileDialog extends DialogFragment {
 
     private final User user;
 
-    public UserProfileDialog(User user) {
+    public AdminUserProfileDialog(User user) {
         this.user = user;
     }
 

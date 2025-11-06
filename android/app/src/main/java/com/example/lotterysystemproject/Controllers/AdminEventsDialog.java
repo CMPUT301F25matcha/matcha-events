@@ -3,6 +3,7 @@ package com.example.lotterysystemproject.Controllers;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,16 +16,15 @@ import androidx.fragment.app.DialogFragment;
 import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.FirebaseManager;
-import com.google.firebase.Firebase;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
-public class EventsDialog extends DialogFragment {
+public class AdminEventsDialog extends DialogFragment {
 
     private final Event event;
 
-    public EventsDialog(Event event) {this.event = event;}
+    public AdminEventsDialog(Event event) {this.event = event;}
 
     @NonNull
     @Override
@@ -55,13 +55,14 @@ public class EventsDialog extends DialogFragment {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(requireContext(), "Event removed sucessfullly", Toast.LENGTH_SHORT).show();
+                    Log.d("FirebaseManager", "Delete success");
                     dismiss();
                 }
 
                 @Override
                 public void onError(Exception e) {
                     Toast.makeText(requireContext(), "Failed to remove user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    dismiss();
+
 
                 }
             });

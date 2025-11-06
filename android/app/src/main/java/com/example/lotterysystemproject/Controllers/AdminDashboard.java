@@ -27,8 +27,6 @@ public class AdminDashboard extends Fragment {
 
 
 
-
-
         return binding.getRoot();
 
 
@@ -49,6 +47,10 @@ public class AdminDashboard extends Fragment {
             NavHostFragment.findNavController(AdminDashboard.this)
                     .navigate(R.id.action_adminDashboard_to_adminBrowseEvents);
 
+        });
+        binding.btnBrowseImages.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminBrowseImages);
         });
     }
 

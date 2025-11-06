@@ -18,6 +18,11 @@
         <action
             android:id="@+id/action_adminDashboard_to_adminBrowseEvents"
             app:destination="@id/adminBrowseEventsFragment" />
+
+        <action
+            android:id="@+id/action_adminDashboard_to_adminBrowseImages"
+            app:destination="@id/adminBrowseImagesFragment" />
+
     </fragment>
 
     <fragment
@@ -31,5 +36,12 @@
         android:name="com.example.lotterysystemproject.Controllers.AdminBrowseEvents"
         android:label="AdminBrowseEvents"
         tools:layout="@layout/admin_browse_events" />
+
+
+    <fragment
+        android:id="@+id/adminBrowseImagesFragment"
+        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseImages"
+        android:label="AdminBrowseImages"
+        tools:layout="@layout/admin_browse_images" />
 
 </navigation>

@@ -5,6 +5,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -158,14 +160,14 @@ public class FirebaseManager {
                 });
     }
 
+
+
     /**
      * Retrieve all documents from "events" collection in Firestore,
      * and converts them into a list of Event objects.
      * @param onSuccess a callback with the list of events if successful
      * @param onError a callback with an exception if operation fails
      */
-
-
     public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
                 .get()
@@ -210,6 +212,23 @@ public class FirebaseManager {
                 });
     }
 
+    public void addEvent(Event event, FirebaseCallback callback) {
+        if (event == null || event.getId() == null || event.getId().isEmpty()) {
+            if (callback != null) {
+                callback.onError(new IllegalArgumentException("Event or EventID cannot be null"));
+            }
+            return;
+        }
+        db.collection("events").document(event.getId())
+                .set(event)
+                .addOnSuccessListener(aVoid -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onError(e);
+                });
+    }
+
     public void deleteEvent(String eventId, FirebaseCallback callback) {
         if (eventId == null || eventId.isEmpty()) {
             if(callback != null) {
@@ -226,6 +245,32 @@ public class FirebaseManager {
                 .addOnFailureListener(e -> {
                     if (callback != null) callback.onError(e);
                 });
+    }
+
+
+    public void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        db.collection("events").addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (e != null) {
+                if (onError != null) onError.accept(e);
+                return;
+            }
+
+            List<Event> eventList = new ArrayList<>();
+            if (queryDocumentSnapshots != null) {
+                for (DocumentSnapshot doc: queryDocumentSnapshots) {
+                    Event event = doc.toObject(Event.class);
+                    if (event != null) {
+
+                        eventList.add(event);
+
+                    }
+
+                }
+            }
+
+            if (onSuccess != null) onSuccess.accept(eventList);
+
+        });
     }
 
 

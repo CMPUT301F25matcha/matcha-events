@@ -1,6 +1,5 @@
 package com.example.lotterysystemproject.Controllers;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.annotation.NonNull;
 
 import com.example.lotterysystemproject.Models.Event;
-import com.example.lotterysystemproject.Models.User;
 
 import com.example.lotterysystemproject.R;
 
@@ -22,11 +20,11 @@ import java.util.List;
 
 
 
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
+public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.EventViewHolder> {
     private final Context context;
     private List<Event> events;
 
-    public EventsAdapter(Context context, List<Event> events) {
+    public AdminEventsAdapter(Context context, List<Event> events) {
         this.context = context;
         this.events = events;
     }
@@ -64,7 +62,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         // Handle "View Event" button click
         viewHolder.viewEventButton.setOnClickListener(v -> {
             // Show Event Dialog
-            EventsDialog dialog = new EventsDialog(event);
+            AdminEventsDialog dialog = new AdminEventsDialog(event);
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "EventsDialog");
 
         });
