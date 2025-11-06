@@ -15,22 +15,30 @@ import com.example.lotterysystemproject.Utils.NavWiring;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Displays a scrollable list of all notifications relevant to current entrant.
+ */
 public class NotificationsActivity extends AppCompatActivity {
     private NotificationsAdapter adapter;
     private final List<NotificationItem> notifications = new ArrayList<>();
 
+    /**
+     * Called when the activity is first created.
+     * Initializes notification list, sets up bottom navigation bar, and populates mock data.
+     * @param savedInstanceState Previous instance state if re-created
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notifications); // contains the bottom bar include
+        setContentView(R.layout.activity_notifications); // contains bottom bar include
 
-        // Wire the bar for this screen too
+        // Wire the bar for this screen
         NavWiring.wire(
                 this,
                 EntrantMainActivity.class,
                 null,
                 null,
-                NotificationsActivity.class,  // self
+                NotificationsActivity.class,
                 ProfileHostActivity.class
         );
 
@@ -56,6 +64,10 @@ public class NotificationsActivity extends AppCompatActivity {
         seedMock();
     }
 
+    /**
+     * Called when the activity resumes.
+     * Ensures any updated responses are shown in RecyclerView.
+     */
     @Override protected void onResume() {
         super.onResume();
         // Rebind so persisted responses are applied in onBindViewHolder
@@ -63,12 +75,16 @@ public class NotificationsActivity extends AppCompatActivity {
     }
 
 
-    // Mock data, replace with firebase later
+    /**
+     * Generates temporary mock notifs for testing and demos.
+     * Will later be replaced by Firebase data.
+     */
+    // Mock data, replace later with firebase
     private void seedMock() {
         long now = System.currentTimeMillis();
         notifications.clear();
         notifications.add(new NotificationItem(
-                "event-123:reg-abc",                    // stable ID
+                "event-123:reg-abc",
                 "Event Invitation",
                 "You’ve been selected for Swimming Lessons!",
                 true,
@@ -83,7 +99,6 @@ public class NotificationsActivity extends AppCompatActivity {
         ));
         adapter.notifyDataSetChanged();
     }
-
 
 
 }

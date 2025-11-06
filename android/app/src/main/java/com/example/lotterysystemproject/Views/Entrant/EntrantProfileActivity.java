@@ -5,8 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Utils.NavWiring;
 
-
+/**
+ * Displays the entrant’s personal profile screen, allowing users to view and manage
+ * their account information.
+ */
 public class EntrantProfileActivity extends AppCompatActivity {
+
+    /**
+     * Initializes the entrant profile screen and configures bottom navigation.
+     * @param savedInstanceState saved instance state of the activity if re-initialized
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

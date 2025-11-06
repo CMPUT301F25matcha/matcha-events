@@ -9,9 +9,18 @@ import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Utils.BottomNavigationHelper;
 import com.example.lotterysystemproject.Utils.NavWiring;
 
+/**
+ * Serves as the container for entrant profile-related fragments.
+ */
 public class ProfileHostActivity extends AppCompatActivity {
     private NavController navController;
 
+    /**
+     * Called when activity is created.
+     * Initializes navigation host, sets up the bottom navigation bar, ensures the profile tab
+     * remains highlighted when navigating between fragments.
+     * @param savedInstanceState Previous instance state if re-created
+     */
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_main_activity);
@@ -20,14 +29,13 @@ public class ProfileHostActivity extends AppCompatActivity {
                 .findFragmentById(R.id.entrant_nav_host);
         navController = host.getNavController();
 
-        // Wire the same custom bottom bar here
         NavWiring.wire(
                 this,
-                com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity.class, // home
+                com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity.class,
                 null,
                 null,
                 NotificationsActivity.class,
-                ProfileHostActivity.class // profile (self)
+                ProfileHostActivity.class
         );
 
         // Keeps Profile icon selected while in Profile/Settings

@@ -8,9 +8,28 @@ import android.widget.Toast;
 
 import com.example.lotterysystemproject.R;
 
+/**
+ * Utility class for wiring and managing bottom navigation bar across multiple entrant activities.
+ * Helps ensure consistent navigation behavior.
+ */
 public final class NavWiring {
+
+    /** Default constructor required for proper fragment instantiation. */
     private NavWiring() {}
 
+
+    /**
+     * Sets up navigation listeners for the bottom navigation bar.
+     * When a tab for a different screen is tapped, the current
+     * activity is finished and the new one is launched without animation.
+     *
+     * @param a        Current activity hosting the navigation bar.
+     * @param home     Target class for the Home screen activity.
+     * @param explore  Target class for the Explore screen activity
+     * @param qr       Target class for the QR Scanner screen activity
+     * @param notif    Target class for the Notifications screen activity.
+     * @param profile  Target class for the Profile screen activity.
+     */
     public static void wire(Activity a,
                             Class<?> home, Class<?> explore, Class<?> qr,
                             Class<?> notif, Class<?> profile) {

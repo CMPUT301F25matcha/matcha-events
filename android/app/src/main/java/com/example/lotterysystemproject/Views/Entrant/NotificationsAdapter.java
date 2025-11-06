@@ -16,10 +16,17 @@ import com.example.lotterysystemproject.R;
 
 import java.util.List;
 
+/**
+ * Bridges a list of NotificationItems to the RecyclerView UI in NotificationsActivity.
+ */
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.VH> {
 
     private final List<NotificationItem> items;
 
+    /**
+     * Constructs adapter with list of notifications.
+     * @param items List of NotificationItem objects to display.
+     */
     public NotificationsAdapter(List<NotificationItem> items) {
         this.items = items;
     }
@@ -39,6 +46,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         }
     }
 
+    /**
+     * Inflates new item view when no suitable recycled view available.
+     * @param parent   Parent view group.
+     * @param viewType Type of view to inflate.
+     * @return A new VH representing inflated view.
+     */
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,6 +60,11 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return new VH(v);
     }
 
+    /**
+     * Binds data from a NotificationItem to corresponding UI components.
+     * @param holder   VH instance containing view references.
+     * @param position Position of item in dataset.
+     */
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         NotificationItem item = items.get(position);
@@ -126,6 +144,11 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         });
     }
 
+    /**
+     * Converts time difference in milliseconds to relative time string.
+     * @param diffMillis Elapsed time in milliseconds.
+     * @return Short string representing the relative time.
+     */
     // Helper: convert milliseconds into readable text
     private String getRelativeTime(long diffMillis) {
         long minutes = diffMillis / 60000;
@@ -137,6 +160,10 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return days == 1 ? "Yesterday" : days + "d ago";
     }
 
+    /**
+     * Returns the total number of items in the dataset.
+     * @return Count of NotificationItems currently displayed.
+     */
     // RecyclerView Counter
     @Override
     public int getItemCount() {

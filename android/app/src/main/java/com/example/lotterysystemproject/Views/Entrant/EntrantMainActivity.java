@@ -16,12 +16,22 @@ import android.widget.LinearLayout;
 
 import com.example.lotterysystemproject.R;
 
+/**
+ * Serves as the main home screen for entrants in the application.
+ * Displays featured and available community events that users can browse, search for,
+ * and select to view details or register.
+ */
 public class EntrantMainActivity extends AppCompatActivity {
     private EventViewsBinding binding;
     private EventListHelper eventListHelper;
-    private LinearLayout navHome, navExplore, navQR, navNotifications, navProfile;
 
 
+    /**
+     * Initializes the view binding, sets up the search bar, featured events, dynamic event list,
+     * and bottom navigation bar.
+     * @param savedInstanceState Saved instance state if the activity is being reinitialized
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +66,7 @@ public class EntrantMainActivity extends AppCompatActivity {
                 EntrantMainActivity.class,   // home
                 null,                        // explore (not yet)
                 null,                        // QR (not yet)
-                NotificationsActivity.class,       // notifications
+                NotificationsActivity.class, // notifications
                 ProfileHostActivity.class // profile
         );
 
@@ -73,63 +83,6 @@ public class EntrantMainActivity extends AppCompatActivity {
                     home, expl, qr, notif, prof
             );
         }
-
-        /*
-        // Initialize the layouts for each nav item
-        navHome = findViewById(R.id.nav_home);
-        navExplore = findViewById(R.id.nav_explore);
-        navQR = findViewById(R.id.nav_qr_scanner);
-        navNotifications = findViewById(R.id.nav_notifications);
-        navProfile = findViewById(R.id.nav_profile);
-
-        // PROFILE BUTTON HANDLER
-        navProfile.setOnClickListener(v -> {
-            BottomNavigationHelper.setSelectedItem(
-                    BottomNavigationHelper.NavItem.PROFILE,
-                    navHome, navExplore, navQR, navNotifications, navProfile
-            );
-
-            // Open your profile activity
-            Intent intent = new Intent(this, EntrantProfileView.class);
-            startActivity(intent);
-        });
-
-
-        // HOME BUTTON HANDLER
-        navHome.setOnClickListener(v -> {
-            BottomNavigationHelper.setSelectedItem(
-                    BottomNavigationHelper.NavItem.HOME,
-                    navHome, navExplore, navQR, navNotifications, navProfile
-            );
-
-            // Open your home activity
-            Intent intent = new Intent(this, EntrantMainActivity.class);
-            startActivity(intent);
-        });
-
-
-
-        // 1) Wire the bar actions for THIS screen
-        NavWiring.wire(
-                this,
-                EntrantMainActivity.class,
-                null,
-                null,
-                null,
-                EntrantProfileActivity.class
-        );
-
-        // 2) Make HOME look selected in THIS activity
-        com.example.lotterysystemproject.Utils.BottomNavigationHelper.setSelectedItem(
-                com.example.lotterysystemproject.Utils.BottomNavigationHelper.NavItem.HOME,
-                findViewById(R.id.nav_home),
-                findViewById(R.id.nav_explore),
-                findViewById(R.id.nav_qr_scanner),
-                findViewById(R.id.nav_notifications),
-                findViewById(R.id.nav_profile)
-        );
-
-         */
 
 
     }
@@ -153,7 +106,12 @@ public class EntrantMainActivity extends AppCompatActivity {
         }
     }
 
-    // Utility method to start details activity
+
+    /**
+     * Utility method to start details activity.
+     * Launches the event details activity for a selected event
+     * @param eventId unique identifier of the selected event
+     */
     private void launchEventDetails(String eventId) {
         Log.d("EntrantMainActivity", "launchEventDetails called with ID: " + eventId);
         if (eventId == null || eventId.isEmpty()) {
@@ -165,6 +123,10 @@ public class EntrantMainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Refreshes the event list when the activity resumes.
+     * Ensures event data stays up-to-date whenever entrant returns to the home screen
+     */
     @Override
     protected void onResume() {
         super.onResume();

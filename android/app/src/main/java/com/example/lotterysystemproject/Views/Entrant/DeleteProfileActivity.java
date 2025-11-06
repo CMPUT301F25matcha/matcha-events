@@ -15,6 +15,10 @@ import com.example.lotterysystemproject.Models.ProfilePrefs;
 import com.example.lotterysystemproject.Models.User;
 import com.example.lotterysystemproject.R;
 
+/**
+ * Provides entrants with an interface to permanently
+ * delete their local profile data and return to the login screen.
+ */
 public class DeleteProfileActivity extends AppCompatActivity {
 
     public static final String EXTRA_USER_ID = "EXTRA_USER_ID";
@@ -25,6 +29,12 @@ public class DeleteProfileActivity extends AppCompatActivity {
     //private FirebaseManager fm;
     private ProfilePrefs prefs;
     private String userId;
+
+    /**
+     * Initializes the UI components, retrieves userId from the
+     * intent extras, and sets up button listeners for deletion and cancellation.
+     * @param savedInstanceState Contains saved instance data if the activity is being re-initialized
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +56,10 @@ public class DeleteProfileActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Displays a confirmation dialog asking the user to verify that they want
+     * to permanently delete their profile.
+     */
     private void confirmThenDelete() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete profile?")
@@ -55,16 +69,20 @@ public class DeleteProfileActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Performs the actual profile deletion.
+     * Clears all local user data by calling deleteUser and clearUserPrefs
+     */
     private void performDeletion() {
         setLoading(true);
         try {
-            // delete local profile data you keep (mock store)
+            // Delete local profile data you keep (mock store)
             prefs.deleteUser(userId);
 
-            // CRITICAL: clear the same prefs that UserInfo uses
+            // Clear  same prefs that UserInfo uses
             com.example.lotterysystemproject.Utils.AuthState.clearUserPrefs(this);
 
-            // go to login and wipe back stack
+            // Go to login and wipe back stack
             android.widget.Toast.makeText(this, "Profile deleted", android.widget.Toast.LENGTH_LONG).show();
             Intent i = new Intent(this, com.example.lotterysystemproject.Views.Entrant.UserInfoView.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -78,6 +96,12 @@ public class DeleteProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Toggles the visibility of the progress bar and enables/disables the action buttons.
+     * @param loading
+     * - true to show the loading spinner and disable buttons;
+     * - false to hide it and re-enable buttons.
+     */
     private void setLoading(boolean loading) {
         progress.setVisibility(loading ? View.VISIBLE : View.GONE);
         btnDelete.setEnabled(!loading);

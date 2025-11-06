@@ -18,8 +18,14 @@ import androidx.fragment.app.Fragment;
 
 import com.example.lotterysystemproject.R;
 
+/**
+ * Represents entrant’s profile screen displayed within the profile navigation section of the app.
+ * Allows users to view their personal information (name, email, phone), access account settings,
+ * and delete their profile.
+ */
 public class EntrantProfileFragment extends Fragment {
 
+    /** Default constructor required for Fragment instantiation. */
     public EntrantProfileFragment() {}
 
     // ActivityResultLauncher to handle result from DeleteProfileActivity
@@ -35,6 +41,12 @@ public class EntrantProfileFragment extends Fragment {
                 }
             });
 
+    /**
+     * Inflates the fragment’s layout.
+     * @param inflater  LayoutInflater used to inflate the layout XML
+     * @param container Parent container that holds this fragment
+     * @param savedInstanceState Previous instance state if re-created
+     */
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
@@ -42,6 +54,12 @@ public class EntrantProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_entrant_profile, container, false);
     }
 
+    /**
+     * Called after the fragment’s view hierarchy is created.
+     * Wires the button listeners for navigation and deletion actions and loads profile data into the screen views.
+     * @param v Root view of fragment
+     * @param savedInstanceState Previous instance state if re-created
+     */
     @Override
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         Button settings = v.findViewById(R.id.btn_settings);
@@ -53,26 +71,35 @@ public class EntrantProfileFragment extends Fragment {
         deleteBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), DeleteProfileActivity.class);
             i.putExtra(DeleteProfileActivity.EXTRA_USER_ID, resolveUserId());
-            startActivity(i); // or use startActivityForResult pattern below if you want a callback
+            startActivity(i); // or use startActivityForResult pattern below if callback wanted
         });
 
-        bindProfileToViews(v);   // <- load saved data to UI
+        bindProfileToViews(v);   // load saved data to UI
     }
 
+    /**
+     * Refreshes profile data whenever fragment becomes visible again.
+     * Ensures updates are reflected when returning from settings screen.
+     */
     @Override
     public void onResume() {
         super.onResume();
         View v = getView();
-        if (v != null) bindProfileToViews(v);  // refresh if you returned from edits
+        if (v != null) bindProfileToViews(v);  // refresh if returned from edits
     }
 
+    /**
+     * Binds saved user profile information to corresponding text views.
+     * Reads stored values from and updates the profile UI fields.
+     * @param root The fragment’s root used to locate text views
+     */
     private void bindProfileToViews(@NonNull View root) {
         android.content.SharedPreferences prefs =
                 requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
 
         String name  = prefs.getString("userName",  "—");
         String email = prefs.getString("userEmail", "—");
-        String phone = prefs.getString("userPhone", "—"); // show if you have a phone TextView
+        String phone = prefs.getString("userPhone", "—"); // show if optional phone TextView present
 
         android.widget.TextView tvName  = root.findViewById(R.id.profile_name);
         android.widget.TextView tvEmail = root.findViewById(R.id.profile_email);
@@ -83,9 +110,13 @@ public class EntrantProfileFragment extends Fragment {
         if (tvPhone != null) tvPhone.setText(phone == null || phone.isEmpty() ? "—" : phone);
     }
 
+    /**
+     * Retrieves the current user’s unique identifier.
+     * Uses a mock device ID for local testing purposes.
+     */
     private String resolveUserId() {
         try {
-            // If you have a device ID manager in your project, prefer it:
+            // Prefers a device ID manager if available:
             // return DeviceIdentityManager.getInstance(requireContext()).getOrCreateDeviceId();
             return "device-123"; // fallback for local demo
         } catch (Exception e) {
