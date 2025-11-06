@@ -14,7 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.TabsPagerAdapter;
-import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import com.google.android.material.tabs.TabLayout;

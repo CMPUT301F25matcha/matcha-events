@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.utils.QRCodeGenerator;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 

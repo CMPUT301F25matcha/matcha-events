@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EventAdapter;
-import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.util.ArrayList;
 

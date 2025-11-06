@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.lotterysystemproject.Models.Entrant;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EntrantAdapter;
-import com.example.lotterysystemproject.models.Entrant;
+import com.example.lotterysystemproject.Models.Entrant;
 import com.example.lotterysystemproject.repositories.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 

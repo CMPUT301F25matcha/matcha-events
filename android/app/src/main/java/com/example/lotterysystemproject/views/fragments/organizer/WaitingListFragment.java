@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EntrantAdapter;
-import com.example.lotterysystemproject.models.Entrant;
+import com.example.lotterysystemproject.Models.Entrant;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import java.util.ArrayList;
 import java.util.List;

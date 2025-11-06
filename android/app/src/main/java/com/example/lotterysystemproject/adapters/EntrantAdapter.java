@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.models.Entrant;
+import com.example.lotterysystemproject.Models.Entrant;
 import java.util.ArrayList;
 import java.util.List;
 
