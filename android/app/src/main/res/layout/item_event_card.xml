@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/event_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏊 Swimming Lessons"
+            android:textSize="18sp"
+            android:fontFamily="@font/anuphan_semibold"
+            android:textColor="#262424" />
+
+        <TextView
+            android:id="@+id/event_date_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jan 15, 2025 • 2:00 PM"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#B6ACAC"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/enrollment_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👥 18/20 enrolled"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#262424"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/event_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⏳ Registration open"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#B6ACAC"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

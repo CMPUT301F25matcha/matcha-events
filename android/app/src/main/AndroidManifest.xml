@@ -36,8 +36,15 @@
             <meta-data android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
         </activity>
+
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
+
         <activity android:name=".Views.Admin.AdminLoginActivity" />
+
+        <!-- Organizer Main Activity -->
+        <activity
+            android:name=".Views.Organizer.OrganizerMainActivity"
+            android:exported="false" />
 
     </application>
 

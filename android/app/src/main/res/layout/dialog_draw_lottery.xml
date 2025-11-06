@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🎲 Draw Lottery"
+        android:textSize="20sp"
+        android:fontFamily="@font/anuphan_semibold"
+        android:textColor="#262424"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Info Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#F5F5F5"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/waiting_list_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waiting List: 130"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#262424" />
+
+        <TextView
+            android:id="@+id/available_spots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Available Spots: 20"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#262424"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+    <!-- Number Input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number to Draw"
+        android:textSize="14sp"
+        android:fontFamily="@font/anuphan_semibold"
+        android:textColor="#262424"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/number_input"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:hint="20"
+        android:textColorHint="#B6ACAC"
+        android:fontFamily="@font/anuphan"
+        android:inputType="number"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Warning -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFF3E0"
+        android:padding="12dp"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️"
+            android:textSize="15sp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="This will randomly select entrants and notify them."
+            android:textSize="11sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#262424" />
+
+    </LinearLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan"
+            android:textColor="#000000"
+            android:backgroundTint="#EDE9E9"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="12dp"
+            style="@style/Widget.Material3.Button" />
+
+        <Button
+            android:id="@+id/draw_button"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="🎲 Draw Now"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan_semibold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#262424"
+            android:layout_marginStart="8dp"
+            app:cornerRadius="12dp"
+            style="@style/Widget.Material3.Button" />
+
+    </LinearLayout>
+
+</LinearLayout>

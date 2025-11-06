@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package com.example.lotterysystemproject.Models;
+=======
+package com.example.lotterysystemproject.models;
+>>>>>>> origin/main
 
 public class Entrant {
 

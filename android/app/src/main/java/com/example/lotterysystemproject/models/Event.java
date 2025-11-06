@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package com.example.lotterysystemproject.Models;
+=======
+package com.example.lotterysystemproject.models;
+>>>>>>> origin/main
 
 import java.util.Date;
 
@@ -20,7 +24,11 @@ public class Event {
     private String qrCodePromo;
     private String qrCodeCheckin;
     private String posterUrl;
+<<<<<<< HEAD
 
+=======
+    private int maxWaitingList;
+>>>>>>> origin/main
     // Empty constructor for Firebase
     public Event() {}
 
@@ -81,6 +89,11 @@ public class Event {
         this.registrationEnd = registrationEnd;
     }
 
+<<<<<<< HEAD
+=======
+    public int getMaxWaitingList() { return maxWaitingList; }
+    public void setMaxWaitingList(int maxWaitingList) { this.maxWaitingList = maxWaitingList; }
+>>>>>>> origin/main
     public String getQrCodePromo() { return qrCodePromo; }
     public void setQrCodePromo(String qrCodePromo) {
         this.qrCodePromo = qrCodePromo;
