@@ -42,6 +42,12 @@
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
         <activity android:name=".Views.Admin.AdminLoginActivity" />
         <activity android:name=".Views.Entrant.EventDetailsActivity" />
+        <activity
+            android:name=".Views.Entrant.ProfileHostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Views.Entrant.EntrantProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

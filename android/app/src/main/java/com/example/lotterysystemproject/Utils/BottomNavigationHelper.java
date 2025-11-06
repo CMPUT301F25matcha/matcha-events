@@ -4,6 +4,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+
 import com.example.lotterysystemproject.R;
 
 public class BottomNavigationHelper {
@@ -27,12 +29,17 @@ public class BottomNavigationHelper {
      */
     public static void setSelectedItem(
             NavItem navItem,
-            LinearLayout homeLayout,
-            LinearLayout exploreLayout,
-            LinearLayout qrScannerLayout,
-            LinearLayout notificationsLayout,
-            LinearLayout profileLayout) {
-        
+            @Nullable LinearLayout homeLayout,
+            @Nullable LinearLayout exploreLayout,
+            @Nullable LinearLayout qrScannerLayout,
+            @Nullable LinearLayout notificationsLayout,
+            @Nullable LinearLayout profileLayout) {
+
+        if (homeLayout == null || exploreLayout == null || qrScannerLayout == null
+                || notificationsLayout == null || profileLayout == null) {
+            // Gracefully bail if bar is missing
+            return;
+        }
         // Reset all items to unselected state
         resetAllItems(homeLayout, exploreLayout, qrScannerLayout, notificationsLayout, profileLayout);
         
@@ -111,9 +118,9 @@ public class BottomNavigationHelper {
             icon.setImageResource(R.drawable.ic_bell_selected);
         } else if (iconId == R.id.nav_profile_icon) {
             icon.setImageResource(R.drawable.ic_account_circle_selected);
-            if (border != null) {
-                border.setVisibility(View.VISIBLE);
-            }
+            //if (border != null) {
+            //    border.setVisibility(View.VISIBLE);
+            //}
         }
     }
 }

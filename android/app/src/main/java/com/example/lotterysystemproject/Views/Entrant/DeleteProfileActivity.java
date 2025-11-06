@@ -1,6 +1,7 @@
 package com.example.lotterysystemproject.Views.Entrant;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.Models.ProfilePrefs;
+import com.example.lotterysystemproject.Models.User;
 import com.example.lotterysystemproject.R;
 
 public class DeleteProfileActivity extends AppCompatActivity {
@@ -18,7 +21,9 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private ProgressBar progress;
     private Button btnDelete, btnCancel;
-    private FirebaseManager fm;
+
+    //private FirebaseManager fm;
+    private ProfilePrefs prefs;
     private String userId;
 
     @Override
@@ -26,8 +31,12 @@ public class DeleteProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_profile);
 
-        fm = FirebaseManager.getInstance();
+        //fm = FirebaseManager.getInstance();
+        prefs = new ProfilePrefs(getApplicationContext());
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
+        if (userId == null || userId.trim().isEmpty()) {
+            userId = "device-123"; // fallback demo ID
+        }
 
         progress = findViewById(R.id.progress);
         btnDelete = findViewById(R.id.btn_delete);
@@ -40,11 +49,52 @@ public class DeleteProfileActivity extends AppCompatActivity {
     private void confirmThenDelete() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete profile?")
+                .setMessage("This will permanently delete your local profile data.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (d, w) -> performDeletion())
+                .show();
+    }
+
+    private void performDeletion() {
+        setLoading(true);
+        try {
+            // delete local profile data you keep (mock store)
+            prefs.deleteUser(userId);
+
+            // CRITICAL: clear the same prefs that UserInfo uses
+            com.example.lotterysystemproject.Utils.AuthState.clearUserPrefs(this);
+
+            // go to login and wipe back stack
+            android.widget.Toast.makeText(this, "Profile deleted", android.widget.Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, com.example.lotterysystemproject.Views.Entrant.UserInfoView.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    private void setLoading(boolean loading) {
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        btnDelete.setEnabled(!loading);
+        btnCancel.setEnabled(!loading);
+    }
+
+    // Firebase usage, will be commented out for demo and use alternate function
+    /*
+    private void confirmThenDelete() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete profile?")
                 .setMessage("This will anonymize your registrations, revoke notifications, and delete your profile. This can’t be undone.")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Delete", (d, w) -> performDeletion())
                 .show();
     }
+
 
     private void performDeletion() {
         setLoading(true);
@@ -85,4 +135,6 @@ public class DeleteProfileActivity extends AppCompatActivity {
         btnDelete.setEnabled(!loading);
         btnCancel.setEnabled(!loading);
     }
+
+     */
 }

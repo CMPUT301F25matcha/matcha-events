@@ -559,33 +559,38 @@ public class FirebaseManager {
             }
         }, 400);
     }
-    /** Anonymize all registrations for a user (but keeps event stats, just removes personal linkage). */
-    public void anonymizeRegistrationsForUser(String userId, FirebaseCallback callback) {
-        db.collection("registrations")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener(q -> {
-                    WriteBatch batch = db.batch();
-                    for (QueryDocumentSnapshot d : q) {
-                        batch.update(d.getReference(), new java.util.HashMap<String, Object>() {{
-                            put("userId", "DELETED");          // break linkage
-                            put("userDeleted", true);          // deletion marker
-                            put("updatedAt", Timestamp.now());
-                        }});
-                    }
-                    batch.commit()
-                            .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
-                            .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
-                })
-                .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
-    }
 
-    /** Best-effort FCM token revoke. Call from Activity. */
-    public void revokeFcmToken(FirebaseCallback callback) {
-        FirebaseMessaging.getInstance().deleteToken()
-                .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
-                .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
-    }
+    // COMMENTED OUT FOR DEMO - Using local data instead
+    // /** Anonymize all registrations for a user (but keeps event stats, just removes personal linkage). */
+    // public void anonymizeRegistrationsForUser(String userId, FirebaseCallback callback) {
+    //    db.collection("registrations")
+    //            .whereEqualTo("userId", userId)
+    //            .get()
+    //            .addOnSuccessListener(q -> {
+    //                WriteBatch batch = db.batch();
+    //                for (QueryDocumentSnapshot d : q) {
+    //                    batch.update(d.getReference(), new java.util.HashMap<String, Object>() {{
+    //                        put("userId", "DELETED");          // break linkage
+    //                        put("userDeleted", true);          // deletion marker
+    //                        put("updatedAt", Timestamp.now());
+    //                    }});
+    //                }
+    //               batch.commit()
+    //                      .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
+    //                      .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+    //          })
+    //            .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+    //}
+
+
+    // COMMENTED OUT FOR DEMO - Using local data instead
+    // /** Best-effort FCM token revoke. Call from Activity. */
+    //public void revokeFcmToken(FirebaseCallback callback) {
+    //    FirebaseMessaging.getInstance().deleteToken()
+    //            .addOnSuccessListener(v -> { if (callback != null) callback.onSuccess(); })
+    //            .addOnFailureListener(e -> { if (callback != null) callback.onError(e); });
+    //}
+
 
 
 
