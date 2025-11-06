@@ -4,12 +4,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
@@ -272,6 +274,76 @@ public class FirebaseManager {
 
         });
     }
+
+    public void getAllImages(Consumer<List<String>> onSuccess, Consumer<Exception> onError) {
+        storage.getReference().child("images")
+                .listAll()
+                .addOnSuccessListener(listResult -> {
+                    List<String> urls = new ArrayList<>();
+                    List<StorageReference> items = listResult.getItems();
+
+                    if (items.isEmpty()) {
+                        if (onSuccess != null) onSuccess.accept(urls);
+                        return;
+                    }
+
+                    for (StorageReference item: items) {
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            urls.add(uri.toString());
+                            if (urls.size() == items.size() && onSuccess != null) {
+                                onSuccess.accept(urls);
+                            }
+                        }).addOnFailureListener(e -> {
+                            if (onError != null) onError.accept(e);
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept(e);
+                });
+    }
+
+    public void deleteImage(String imageUrl, FirebaseCallback callback) {
+        try {
+            StorageReference imageRef = storage.getReferenceFromUrl(imageUrl);
+            imageRef.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        if (callback != null) callback.onSuccess();
+                    })
+                    .addOnFailureListener(e -> {
+                        if (callback != null) callback.onError(e);
+                    });
+        } catch (Exception e) {
+            if (callback != null) callback.onError(e);
+        }
+    }
+
+
+    public void deleteMultipleImages(List<String> imageUrls, BiConsumer<Integer, Exception> onComplete) {
+
+        int[] remaining = {imageUrls.size()};
+        int[] deleteCount = {0};
+
+        for (String url: imageUrls) {
+            deleteImage(url, new FirebaseCallback() {
+                @Override
+                public void onSuccess() {
+                    deleteCount[0]++;
+                    if (--remaining[0] == 0 && onComplete != null) {
+                        onComplete.accept(deleteCount[0], null);
+                    }
+                }
+                @Override
+                public void onError(Exception e) {
+                    if (--remaining[0] == 0 && onComplete != null) {
+                        onComplete.accept(deleteCount[0], e);
+                    }
+                }
+            });
+        }
+    }
+
+
 
 
 

@@ -2,23 +2,21 @@ package com.example.lotterysystemproject.Controllers;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.databinding.AdminBrowseImagesBinding;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +28,16 @@ public class AdminBrowseImages extends Fragment {
     private final List<String> imageUrls = new ArrayList<>();
     private final List<String> allImagesUrls = new ArrayList<>();
 
+    // Model layer reference
+    private FirebaseManager firebaseManager;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = AdminBrowseImagesBinding.inflate(inflater, container, false);
+        firebaseManager = FirebaseManager.getInstance(); // initialize Firebase model
         return binding.getRoot();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -53,63 +54,54 @@ public class AdminBrowseImages extends Fragment {
         );
 
         // Show delete icon when something is selected
-        adapter.setOnSelectionChangedListener(count -> {
-            binding.deleteIcon.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
-        });
+        adapter.setOnSelectionChangedListener(count ->
+                binding.deleteIcon.setVisibility(count > 0 ? View.VISIBLE : View.GONE)
+        );
 
+        // Delete selected images
         binding.deleteIcon.setOnClickListener(v -> confirmDeleteImages());
 
-        fetchImagesFromStorage();
+        // Fetch images from Firebase (through model)
+        fetchImages();
 
+        // Search filter listener
         TextInputEditText searchInput = binding.searchInput;
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) {}
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filterImages(s.toString());
             }
         });
-
     }
 
-    private void fetchImagesFromStorage() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference().child("images");
-
-        storageReference.listAll()
-                .addOnSuccessListener(listResult -> {
-                    imageUrls.clear();
-                    allImagesUrls.clear();
-
-                    for (StorageReference item: listResult.getItems()) {
-                        item.getDownloadUrl().addOnSuccessListener(uri -> {
-                            String url = uri.toString();
-                            imageUrls.add(url);
-                            allImagesUrls.add(url);
-                            adapter.notifyDataSetChanged();
-                        });
-                    }
-                })
-                .addOnFailureListener(e -> e.printStackTrace());
+    /** Fetch all images from Firebase Storage via FirebaseManager */
+    private void fetchImages() {
+        firebaseManager.getAllImages(urls -> {
+            imageUrls.clear();
+            allImagesUrls.clear();
+            imageUrls.addAll(urls);
+            allImagesUrls.addAll(urls);
+            adapter.notifyDataSetChanged();
+        }, e -> {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Failed to load images", Toast.LENGTH_SHORT).show();
+        });
     }
 
+    /** Filter images by name */
     private void filterImages(String query) {
         imageUrls.clear();
 
         if (query.isEmpty()) {
             imageUrls.addAll(allImagesUrls);
         } else {
-            for (String url: allImagesUrls) {
-                // Extract file name from URL
+            for (String url : allImagesUrls) {
                 String fileName = url.substring(url.lastIndexOf('/') + 1).toLowerCase();
                 if (fileName.contains(query.toLowerCase())) {
                     imageUrls.add(url);
@@ -119,42 +111,33 @@ public class AdminBrowseImages extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
+    /** Confirm deletion before proceeding */
     private void confirmDeleteImages() {
         List<String> selectedImages = adapter.getSelectedImages();
-
         if (selectedImages.isEmpty()) return;
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Images")
                 .setMessage("Are you sure you want to delete the selected images?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteImagesFromStorage(selectedImages))
-                .setNegativeButton("Close", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("Delete", (dialog, which) -> deleteImages(selectedImages))
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show();
-
     }
 
-    private void deleteImagesFromStorage(List<String> selectedImages) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        for (String url: selectedImages) {
-            StorageReference imageRef = storage.getReferenceFromUrl(url);
-
-            imageRef.delete()
-                    .addOnSuccessListener(aVoid -> {
-                        imageUrls.remove(url);
-                        allImagesUrls.remove(url);
-                        adapter.getSelectedImages().remove(url);
-                        adapter.notifyDataSetChanged();
-
-                        Toast.makeText(getContext(), "Image deleted", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Failed to delete image", Toast.LENGTH_SHORT).show();
-                    });
-        }
-
-        binding.deleteIcon.setVisibility(View.GONE);
+    /** Delete selected images from Firebase Storage using FirebaseManager */
+    private void deleteImages(List<String> selectedImages) {
+        firebaseManager.deleteMultipleImages(selectedImages, (deletedCount, e) -> {
+            if (e == null) {
+                imageUrls.removeAll(selectedImages);
+                allImagesUrls.removeAll(selectedImages);
+                adapter.getSelectedImages().clear();
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Deleted " + deletedCount + " image(s)", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Error deleting images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            binding.deleteIcon.setVisibility(View.GONE);
+        });
     }
 
     @Override
@@ -162,10 +145,4 @@ public class AdminBrowseImages extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
-
-
-
-
-
 }
