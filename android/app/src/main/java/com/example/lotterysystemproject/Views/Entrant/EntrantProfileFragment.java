@@ -35,7 +35,8 @@ public class EntrantProfileFragment extends Fragment {
                 }
             });
 
-    @Nullable @Override
+    @Nullable
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -49,11 +50,19 @@ public class EntrantProfileFragment extends Fragment {
                 androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_profile_to_settings)
         );
 
+        // ✅ NEW: Edit Profile button
+        Button editBtn = v.findViewById(R.id.btn_edit_profile);
+        editBtn.setOnClickListener(click -> {
+            Intent i = new Intent(requireContext(), EditProfileActivity.class);
+            i.putExtra(EditProfileActivity.EXTRA_USER_ID, resolveUserId());
+            startActivity(i);
+        });
+
         Button deleteBtn = v.findViewById(R.id.btn_delete_profile);
         deleteBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), DeleteProfileActivity.class);
             i.putExtra(DeleteProfileActivity.EXTRA_USER_ID, resolveUserId());
-            startActivity(i); // or use startActivityForResult pattern below if you want a callback
+            startActivity(i);
         });
 
         bindProfileToViews(v);   // <- load saved data to UI
@@ -84,13 +93,8 @@ public class EntrantProfileFragment extends Fragment {
     }
 
     private String resolveUserId() {
-        try {
-            // If you have a device ID manager in your project, prefer it:
-            // return DeviceIdentityManager.getInstance(requireContext()).getOrCreateDeviceId();
-            return "device-123"; // fallback for local demo
-        } catch (Exception e) {
-            return "device-123";
-        }
+        android.content.SharedPreferences prefs =
+                requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
+        return prefs.getString("userId", "unknown");
     }
 }
-

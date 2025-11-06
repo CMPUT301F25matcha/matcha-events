@@ -1,5 +1,7 @@
 package com.example.lotterysystemproject.Views.Entrant;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -13,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lotterysystemproject.Models.FirebaseManager;
-import com.example.lotterysystemproject.Models.User;
 import com.example.lotterysystemproject.R;
 
 import java.util.HashMap;
@@ -21,7 +22,8 @@ import java.util.Map;
 
 /**
  * US 01.02.02: Entrant can update profile (name, email, phone).
- * Expects caller to pass EXTRA_USER_ID (String).
+ * Prefills from SharedPreferences (same source as Profile screen) and
+ * writes back to SharedPreferences on save. Also attempts a Firestore update if available.
  */
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -31,8 +33,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button saveBtn, cancelBtn;
     private ProgressBar progress;
 
-    private FirebaseManager fm;
     private String userId;
+    private SharedPreferences prefs;
+    private FirebaseManager fm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +43,13 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         fm = FirebaseManager.getInstance();
+        prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+
+        // Resolve userId: intent extra → prefs → fallback
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
+        if (TextUtils.isEmpty(userId)) {
+            userId = prefs.getString("userId", "unknown");
+        }
 
         nameEt   = findViewById(R.id.input_name);
         emailEt  = findViewById(R.id.input_email);
@@ -49,27 +58,21 @@ public class EditProfileActivity extends AppCompatActivity {
         cancelBtn= findViewById(R.id.btn_cancel);
         progress = findViewById(R.id.progress);
 
-        if (TextUtils.isEmpty(userId)) {
-            Toast.makeText(this, "Missing userId", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        setLoading(true);
-        fm.getUser(userId, user -> {
-            if (user != null) {
-                if (!TextUtils.isEmpty(user.getName()))  nameEt.setText(user.getName());
-                if (!TextUtils.isEmpty(user.getEmail())) emailEt.setText(user.getEmail());
-                if (!TextUtils.isEmpty(user.getPhone())) phoneEt.setText(user.getPhone());
-            }
-            setLoading(false);
-        }, e -> {
-            setLoading(false);
-            Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show();
-        });
+        // Prefill directly from SharedPreferences (this matches your Profile fragment)
+        prefillFromPrefs();
 
         saveBtn.setOnClickListener(v -> attemptSave());
         cancelBtn.setOnClickListener(v -> finish());
+    }
+
+    private void prefillFromPrefs() {
+        String name  = prefs.getString("userName",  "");
+        String email = prefs.getString("userEmail", "");
+        String phone = prefs.getString("userPhone", "");
+
+        nameEt.setText(name);
+        emailEt.setText(email);
+        phoneEt.setText(phone);
     }
 
     private void attemptSave() {
@@ -83,37 +86,44 @@ public class EditProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailEt.setError("Valid email required"); emailEt.requestFocus(); return;
         }
-        if (!TextUtils.isEmpty(phone) && phone.length() < 7) {
-            phoneEt.setError("Phone looks too short"); phoneEt.requestFocus(); return;
-        }
 
+
+        setLoading(true);
+
+        // 1) Save to SharedPreferences (source of truth for your current flow)
+        prefs.edit()
+                .putString("userName",  name)
+                .putString("userEmail", email)
+                .putString("userPhone", phone)
+                .apply();
+
+        // 2) Best-effort Firestore update (safe to keep; harmless with mock FM)
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("email", email);
         updates.put("phone", TextUtils.isEmpty(phone) ? null : phone);
 
-        setLoading(true);
         fm.updateUser(userId, updates, new FirebaseManager.FirebaseCallback() {
             @Override public void onSuccess() {
                 setLoading(false);
                 Toast.makeText(EditProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
                 finish();
             }
             @Override public void onError(Exception e) {
+                // Even if Firestore fails (e.g., demo/mock), we already updated local prefs.
                 setLoading(false);
-                Toast.makeText(EditProfileActivity.this, "Update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(EditProfileActivity.this,
+                        "Saved locally. Cloud update failed: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
 
     private void setLoading(boolean loading) {
-        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
-        saveBtn.setEnabled(!loading);
-        cancelBtn.setEnabled(!loading);
-        nameEt.setEnabled(!loading);
-        emailEt.setEnabled(!loading);
-        phoneEt.setEnabled(!loading);
+        if (progress != null) progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        if (saveBtn != null)  saveBtn.setEnabled(!loading);
+        if (cancelBtn != null) cancelBtn.setEnabled(!loading);
     }
 
     private static String trim(EditText et) {

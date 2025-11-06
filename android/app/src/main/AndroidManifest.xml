@@ -62,6 +62,10 @@
             android:name=".Views.Entrant.EditProfileActivity"
             android:exported="false"
             android:label="Edit Profile" />
+        <activity
+            android:name=".Views.Entrant.EventsHistoryActivity"
+            android:exported="false"
+            android:label="Events History" />
 
         <activity
             android:name=".TestActivity"
