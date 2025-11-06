@@ -18,7 +18,7 @@ public class EntrantProfileActivity extends AppCompatActivity {
                 EntrantMainActivity.class,
                 null,
                 null,
-                null,
+                NotificationsActivity.class,
                 EntrantProfileActivity.class
         );
 

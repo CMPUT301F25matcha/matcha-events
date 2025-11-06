@@ -24,7 +24,9 @@ public class ProfileHostActivity extends AppCompatActivity {
         NavWiring.wire(
                 this,
                 com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity.class, // home
-                null, null, null,
+                null,
+                null,
+                NotificationsActivity.class,
                 ProfileHostActivity.class // profile (self)
         );
 

@@ -217,6 +217,10 @@ public class UserInfo {
         model.setSignedUp(true);
         model.setRole("entrant"); // Default role for users who sign up
         persistInMemory(activity, model);
+
+        //Clear all old notifications (reset for this user)
+        com.example.lotterysystemproject.Utils.NotificationsLocalStore.clearAll(activity);
+
         navigateToEntrantHome(activity);
     }
 
@@ -237,6 +241,10 @@ public class UserInfo {
         model.setSignedUp(false);
         model.setRole("entrant"); // Default role for users who skip
         persistInMemory(activity, model);
+
+        // Clear all old notifications (reset for this user)
+        com.example.lotterysystemproject.Utils.NotificationsLocalStore.clearAll(activity);
+
         navigateToEntrantHome(activity);
     }
 }

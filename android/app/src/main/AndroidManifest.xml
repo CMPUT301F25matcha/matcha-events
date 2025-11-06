@@ -48,6 +48,11 @@
         <activity
             android:name=".Views.Entrant.EntrantProfileActivity"
             android:exported="false" />
+        <activity
+            android:name=".Views.Entrant.NotificationsActivity"
+            android:exported="false"
+            android:label="Notifications" />
+
     </application>
 
 </manifest>

@@ -35,7 +35,7 @@
                 android:id="@+id/profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="June Hu"
+                android:text="John Doe"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:layout_marginTop="12dp"/>
@@ -44,7 +44,7 @@
                 android:id="@+id/profile_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="june@example.com"
+                android:text="john@example.com"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"/>
 
@@ -62,7 +62,8 @@
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textAllCaps="false"
-                android:layout_marginTop="24dp" />
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/black"/>
 
             <Button
                 android:id="@+id/btn_delete_profile"
@@ -70,7 +71,8 @@
                 android:layout_height="wrap_content"
                 android:text="Delete Profile"
                 android:textAllCaps="false"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/red"/>
         </LinearLayout>
     </ScrollView>
 

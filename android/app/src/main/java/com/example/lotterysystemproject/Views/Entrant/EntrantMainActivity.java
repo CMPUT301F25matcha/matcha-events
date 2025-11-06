@@ -56,7 +56,7 @@ public class EntrantMainActivity extends AppCompatActivity {
                 EntrantMainActivity.class,   // home
                 null,                        // explore (not yet)
                 null,                        // QR (not yet)
-                null,                        // notifications (not yet)
+                NotificationsActivity.class,       // notifications
                 ProfileHostActivity.class // profile
         );
 
