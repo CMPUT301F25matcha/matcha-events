@@ -67,7 +67,6 @@ public class EntrantProfileFragment extends Fragment {
                 androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_profile_to_settings)
         );
 
-        // ✅ NEW: Edit Profile button
         Button editBtn = v.findViewById(R.id.btn_edit_profile);
         editBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), EditProfileActivity.class);
@@ -83,7 +82,6 @@ public class EntrantProfileFragment extends Fragment {
         });
 
         bindProfileToViews(v);   // load saved data to UI
-        bindProfileToViews(v);   // <- load saved data to UI
 
         View historyBtn = v.findViewById(R.id.btn_events_history);
         if (historyBtn != null) {
@@ -132,6 +130,7 @@ public class EntrantProfileFragment extends Fragment {
      * Uses a mock device ID for local testing purposes.
      */
     private String resolveUserId() {
+        /*
         try {
             // Prefers a device ID manager if available:
             // return DeviceIdentityManager.getInstance(requireContext()).getOrCreateDeviceId();
@@ -139,6 +138,8 @@ public class EntrantProfileFragment extends Fragment {
         } catch (Exception e) {
             return "device-123";
         }
+
+         */
         android.content.SharedPreferences prefs =
                 requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
         return prefs.getString("userId", "unknown");
