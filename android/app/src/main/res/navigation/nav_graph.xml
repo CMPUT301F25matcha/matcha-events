@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_entrantMainActivity"
+            app:destination="@id/entrantMainActivity" />
     </fragment>
 
 
@@ -37,4 +40,8 @@
             android:id="@+id/action_thirdFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
     </fragment>
+    <activity
+        android:id="@+id/entrantMainActivity"
+        android:name="com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity"
+        android:label="EntrantMainActivity" />
 </navigation>
