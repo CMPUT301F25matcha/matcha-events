@@ -14,7 +14,54 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+
+        <!-- NEW: Organizer button -> Dashboard -->
+        <action
+            android:id="@+id/action_FirstFragment_to_OrganizerDashboard"
+            app:destination="@id/OrganizerDashboardFragment" />
     </fragment>
+
+    <!-- ORGANIZER SCREENS -->
+    <fragment
+        android:id="@+id/OrganizerDashboardFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.OrganizerDashboardFragment"
+        android:label="My Events"
+        tools:layout="@layout/fragment_organizer_dashboard">
+
+        <!-- CHANGED: Update destination reference -->
+        <action
+            android:id="@+id/action_dashboard_to_createEvent"
+            app:destination="@id/createEventFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_to_eventManagement"
+            app:destination="@id/EventManagementFragment" />
+    </fragment>
+
+    <!-- Create Event Fragment -->
+    <fragment
+        android:id="@+id/createEventFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.CreateEventFragment"
+        android:label="Create Event"
+        tools:layout="@layout/fragment_create_event" />
+
+    <!-- Event Management Fragment -->
+    <fragment
+        android:id="@+id/EventManagementFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.EventManagementFragment"
+        android:label="Event Management"
+        tools:layout="@layout/fragment_event_management">
+
+    <action
+        android:id="@+id/action_eventManagement_to_qrCodeDisplay"
+        app:destination="@id/QRCodeDisplayFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/QRCodeDisplayFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.QRCodeDisplayFragment"
+        android:label="QR Codes"
+        tools:layout="@layout/fragment_qr_code_display" />
 
     <fragment
         android:id="@+id/SecondFragment"
