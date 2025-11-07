@@ -71,7 +71,7 @@
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search images..."
+        android:hint="Search Images..."
         app:startIconDrawable="@drawable/ic_search"
         app:startIconTint="@color/black"
         app:boxBackgroundMode="outline"
