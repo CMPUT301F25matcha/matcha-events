@@ -87,6 +87,7 @@ public class AdminBrowseProfiles extends Fragment {
 
     }
 
+
     private void loadProfiles() {
         db.collection("users").addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (e != null) {
