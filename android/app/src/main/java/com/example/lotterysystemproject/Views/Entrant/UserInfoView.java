@@ -56,7 +56,7 @@ public class UserInfoView extends AppCompatActivity {
         // Existing buttons
         binding.buttonContinue.setOnClickListener(v -> controller.handleContinue(this, binding));
         binding.buttonSkip.setOnClickListener(v -> controller.handleSkip(this, binding));
-//        binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
+        binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
 
         // 🆕 Organizer button — connects to your new handler
         if (binding.buttonOrganizer != null) {

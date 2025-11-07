@@ -2,7 +2,6 @@ package com.example.lotterysystemproject.Views.Entrant;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -11,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lotterysystemproject.Models.DeviceIdentityManager;
-import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.Models.EventFirebase;
 import com.example.lotterysystemproject.Models.Registration;
 import com.example.lotterysystemproject.R;
 
@@ -23,7 +22,7 @@ public class EventsHistoryActivity extends AppCompatActivity {
     private LinearLayout container;
     private ProgressBar progress;
     private TextView empty;
-    private FirebaseManager fm;
+    private EventFirebase fm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,11 +33,11 @@ public class EventsHistoryActivity extends AppCompatActivity {
         progress  = findViewById(R.id.progress);
         empty     = findViewById(R.id.empty_state);
 
-        fm = FirebaseManager.getInstance();
+        fm = EventFirebase.getInstance();
         String uid = DeviceIdentityManager.getUserId(this);
 
         progress.setVisibility(View.VISIBLE);
-        fm.listenUserRegistrations(uid, new FirebaseManager.RegistrationsListener() {
+        fm.listenUserRegistrations(uid, new EventFirebase.RegistrationsListener() {
             @Override public void onChanged(List<Registration> items) {
                 progress.setVisibility(View.GONE);
                 render(items);

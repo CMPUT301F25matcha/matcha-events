@@ -14,7 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.Models.EventFirebase;
 import com.example.lotterysystemproject.R;
 
 import java.util.HashMap;
@@ -35,14 +35,14 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private String userId;
     private SharedPreferences prefs;
-    private FirebaseManager fm;
+    private EventFirebase fm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        fm = FirebaseManager.getInstance();
+        fm = EventFirebase.getInstance();
         prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
         // Resolve userId: intent extra → prefs → fallback
@@ -103,7 +103,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updates.put("email", email);
         updates.put("phone", TextUtils.isEmpty(phone) ? null : phone);
 
-        fm.updateUser(userId, updates, new FirebaseManager.FirebaseCallback() {
+        fm.updateUser(userId, updates, new EventFirebase.FirebaseCallback() {
             @Override public void onSuccess() {
                 setLoading(false);
                 Toast.makeText(EditProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
