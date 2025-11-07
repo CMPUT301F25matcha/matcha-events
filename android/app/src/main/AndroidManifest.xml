@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -38,12 +39,14 @@
                 android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
         </activity>
+
         <activity
             android:name=".Views.Entrant.DeleteProfileActivity"
             android:exported="false"
             android:label="Delete Profile" />
 
         <activity android:name=".Views.Entrant.SearchResultsActivity" />
+
         <activity android:name=".Views.Admin.AdminLoginActivity" />
         <activity android:name=".Views.Entrant.EventDetailsActivity" />
         <activity
@@ -76,6 +79,11 @@
             android:name=".TestActivity"
             android:exported="true"
             android:label="Test Activity" />
+
+        <!-- Organizer Main Activity -->
+        <activity
+            android:name=".Views.Organizer.OrganizerMainActivity"
+            android:exported="false" />
 
     </application>
 

@@ -5,6 +5,7 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/FirstFragment">
 
+
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.lotterysystemproject.Controllers.UserInfo"
@@ -18,6 +19,7 @@
             android:id="@+id/action_FirstFragment_to_entrantMainActivity"
             app:destination="@id/entrantMainActivity" />
     </fragment>
+
 
     <fragment
         android:id="@+id/SecondFragment"

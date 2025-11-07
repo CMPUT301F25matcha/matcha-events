@@ -9,6 +9,7 @@ import android.view.View;
 import com.example.lotterysystemproject.Models.User;
 //import com.example.lotterysystemproject.Views.Admin.AdminLoginActivity;
 import com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity;
+import com.example.lotterysystemproject.Views.Organizer.OrganizerMainActivity;  // ✅ Add this import
 import com.example.lotterysystemproject.databinding.UserInfoBinding;
 
 import java.util.UUID;
@@ -182,6 +183,22 @@ public class UserInfo {
         Intent intent = new Intent(activity, EntrantMainActivity.class);
         activity.startActivity(intent);
         activity.finish(); // Prevent back navigation to sign-up screen
+    }
+
+    public void navigateToOrganizerHome(Activity activity) {
+        Intent intent = new Intent(activity, OrganizerMainActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public void handleOrganizer(Activity activity, UserInfoBinding binding) {
+        hideValidationError(binding);
+        User model = collectUserInfo(binding);
+        if (!validate(model)) {
+            showValidationError(binding);
+            return;
+        }
+        persistInMemory(activity, model);
+        navigateToOrganizerHome(activity);
     }
 
     /**

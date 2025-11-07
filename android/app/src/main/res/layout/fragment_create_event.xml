@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#262424"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:elevation="4dp">
+
+            <Button
+                android:id="@+id/back_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Material3.Button.TextButton"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconTint="#FFFFFF"
+                app:iconPadding="0dp"
+                android:padding="0dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Create Event"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:fontFamily="@font/anuphan_semibold"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <!-- Form Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Section: Event Details -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Event Details"
+                android:textSize="16sp"
+                android:fontFamily="@font/anuphan_semibold"
+                android:textColor="#262424"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Event Name -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Event Name *"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/event_name_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Swimming Lessons"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/description_input"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Beginner swimming for kids ages 6-12..."
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="12dp"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Date & Time -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date &amp; Time *"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/date_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="📅 Select Date"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/anuphan"
+                    android:textColor="#000000"
+                    android:backgroundTint="#EDE9E9"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.Material3.Button" />
+
+                <Button
+                    android:id="@+id/time_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="🕐 Select Time"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/anuphan"
+                    android:textColor="#000000"
+                    android:backgroundTint="#EDE9E9"
+                    android:layout_marginStart="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.Material3.Button" />
+            </LinearLayout>
+
+            <!-- Location -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/location_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="📍 Community Pool"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Capacity -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capacity *"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/capacity_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="20 participants"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:inputType="number"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Max Waiting List -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Max Waiting List"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/max_waiting_list_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="100 entrants"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:inputType="number"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Registration Period -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registration Period *"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/reg_start_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="📅 Start"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/anuphan"
+                    android:textColor="#000000"
+                    android:backgroundTint="#EDE9E9"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.Material3.Button" />
+
+                <Button
+                    android:id="@+id/reg_end_button"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="📅 End"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/anuphan"
+                    android:textColor="#000000"
+                    android:backgroundTint="#EDE9E9"
+                    android:layout_marginStart="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.Material3.Button" />
+            </LinearLayout>
+
+            <!-- Price (Optional) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Price (optional)"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#262424"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/price_input"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="$ 60.00"
+                android:textColorHint="#B6ACAC"
+                android:fontFamily="@font/anuphan"
+                android:inputType="numberDecimal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Upload Poster -->
+            <Button
+                android:id="@+id/upload_poster_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="📤 Upload Event Poster"
+                android:textSize="14sp"
+                android:fontFamily="@font/anuphan"
+                android:textColor="#000000"
+                android:backgroundTint="#EDE9E9"
+                android:layout_marginBottom="8dp"
+                app:cornerRadius="12dp"
+                style="@style/Widget.Material3.Button" />
+
+            <!-- Create Event Button -->
+            <Button
+                android:id="@+id/create_event_button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="✓ Create Event &amp; QR Code"
+                android:textSize="16sp"
+                android:fontFamily="@font/anuphan_semibold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#262424"
+                android:enabled="false"
+                android:alpha="0.5"
+                app:cornerRadius="12dp"
+                style="@style/Widget.Material3.Button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
