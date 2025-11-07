@@ -1,0 +1,14 @@
+com.example.lotterysystemproject
+com.example.lotterysystemproject.adapters
+com.example.lotterysystemproject.Controllers
+com.example.lotterysystemproject.Helpers
+com.example.lotterysystemproject.Models
+com.example.lotterysystemproject.repositories
+com.example.lotterysystemproject.testfakes
+com.example.lotterysystemproject.utils
+com.example.lotterysystemproject.Utils
+com.example.lotterysystemproject.viewmodels
+com.example.lotterysystemproject.Views.Admin
+com.example.lotterysystemproject.Views.Entrant
+com.example.lotterysystemproject.Views.fragments.organizer
+com.example.lotterysystemproject.Views.Organizer
