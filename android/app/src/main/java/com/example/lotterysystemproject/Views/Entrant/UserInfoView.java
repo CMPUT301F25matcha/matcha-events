@@ -53,15 +53,10 @@ public class UserInfoView extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Set up button click listeners, delegating to controller
-        // Existing buttons
         binding.buttonContinue.setOnClickListener(v -> controller.handleContinue(this, binding));
         binding.buttonSkip.setOnClickListener(v -> controller.handleSkip(this, binding));
         binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
-
-        // 🆕 Organizer button — connects to your new handler
-        if (binding.buttonOrganizer != null) {
-            binding.buttonOrganizer.setOnClickListener(v -> controller.handleOrganizer(this, binding));
-        }
+        binding.buttonOrganizer.setOnClickListener(v -> controller.navigateToOrganizerHome(this));
     }
 
     /**

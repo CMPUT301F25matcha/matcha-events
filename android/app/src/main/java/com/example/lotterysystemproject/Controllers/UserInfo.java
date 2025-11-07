@@ -190,17 +190,6 @@ public class UserInfo {
         activity.startActivity(intent);
     }
 
-    public void handleOrganizer(Activity activity, UserInfoBinding binding) {
-        hideValidationError(binding);
-        User model = collectUserInfo(binding);
-        if (!validate(model)) {
-            showValidationError(binding);
-            return;
-        }
-        persistInMemory(activity, model);
-        navigateToOrganizerHome(activity);
-    }
-
     /**
      * Navigates to the admin login screen.
      * Starts the AdminLoginActivity.
