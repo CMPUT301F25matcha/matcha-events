@@ -52,7 +52,7 @@
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search events..."
+        android:hint="Search eventAdmins..."
         app:startIconDrawable="@drawable/ic_search"
         app:startIconTint="@color/black"
         app:boxBackgroundMode="outline"

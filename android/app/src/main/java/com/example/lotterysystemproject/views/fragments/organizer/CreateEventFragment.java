@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
+
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -234,7 +234,7 @@ public class CreateEventFragment extends Fragment {
         }
 
         // Create Event object
-        Event newEvent = new Event(
+        EventAdmin newEvent = new EventAdmin(
                 name,
                 eventDateTime.getTime(),
                 timeFormat.format(eventDateTime.getTime()),

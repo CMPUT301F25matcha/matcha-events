@@ -21,7 +21,7 @@
             android:layout_margin="8dp"
             android:background="@drawable/rounded_search_bg"
             app:iconifiedByDefault="false"
-            app:queryHint="Search events..."
+            app:queryHint="Search eventAdmins..."
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

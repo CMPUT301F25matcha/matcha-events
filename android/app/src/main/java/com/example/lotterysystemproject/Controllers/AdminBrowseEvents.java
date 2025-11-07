@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.lotterysystemproject.Models.Event;
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.databinding.AdminBrowseEventsBinding;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,8 +27,8 @@ public class AdminBrowseEvents extends Fragment {
 
     private AdminEventsAdapter adapter;
 
-    private final List<Event> eventList = new ArrayList<>();
-    private final List<Event> allEvents = new ArrayList<>();
+    private final List<EventAdmin> eventAdminList = new ArrayList<>();
+    private final List<EventAdmin> allEventAdmins = new ArrayList<>();
 
     private FirebaseManager firebaseManager;
 
@@ -48,7 +48,7 @@ public class AdminBrowseEvents extends Fragment {
         binding.recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize  Adapter
-        adapter = new AdminEventsAdapter(getContext(), eventList);
+        adapter = new AdminEventsAdapter(getContext(), eventAdminList);
 
         binding.recyclerEvents.setAdapter(adapter);
 
@@ -90,11 +90,11 @@ public class AdminBrowseEvents extends Fragment {
 
     private void fetchEvents() {
         firebaseManager.listenToAllEvents(events -> {
-            allEvents.clear();
-            allEvents.addAll(events);
+            allEventAdmins.clear();
+            allEventAdmins.addAll(events);
 
-            eventList.clear();
-            eventList.addAll(events);
+            eventAdminList.clear();
+            eventAdminList.addAll(events);
             adapter.notifyDataSetChanged();
 
             // Add sample events only if Firestore is empty
@@ -109,15 +109,15 @@ public class AdminBrowseEvents extends Fragment {
     private void addSampleEventsToFirebase() {
         // Use existing instance
         // Create a few example events
-        Event e1 = new Event("Charity Marathon", new Date(), "10:00 AM", "Downtown Park", 50);
+        EventAdmin e1 = new EventAdmin("Charity Marathon", new Date(), "10:00 AM", "Downtown Park", 50);
         e1.setId(firebaseManager.getDatabase().collection("events").document().getId());
         e1.setDescription("A community marathon to raise funds for hospitals.");
 
-        Event e2 = new Event("Winter Festival", new Date(), "5:00 PM", "City Hall", 100);
+        EventAdmin e2 = new EventAdmin("Winter Festival", new Date(), "5:00 PM", "City Hall", 100);
         e2.setId(firebaseManager.getDatabase().collection("events").document().getId());
         e2.setDescription("Enjoy local food, music, and winter festivities.");
 
-        Event e3 = new Event("Tech Conference", new Date(), "9:00 AM", "UofA Campus", 200);
+        EventAdmin e3 = new EventAdmin("Tech Conference", new Date(), "9:00 AM", "UofA Campus", 200);
         e3.setId(firebaseManager.getDatabase().collection("events").document().getId());
         e3.setDescription("A day of talks, networking, and innovation.");
 
@@ -127,14 +127,14 @@ public class AdminBrowseEvents extends Fragment {
     }
 
     private void filterEvents(String query) {
-        eventList.clear();
+        eventAdminList.clear();
         if (query.isEmpty()) {
-            eventList.addAll(allEvents);
+            eventAdminList.addAll(allEventAdmins);
         } else {
-            for (Event event: allEvents) {
-                if (event.getName().toLowerCase().contains(query.toLowerCase()) ||
-                event.getLocation().toLowerCase().contains(query.toLowerCase())) {
-                    eventList.add(event);
+            for (EventAdmin eventAdmin : allEventAdmins) {
+                if (eventAdmin.getName().toLowerCase().contains(query.toLowerCase()) ||
+                eventAdmin.getLocation().toLowerCase().contains(query.toLowerCase())) {
+                    eventAdminList.add(eventAdmin);
                 }
             }
         }

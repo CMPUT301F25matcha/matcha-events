@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EventAdapter;
-import com.example.lotterysystemproject.Models.Event;
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ public class OrganizerDashboardFragment extends Fragment {
         return view;
     }
 
-    private void onEventClick(Event event) {
+    private void onEventClick(EventAdmin event) {
         Bundle args = new Bundle();
         args.putString("eventId", event.getId());
 
@@ -74,7 +74,7 @@ public class OrganizerDashboardFragment extends Fragment {
         );
     }
 
-    private void updateStats(java.util.List<Event> events) {
+    private void updateStats(java.util.List<EventAdmin> events) {
         if (events == null || events.isEmpty()) {
             activeCount.setText("0");
             upcomingCount.setText("0");
@@ -89,7 +89,7 @@ public class OrganizerDashboardFragment extends Fragment {
         long now = System.currentTimeMillis();
         long oneDayFromNow = now + (24 * 60 * 60 * 1000); // 1 day in milliseconds
 
-        for (Event event : events) {
+        for (EventAdmin event : events) {
             long eventTime = event.getEventDate().getTime();
 
             if (eventTime < now) {

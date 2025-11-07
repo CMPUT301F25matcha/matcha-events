@@ -2,7 +2,7 @@ package com.example.lotterysystemproject.Models;
 
 import java.util.Date;
 
-public class Event {
+public class EventAdmin {
     private String id;
     private String name;
     private String description;
@@ -22,10 +22,10 @@ public class Event {
     private String posterUrl;
     private int maxWaitingList;
     // Empty constructor for Firebase
-    public Event() {}
+    public EventAdmin() {}
 
     // Constructor with required fields
-    public Event(String name, Date eventDate, String time, String location, int capacity) {
+    public EventAdmin(String name, Date eventDate, String time, String location, int capacity) {
         this.name = name;
         this.eventDate = eventDate;
         this.time = time;

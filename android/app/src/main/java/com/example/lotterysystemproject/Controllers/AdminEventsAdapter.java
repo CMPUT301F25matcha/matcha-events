@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.annotation.NonNull;
 
-import com.example.lotterysystemproject.Models.Event;
+import com.example.lotterysystemproject.Models.EventAdmin;
 
 import com.example.lotterysystemproject.R;
 
@@ -22,11 +22,11 @@ import java.util.List;
 
 public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.EventViewHolder> {
     private final Context context;
-    private List<Event> events;
+    private List<EventAdmin> eventAdmins;
 
-    public AdminEventsAdapter(Context context, List<Event> events) {
+    public AdminEventsAdapter(Context context, List<EventAdmin> eventAdmins) {
         this.context = context;
-        this.events = events;
+        this.eventAdmins = eventAdmins;
     }
 
     public class EventViewHolder extends RecyclerView.ViewHolder {
@@ -53,16 +53,16 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder viewHolder, final int position) {
-        Event event = events.get(position);
+        EventAdmin eventAdmin = eventAdmins.get(position);
 
-        viewHolder.eventName.setText(event.getName());
+        viewHolder.eventName.setText(eventAdmin.getName());
         //viewHolder.organizerName.setText(user.);
 
 
         // Handle "View Event" button click
         viewHolder.viewEventButton.setOnClickListener(v -> {
             // Show Event Dialog
-            AdminEventsDialog dialog = new AdminEventsDialog(event);
+            AdminEventsDialog dialog = new AdminEventsDialog(eventAdmin);
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "EventsDialog");
 
         });
@@ -71,7 +71,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
 
     @Override
     public int getItemCount() {
-        return events != null ? events.size() : 0;
+        return eventAdmins != null ? eventAdmins.size() : 0;
     }
 
 

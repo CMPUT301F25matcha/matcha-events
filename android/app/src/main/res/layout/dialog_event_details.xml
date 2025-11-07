@@ -64,7 +64,7 @@
             android:id="@+id/dialog_event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Full event description goes here..."
+            android:text="Full eventAdmin description goes here..."
             android:textSize="15sp"
             android:layout_marginTop="12dp"
             android:lineSpacingExtra="4dp" />

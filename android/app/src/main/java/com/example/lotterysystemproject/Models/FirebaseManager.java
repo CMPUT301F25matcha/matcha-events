@@ -6,8 +6,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.w3c.dom.Document;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -170,22 +168,22 @@ public class FirebaseManager {
      * @param onSuccess a callback with the list of events if successful
      * @param onError a callback with an exception if operation fails
      */
-    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+    public void getAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     // Create a list to store all Event objects
-                    List<Event> eventList = new ArrayList<>();
+                    List<EventAdmin> eventAdminList = new ArrayList<>();
 
                     // Loop through all documents in the collection
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
                         // Convert each document to an Event object
-                        Event event = doc.toObject(Event.class);
-                        eventList.add(event);
+                        EventAdmin eventAdmin = doc.toObject(EventAdmin.class);
+                        eventAdminList.add(eventAdmin);
                     }
 
                     if (onSuccess != null) {
-                        onSuccess.accept(eventList);
+                        onSuccess.accept(eventAdminList);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -214,15 +212,15 @@ public class FirebaseManager {
                 });
     }
 
-    public void addEvent(Event event, FirebaseCallback callback) {
-        if (event == null || event.getId() == null || event.getId().isEmpty()) {
+    public void addEvent(EventAdmin eventAdmin, FirebaseCallback callback) {
+        if (eventAdmin == null || eventAdmin.getId() == null || eventAdmin.getId().isEmpty()) {
             if (callback != null) {
                 callback.onError(new IllegalArgumentException("Event or EventID cannot be null"));
             }
             return;
         }
-        db.collection("events").document(event.getId())
-                .set(event)
+        db.collection("events").document(eventAdmin.getId())
+                .set(eventAdmin)
                 .addOnSuccessListener(aVoid -> {
                     if (callback != null) callback.onSuccess();
                 })
@@ -250,27 +248,27 @@ public class FirebaseManager {
     }
 
 
-    public void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+    public void listenToAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
         db.collection("events").addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (e != null) {
                 if (onError != null) onError.accept(e);
                 return;
             }
 
-            List<Event> eventList = new ArrayList<>();
+            List<EventAdmin> eventAdminList = new ArrayList<>();
             if (queryDocumentSnapshots != null) {
                 for (DocumentSnapshot doc: queryDocumentSnapshots) {
-                    Event event = doc.toObject(Event.class);
-                    if (event != null) {
+                    EventAdmin eventAdmin = doc.toObject(EventAdmin.class);
+                    if (eventAdmin != null) {
 
-                        eventList.add(event);
+                        eventAdminList.add(eventAdmin);
 
                     }
 
                 }
             }
 
-            if (onSuccess != null) onSuccess.accept(eventList);
+            if (onSuccess != null) onSuccess.accept(eventAdminList);
 
         });
     }

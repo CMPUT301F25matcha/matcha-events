@@ -6,8 +6,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Models.Event;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +17,14 @@ import java.util.Locale;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
-    private List<Event> events;
+    private List<EventAdmin> events;
     private OnEventClickListener listener;
 
     public interface OnEventClickListener {
-        void onEventClick(Event event);
+        void onEventClick(EventAdmin event);
     }
 
-    public EventAdapter(List<Event> events, OnEventClickListener listener) {
+    public EventAdapter(List<EventAdmin> events, OnEventClickListener listener) {
         this.events = events != null ? events : new ArrayList<>();
         this.listener = listener;
     }
@@ -37,7 +39,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        Event event = events.get(position);
+        EventAdmin event = events.get(position);
         holder.bind(event, listener);
     }
 
@@ -46,7 +48,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         return events.size();
     }
 
-    public void updateEvents(List<Event> newEvents) {
+    public void updateEvents(List<EventAdmin> newEvents) {
         this.events = newEvents != null ? newEvents : new ArrayList<>();
         notifyDataSetChanged();
     }
@@ -62,7 +64,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             eventStatus = itemView.findViewById(R.id.event_status);
         }
 
-        void bind(Event event, OnEventClickListener listener) {
+        void bind(EventAdmin event, OnEventClickListener listener) {
             eventName.setText(getEmoji(event.getName()) + " " + event.getName());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);

@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.lotterysystemproject.Models.Event;
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.FirebaseManager;
 
@@ -22,9 +22,9 @@ import java.util.Locale;
 
 public class AdminEventsDialog extends DialogFragment {
 
-    private final Event event;
+    private final EventAdmin eventAdmin;
 
-    public AdminEventsDialog(Event event) {this.event = event;}
+    public AdminEventsDialog(EventAdmin eventAdmin) {this.eventAdmin = eventAdmin;}
 
     @NonNull
     @Override
@@ -41,17 +41,17 @@ public class AdminEventsDialog extends DialogFragment {
         Button removeEventButton = view.findViewById(R.id.dialog_event_remove_button);
         Button closeEventButton = view.findViewById(R.id.dialog_event_close_button);
 
-        eventNameText.setText(event.getName());
+        eventNameText.setText(eventAdmin.getName());
         String formattedDate = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
-                        .format(event.getEventDate());
+                        .format(eventAdmin.getEventDate());
         eventDateText.setText(formattedDate);
-        eventTimeText.setText(event.getTime());
-        eventLocationText.setText(event.getLocation());
-        eventDescriptionText.setText(event.getDescription());
+        eventTimeText.setText(eventAdmin.getTime());
+        eventLocationText.setText(eventAdmin.getLocation());
+        eventDescriptionText.setText(eventAdmin.getDescription());
 
         // Handle Remove Event
         removeEventButton.setOnClickListener(v -> {
-            FirebaseManager.getInstance().deleteEvent(event.getId(), new FirebaseManager.FirebaseCallback() {
+            FirebaseManager.getInstance().deleteEvent(eventAdmin.getId(), new FirebaseManager.FirebaseCallback() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(requireContext(), "Event removed sucessfullly", Toast.LENGTH_SHORT).show();

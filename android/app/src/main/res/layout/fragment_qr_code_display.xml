@@ -101,7 +101,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Entrants scan this QR code to view event details and join the waiting list."
+                android:text="Entrants scan this QR code to view eventAdmin details and join the waiting list."
                 android:textSize="14sp"
                 android:fontFamily="@font/anuphan"
                 android:textColor="#B6ACAC"
@@ -121,7 +121,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="(For day of event)"
+                android:text="(For day of eventAdmin)"
                 android:textSize="12sp"
                 android:fontFamily="@font/anuphan"
                 android:textColor="#B6ACAC"
@@ -156,7 +156,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Use this QR code for attendance tracking on the day of the event."
+                android:text="Use this QR code for attendance tracking on the day of the eventAdmin."
                 android:textSize="14sp"
                 android:fontFamily="@font/anuphan"
                 android:textColor="#B6ACAC"

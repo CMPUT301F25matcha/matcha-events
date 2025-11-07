@@ -12,8 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.utils.QRCodeGenerator;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 
@@ -21,7 +22,7 @@ public class QRCodeDisplayFragment extends Fragment {
 
     private EventViewModel eventViewModel;
     private String eventId;
-    private Event currentEvent;
+    private EventAdmin currentEvent;
 
     private TextView eventNameTitle;
     private ImageView promoQrImage, checkinQrImage;
@@ -59,7 +60,7 @@ public class QRCodeDisplayFragment extends Fragment {
     private void loadEventAndGenerateQRCodes() {
         eventViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             if (events != null) {
-                for (Event event : events) {
+                for (EventAdmin event : events) {
                     if (event.getId().equals(eventId)) {
                         currentEvent = event;
                         eventNameTitle.setText(event.getName());
@@ -71,7 +72,7 @@ public class QRCodeDisplayFragment extends Fragment {
         });
     }
 
-    private void generateAndDisplayQRCodes(Event event) {
+    private void generateAndDisplayQRCodes(EventAdmin event) {
         // Generate promotional QR code (US 02.01.01)
         String promoData = QRCodeGenerator.generatePromoData(event.getId(), event.getName());
         Bitmap promoQrBitmap = QRCodeGenerator.generateQRCode(promoData, 500, 500);

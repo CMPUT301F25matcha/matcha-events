@@ -12,9 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.TabsPagerAdapter;
-import com.example.lotterysystemproject.Models.Event;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import com.google.android.material.tabs.TabLayout;
@@ -106,7 +107,7 @@ public class EventManagementFragment extends Fragment {
         // Get event details from EventViewModel
         eventViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             if (events != null) {
-                for (Event event : events) {
+                for (EventAdmin event : events) {
                     if (event.getId().equals(eventId)) {
                         displayEventDetails(event);
                         break;
@@ -116,7 +117,7 @@ public class EventManagementFragment extends Fragment {
         });
     }
 
-    private void displayEventDetails(Event event) {
+    private void displayEventDetails(EventAdmin event) {
         eventNameHeader.setText(event.getName());
         eventDate.setText("📅 " + dateFormat.format(event.getEventDate()));
         eventLocation.setText("📍 " + event.getLocation());
