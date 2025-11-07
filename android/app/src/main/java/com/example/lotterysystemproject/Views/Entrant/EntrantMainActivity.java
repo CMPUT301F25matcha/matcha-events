@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.lotterysystemproject.Helpers.EventListHelper;
-import com.example.lotterysystemproject.Utils.NavWiring;
+import com.example.lotterysystemproject.utils.NavWiring;
 import com.example.lotterysystemproject.databinding.EventViewsBinding;
 import android.view.View;
 import android.util.Log;
@@ -78,8 +78,8 @@ public class EntrantMainActivity extends AppCompatActivity {
         LinearLayout prof  = findViewById(R.id.nav_profile);
 
         if (home != null && expl != null && qr != null && notif != null && prof != null) {
-            com.example.lotterysystemproject.Utils.BottomNavigationHelper.setSelectedItem(
-                    com.example.lotterysystemproject.Utils.BottomNavigationHelper.NavItem.HOME,
+            com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
+                    com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.HOME,
                     home, expl, qr, notif, prof
             );
         }

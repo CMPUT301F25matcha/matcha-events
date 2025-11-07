@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Utils.BottomNavigationHelper;
-import com.example.lotterysystemproject.Utils.NavWiring;
+import com.example.lotterysystemproject.utils.BottomNavigationHelper;
+import com.example.lotterysystemproject.utils.NavWiring;
 
 /**
  * Serves as the container for entrant profile-related fragments.

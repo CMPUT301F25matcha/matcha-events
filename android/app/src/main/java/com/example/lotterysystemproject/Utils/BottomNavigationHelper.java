@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Utils;
+package com.example.lotterysystemproject.utils;
 
 import android.view.View;
 import android.widget.ImageView;

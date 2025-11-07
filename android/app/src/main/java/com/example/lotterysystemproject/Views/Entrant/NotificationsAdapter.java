@@ -81,7 +81,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
         // Restore persisted response for this item id
         NotificationItem.InvitationResponse persisted =
-                com.example.lotterysystemproject.Utils.NotificationsLocalStore
+                com.example.lotterysystemproject.utils.NotificationsLocalStore
                         .loadResponse(holder.itemView.getContext(), item.getId());
         item.setResponse(persisted);
 
@@ -105,7 +105,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
                     holder.acceptBtn.setOnClickListener(v -> {
                         item.setResponse(NotificationItem.InvitationResponse.ACCEPTED);
-                        com.example.lotterysystemproject.Utils.NotificationsLocalStore
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore
                                 .saveResponse(v.getContext(), item.getId(), item.getResponse());
                         notifyItemChanged(holder.getBindingAdapterPosition());
                         // TODO: Update backend if needed
@@ -113,7 +113,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
                     holder.declineBtn.setOnClickListener(v -> {
                         item.setResponse(NotificationItem.InvitationResponse.DECLINED);
-                        com.example.lotterysystemproject.Utils.NotificationsLocalStore
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore
                                 .saveResponse(v.getContext(), item.getId(), item.getResponse());
                         notifyItemChanged(holder.getBindingAdapterPosition());
                         // TODO: Trigger replacement draw, notify organizer
@@ -129,7 +129,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         // Notification re-setter for testing purposes (so id does not have to be changed each time)
         holder.itemView.setOnLongClickListener(v -> {
             // Remove saved response for this notification
-            com.example.lotterysystemproject.Utils.NotificationsLocalStore.clearFor(
+            com.example.lotterysystemproject.utils.NotificationsLocalStore.clearFor(
                     v.getContext(), item.getId());
 
             // Reset in-memory state

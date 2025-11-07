@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lotterysystemproject.Models.NotificationItem;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Utils.NavWiring;
+import com.example.lotterysystemproject.utils.NavWiring;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +50,8 @@ public class NotificationsActivity extends AppCompatActivity {
         LinearLayout prof = findViewById(R.id.nav_profile);
 
         if (home != null && expl != null && qr != null && notif != null && prof != null) {
-            com.example.lotterysystemproject.Utils.BottomNavigationHelper.setSelectedItem(
-                    com.example.lotterysystemproject.Utils.BottomNavigationHelper.NavItem.NOTIFICATIONS,
+            com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
+                    com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.NOTIFICATIONS,
                     home, expl, qr, notif, prof
             );
         }

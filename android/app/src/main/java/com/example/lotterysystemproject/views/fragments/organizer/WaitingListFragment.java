@@ -23,6 +23,13 @@ import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Displays the list of entrants currently on the waiting list.
+ * <p>
+ * Provides search functionality and allows organizers to initiate
+ * a draw lottery to move entrants into selected status based on
+ * available event capacity.
+ */
 public class WaitingListFragment extends Fragment {
 
     private EntrantViewModel entrantViewModel;
@@ -34,6 +41,14 @@ public class WaitingListFragment extends Fragment {
 
     private List<Entrant> allWaitingEntrants = new ArrayList<>();
 
+    /**
+     * Inflates the waiting list fragment layout and initializes UI components.
+     *
+     * @param inflater  the LayoutInflater object that can be used to inflate views
+     * @param container the parent view that this fragment's UI should be attached to
+     * @param savedInstanceState if non-null, contains previous state information
+     * @return the root view for this fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -54,14 +69,14 @@ public class WaitingListFragment extends Fragment {
         adapter = new EntrantAdapter(0, null); // 0 = TYPE_WAITING
         recyclerView.setAdapter(adapter);
 
-        // Observe waiting list
+        // Observe waiting list data
         entrantViewModel.getWaitingList().observe(getViewLifecycleOwner(), entrants -> {
             allWaitingEntrants = entrants;
             adapter.updateEntrants(entrants);
             titleText.setText("Waiting List (" + entrants.size() + ")");
         });
 
-        // Draw lottery button
+        // Handle draw lottery button click
         drawLotteryButton.setOnClickListener(v -> showDrawLotteryDialog());
 
         // Search functionality
@@ -81,6 +96,12 @@ public class WaitingListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Filters entrants in the waiting list based on the given query string.
+     * Matches name or email fields (case-insensitive).
+     *
+     * @param query the text to filter entrants by
+     */
     private void filterEntrants(String query) {
         if (query.isEmpty()) {
             adapter.updateEntrants(allWaitingEntrants);
@@ -100,14 +121,20 @@ public class WaitingListFragment extends Fragment {
         adapter.updateEntrants(filtered);
     }
 
+    /**
+     * Displays a dialog to perform a lottery draw for entrants on the waiting list.
+     * <p>
+     * The dialog allows the organizer to select how many entrants will be moved
+     * into the selected list, depending on available event capacity.
+     */
     private void showDrawLotteryDialog() {
         if (allWaitingEntrants.isEmpty()) {
             Toast.makeText(getContext(), "No entrants in waiting list", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Get available spots from parent event
-        int availableSpots = 20; // TODO: Get from event capacity - enrolled count
+        // TODO: Replace with dynamic value from event capacity
+        int availableSpots = 20;
 
         DrawLotteryDialogFragment dialog = DrawLotteryDialogFragment.newInstance(
                 allWaitingEntrants.size(),

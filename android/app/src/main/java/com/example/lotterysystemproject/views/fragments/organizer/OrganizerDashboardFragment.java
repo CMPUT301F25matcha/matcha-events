@@ -14,20 +14,49 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EventAdapter;
 import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Fragment representing the organizer's main dashboard.
+ * <p>
+ * Displays a list of events managed by the organizer along with event statistics
+ * such as the number of active, upcoming, and past events.
+ * Provides navigation options to create new events or view event details.
+ * </p>
+ */
 public class OrganizerDashboardFragment extends Fragment {
 
+    /** ViewModel used to manage and observe event data. */
     private EventViewModel eventViewModel;
+
+    /** RecyclerView that displays the list of events. */
     private RecyclerView eventRecyclerView;
+
+    /** Adapter responsible for binding event data to RecyclerView items. */
     private EventAdapter eventAdapter;
+
+    /** Button that navigates to the event creation screen. */
     private Button createEventButton;
+
+    /** TextViews displaying event counts for different categories. */
     private TextView activeCount, upcomingCount, pastCount;
 
+    /**
+     * Inflates the fragment layout, initializes the ViewModel and UI components,
+     * and sets up event observation and navigation.
+     *
+     * @param inflater LayoutInflater to inflate the layout
+     * @param container Parent container view
+     * @param savedInstanceState Previously saved instance state, if available
+     * @return The inflated view for this fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -37,44 +66,54 @@ public class OrganizerDashboardFragment extends Fragment {
         // Initialize ViewModel
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
-        // Initialize UI
+        // Initialize UI components
         createEventButton = view.findViewById(R.id.create_event_button);
         activeCount = view.findViewById(R.id.active_count);
         upcomingCount = view.findViewById(R.id.upcoming_count);
         pastCount = view.findViewById(R.id.past_count);
         eventRecyclerView = view.findViewById(R.id.event_recycler_view);
 
-        // Setup RecyclerView
+        // Configure RecyclerView
         eventRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventAdapter = new EventAdapter(new ArrayList<>(), this::onEventClick);
         eventRecyclerView.setAdapter(eventAdapter);
 
-        // Observe events
+        // Observe event list changes
         eventViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             eventAdapter.updateEvents(events);
             updateStats(events);
         });
 
-        // Create event button
-        createEventButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_dashboard_to_createEvent);
-        });
+        // Navigate to event creation screen
+        createEventButton.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_dashboard_to_createEvent)
+        );
 
         return view;
     }
 
+    /**
+     * Handles event selection from the RecyclerView.
+     * Navigates to the Event Management screen for the selected event.
+     *
+     * @param event The selected {@link EventAdmin} instance
+     */
     private void onEventClick(EventAdmin event) {
         Bundle args = new Bundle();
         args.putString("eventId", event.getId());
 
-        // Use getView() to get the fragment's root view
         Navigation.findNavController(requireView()).navigate(
                 R.id.action_dashboard_to_eventManagement,
                 args
         );
     }
 
-    private void updateStats(java.util.List<EventAdmin> events) {
+    /**
+     * Updates the active, upcoming, and past event counts displayed on the dashboard.
+     *
+     * @param events The list of all events managed by the organizer
+     */
+    private void updateStats(List<EventAdmin> events) {
         if (events == null || events.isEmpty()) {
             activeCount.setText("0");
             upcomingCount.setText("0");
@@ -87,19 +126,16 @@ public class OrganizerDashboardFragment extends Fragment {
         int past = 0;
 
         long now = System.currentTimeMillis();
-        long oneDayFromNow = now + (24 * 60 * 60 * 1000); // 1 day in milliseconds
+        long oneDayFromNow = now + (24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
         for (EventAdmin event : events) {
             long eventTime = event.getEventDate().getTime();
 
             if (eventTime < now) {
-                // Event has already happened
                 past++;
             } else if (eventTime <= oneDayFromNow) {
-                // Event is within next 24 hours
                 active++;
             } else {
-                // Event is more than 24 hours away
                 upcoming++;
             }
         }

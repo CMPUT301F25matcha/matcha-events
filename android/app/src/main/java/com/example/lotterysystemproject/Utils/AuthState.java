@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Utils;
+package com.example.lotterysystemproject.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

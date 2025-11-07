@@ -3,7 +3,7 @@ package com.example.lotterysystemproject.Views.Entrant;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Utils.NavWiring;
+import com.example.lotterysystemproject.utils.NavWiring;
 
 /**
  * Displays the entrant’s personal profile screen, allowing users to view and manage
@@ -31,8 +31,8 @@ public class EntrantProfileActivity extends AppCompatActivity {
         );
 
         // Select PROFILE tab in this screen
-        com.example.lotterysystemproject.Utils.BottomNavigationHelper.setSelectedItem(
-                com.example.lotterysystemproject.Utils.BottomNavigationHelper.NavItem.PROFILE,
+        com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
+                com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.PROFILE,
                 findViewById(R.id.nav_home),
                 findViewById(R.id.nav_explore),
                 findViewById(R.id.nav_qr_scanner),

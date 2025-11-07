@@ -78,7 +78,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
             prefs.deleteUser(userId);
 
             // Clear  same prefs that UserInfo uses
-            com.example.lotterysystemproject.Utils.AuthState.clearUserPrefs(this);
+            com.example.lotterysystemproject.utils.AuthState.clearUserPrefs(this);
 
             // Go to login and wipe back stack
             android.widget.Toast.makeText(this, "Profile deleted", android.widget.Toast.LENGTH_LONG).show();

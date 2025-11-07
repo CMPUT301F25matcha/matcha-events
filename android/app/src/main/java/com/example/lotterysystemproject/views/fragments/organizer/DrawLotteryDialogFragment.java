@@ -18,6 +18,14 @@ import com.example.lotterysystemproject.repositories.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import java.util.List;
 
+/**
+ * A dialog fragment that allows the organizer to perform a lottery draw for an event.
+ * <p>
+ * Displays the current waiting list size and available spots, and lets the organizer
+ * input the number of winners to select. Handles input validation and performs
+ * the draw through the {@link EntrantViewModel}.
+ * </p>
+ */
 public class DrawLotteryDialogFragment extends DialogFragment {
 
     private EntrantViewModel entrantViewModel;
@@ -28,6 +36,13 @@ public class DrawLotteryDialogFragment extends DialogFragment {
     private int waitingListSize;
     private int availableSpots;
 
+    /**
+     * Creates a new instance of the dialog with waiting list and available spot information.
+     *
+     * @param waitingListSize The number of entrants currently on the waiting list.
+     * @param availableSpots  The number of available spots for the event.
+     * @return A configured instance of {@link DrawLotteryDialogFragment}.
+     */
     public static DrawLotteryDialogFragment newInstance(int waitingListSize, int availableSpots) {
         DrawLotteryDialogFragment fragment = new DrawLotteryDialogFragment();
         Bundle args = new Bundle();
@@ -37,6 +52,12 @@ public class DrawLotteryDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * Creates and returns the dialog for performing a lottery draw.
+     *
+     * @param savedInstanceState The saved instance state, if available.
+     * @return A configured {@link Dialog} instance for the lottery draw.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -44,7 +65,7 @@ public class DrawLotteryDialogFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_draw_lottery, null);
 
-        // Get arguments
+        // Retrieve arguments
         if (getArguments() != null) {
             waitingListSize = getArguments().getInt("waitingListSize");
             availableSpots = getArguments().getInt("availableSpots");
@@ -53,28 +74,33 @@ public class DrawLotteryDialogFragment extends DialogFragment {
         // Get ViewModel
         entrantViewModel = new ViewModelProvider(requireActivity()).get(EntrantViewModel.class);
 
-        // Initialize views
+        // Initialize UI components
         waitingCountText = view.findViewById(R.id.waiting_list_count);
         availableSpotsText = view.findViewById(R.id.available_spots);
         numberInput = view.findViewById(R.id.number_input);
         cancelButton = view.findViewById(R.id.cancel_button);
         drawButton = view.findViewById(R.id.draw_button);
 
-        // Set values
+        // Display current stats
         waitingCountText.setText("Waiting List: " + waitingListSize);
         availableSpotsText.setText("Available Spots: " + availableSpots);
         numberInput.setHint(String.valueOf(Math.min(availableSpots, waitingListSize)));
 
-        // Cancel button
+        // Set up button listeners
         cancelButton.setOnClickListener(v -> dismiss());
-
-        // Draw button (US 02.05.02)
         drawButton.setOnClickListener(v -> drawLottery());
 
         builder.setView(view);
         return builder.create();
     }
 
+    /**
+     * Handles validation and triggers the lottery draw through the ViewModel.
+     * <p>
+     * Validates the user input to ensure that the entered number of winners
+     * is within allowed limits, and then performs the draw.
+     * </p>
+     */
     private void drawLottery() {
         String input = numberInput.getText().toString().trim();
 
@@ -122,9 +148,14 @@ public class DrawLotteryDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Displays a success dialog with a list of selected winners.
+     *
+     * @param winners The list of entrants who were selected in the lottery.
+     */
     private void showSuccessDialog(List<Entrant> winners) {
-        com.example.lotterysystemproject.Views.fragments.organizer.LotterySuccessDialogFragment successDialog =
-                com.example.lotterysystemproject.Views.fragments.organizer.LotterySuccessDialogFragment.newInstance(winners);
+        LotterySuccessDialogFragment successDialog =
+                LotterySuccessDialogFragment.newInstance(winners);
         successDialog.show(getParentFragmentManager(), "lottery_success");
     }
 }

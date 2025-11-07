@@ -225,7 +225,7 @@ public class UserInfo {
         persistInMemory(activity, model);
 
         //Clear all old notifications (reset for this user)
-        com.example.lotterysystemproject.Utils.NotificationsLocalStore.clearAll(activity);
+        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
 
         navigateToEntrantHome(activity);
     }
@@ -249,7 +249,7 @@ public class UserInfo {
         persistInMemory(activity, model);
 
         // Clear all old notifications (reset for this user)
-        com.example.lotterysystemproject.Utils.NotificationsLocalStore.clearAll(activity);
+        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
 
         navigateToEntrantHome(activity);
     }
