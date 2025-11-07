@@ -7,7 +7,7 @@ import android.provider.Settings;
 import android.view.View;
 
 import com.example.lotterysystemproject.Models.User;
-import com.example.lotterysystemproject.Views.Admin.AdminLoginActivity;
+//import com.example.lotterysystemproject.Views.Admin.AdminLoginActivity;
 import com.example.lotterysystemproject.Views.Entrant.EntrantMainActivity;
 import com.example.lotterysystemproject.databinding.UserInfoBinding;
 
@@ -190,11 +190,11 @@ public class UserInfo {
      *
      * @param activity The current activity from which navigation is initiated
      */
-    public void navigateToAdminLogin(Activity activity) {
-        Intent intent = new Intent(activity, AdminLoginActivity.class);
-        activity.startActivity(intent);
-    }
-
+//    public void navigateToAdminLogin(Activity activity) {
+//        Intent intent = new Intent(activity, AdminLoginActivity.class);
+//        activity.startActivity(intent);
+//    }
+// TODO: Admin activity launch
     /**
      * Handles the "Continue" button click.
      * Validates user input, persists data if valid, and navigates to home screen.

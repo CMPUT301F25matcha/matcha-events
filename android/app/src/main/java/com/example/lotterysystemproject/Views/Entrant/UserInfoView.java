@@ -55,7 +55,7 @@ public class UserInfoView extends AppCompatActivity {
         // Set up button click listeners, delegating to controller
         binding.buttonContinue.setOnClickListener(v -> controller.handleContinue(this, binding));
         binding.buttonSkip.setOnClickListener(v -> controller.handleSkip(this, binding));
-        binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
+//        binding.adminLogin.setOnClickListener(v -> controller.navigateToAdminLogin(this));
     }
 
     /**
