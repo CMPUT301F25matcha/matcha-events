@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
@@ -23,47 +22,59 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * Fragment that allows organizers to create new events.
+ * <p>
+ * Provides input fields for event details such as name, description,
+ * location, capacity, and price. Also handles date/time pickers,
+ * registration period selection, and event validation before submission.
+ * </p>
+ */
 public class CreateEventFragment extends Fragment {
 
-    // UI Components
+    /** UI components for event details */
     private EditText eventNameInput, descriptionInput, locationInput, capacityInput, priceInput, maxWaitingListInput;
     private Button dateButton, timeButton, regStartButton, regEndButton;
     private Button uploadPosterButton, createEventButton, backButton;
 
-    // Data
+    /** ViewModel used to manage event data */
     private EventViewModel eventViewModel;
-    private Calendar eventDateTime, regStartDate, regEndDate;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
 
+    /** Calendar objects for date/time management */
+    private Calendar eventDateTime, regStartDate, regEndDate;
+
+    /** Date/time formats for displaying user-selected values */
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
+
+    /**
+     * Inflates the layout and initializes the fragment components.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event, container, false);
 
-        // Initialize ViewModel
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
-        // Initialize calendars
         eventDateTime = Calendar.getInstance();
         regStartDate = Calendar.getInstance();
         regEndDate = Calendar.getInstance();
 
-        // Initialize views
         initializeViews(view);
-
-        // Setup listeners
         setupListeners();
-
-        // Setup validation
         setupValidation();
 
         return view;
     }
 
+    /**
+     * Initializes all UI views from the layout.
+     *
+     * @param view The inflated fragment view.
+     */
     private void initializeViews(View view) {
-        // Text inputs
         eventNameInput = view.findViewById(R.id.event_name_input);
         descriptionInput = view.findViewById(R.id.description_input);
         locationInput = view.findViewById(R.id.location_input);
@@ -71,26 +82,24 @@ public class CreateEventFragment extends Fragment {
         maxWaitingListInput = view.findViewById(R.id.max_waiting_list_input);
         priceInput = view.findViewById(R.id.price_input);
 
-        // Date/Time buttons
         dateButton = view.findViewById(R.id.date_button);
         timeButton = view.findViewById(R.id.time_button);
         regStartButton = view.findViewById(R.id.reg_start_button);
         regEndButton = view.findViewById(R.id.reg_end_button);
 
-        // Action buttons
         uploadPosterButton = view.findViewById(R.id.upload_poster_button);
         createEventButton = view.findViewById(R.id.create_event_button);
         backButton = view.findViewById(R.id.back_button);
 
-        // Set initial button texts
         updateDateTimeButtons();
     }
 
+    /**
+     * Sets up listeners for all interactive elements, such as buttons and pickers.
+     */
     private void setupListeners() {
-        // Back button
         backButton.setOnClickListener(v -> requireActivity().onBackPressed());
 
-        // Event Date picker
         dateButton.setOnClickListener(v -> {
             DatePickerDialog picker = new DatePickerDialog(
                     requireContext(),
@@ -106,7 +115,6 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
-        // Event Time picker
         timeButton.setOnClickListener(v -> {
             TimePickerDialog picker = new TimePickerDialog(
                     requireContext(),
@@ -123,7 +131,6 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
-        // Registration Start Date picker
         regStartButton.setOnClickListener(v -> {
             DatePickerDialog picker = new DatePickerDialog(
                     requireContext(),
@@ -139,7 +146,6 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
-        // Registration End Date picker
         regEndButton.setOnClickListener(v -> {
             DatePickerDialog picker = new DatePickerDialog(
                     requireContext(),
@@ -155,20 +161,19 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
-        // Upload Poster button
-        uploadPosterButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Upload Poster - Coming soon!", Toast.LENGTH_SHORT).show();
-        });
+        uploadPosterButton.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Upload Poster - Coming soon!", Toast.LENGTH_SHORT).show());
 
-        // Create Event button
         createEventButton.setOnClickListener(v -> createEvent());
     }
 
+    /**
+     * Sets up basic input validation to ensure required fields are filled.
+     */
     private void setupValidation() {
         TextWatcher validationWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -176,31 +181,27 @@ public class CreateEventFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         };
 
         eventNameInput.addTextChangedListener(validationWatcher);
         capacityInput.addTextChangedListener(validationWatcher);
     }
 
+    /**
+     * Validates form inputs and toggles the create event button accordingly.
+     */
     private void validateForm() {
-        boolean isValid = true;
+        boolean isValid = !eventNameInput.getText().toString().trim().isEmpty() &&
+                !capacityInput.getText().toString().trim().isEmpty();
 
-        // Check required fields
-        if (eventNameInput.getText().toString().trim().isEmpty()) {
-            isValid = false;
-        }
-
-        if (capacityInput.getText().toString().trim().isEmpty()) {
-            isValid = false;
-        }
-
-        // Enable/disable create button
         createEventButton.setEnabled(isValid);
         createEventButton.setAlpha(isValid ? 1.0f : 0.5f);
     }
 
+    /**
+     * Updates date and time button labels with the currently selected values.
+     */
     private void updateDateTimeButtons() {
         dateButton.setText("📅 " + dateFormat.format(eventDateTime.getTime()));
         timeButton.setText("🕐 " + timeFormat.format(eventDateTime.getTime()));
@@ -208,8 +209,10 @@ public class CreateEventFragment extends Fragment {
         regEndButton.setText("📅 " + dateFormat.format(regEndDate.getTime()));
     }
 
+    /**
+     * Creates a new event using input data and saves it via the ViewModel.
+     */
     private void createEvent() {
-        // Collect form data
         String name = eventNameInput.getText().toString().trim();
         String description = descriptionInput.getText().toString().trim();
         String location = locationInput.getText().toString().trim();
@@ -217,7 +220,6 @@ public class CreateEventFragment extends Fragment {
         String priceStr = priceInput.getText().toString().trim();
         String maxWaitingListStr = maxWaitingListInput.getText().toString().trim();
 
-        // Validate capacity
         int capacity;
         try {
             capacity = Integer.parseInt(capacityStr);
@@ -226,14 +228,11 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        int maxWaitingList = 0;
+        int maxWaitingList = 100;
         try {
             maxWaitingList = Integer.parseInt(maxWaitingListStr);
-        } catch (NumberFormatException e) {
-            maxWaitingList = 100;
-        }
+        } catch (NumberFormatException ignored) {}
 
-        // Create Event object
         EventAdmin newEvent = new EventAdmin(
                 name,
                 eventDateTime.getTime(),
@@ -246,34 +245,34 @@ public class CreateEventFragment extends Fragment {
         newEvent.setRegistrationEnd(regEndDate.getTime());
         newEvent.setMaxWaitingList(maxWaitingList);
 
-        // Parse price if provided
         if (!priceStr.isEmpty()) {
             try {
                 double price = Double.parseDouble(priceStr);
                 newEvent.setPrice(price);
-            } catch (NumberFormatException e) {
-                // Ignore invalid price
-            }
+            } catch (NumberFormatException ignored) {}
         }
 
-        // Generate QR codes
         String promoQR = generateQRCode(name, "PROMO");
         String checkinQR = generateQRCode(name, "CHECKIN");
         newEvent.setQrCodePromo(promoQR);
         newEvent.setQrCodeCheckin(checkinQR);
 
-        // Save to repository via ViewModel
         eventViewModel.createEvent(newEvent);
 
-        // Show success message
         Toast.makeText(getContext(),
                 "✓ Event created with QR codes!",
                 Toast.LENGTH_LONG).show();
 
-        // Navigate back to dashboard
         requireActivity().onBackPressed();
     }
 
+    /**
+     * Generates a mock QR code string for testing purposes.
+     *
+     * @param eventName The name of the event.
+     * @param type The QR code type (e.g., "PROMO", "CHECKIN").
+     * @return The generated QR code string.
+     */
     private String generateQRCode(String eventName, String type) {
         return type + "_" + eventName.replaceAll(" ", "_") + "_" + System.currentTimeMillis();
     }
