@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/notification_card_bg"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/notify_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Event Invitation"/>
+
+    <TextView
+        android:id="@+id/notify_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You have been selected to join the event!"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/notify_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2h ago"
+        android:textSize="12sp"
+        android:textColor="#888888"
+        android:layout_marginTop="2dp"/>
+
+    <LinearLayout
+        android:id="@+id/action_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:visibility="gone"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btn_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"
+            android:backgroundTint="@color/black"/>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/btn_decline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decline"
+            android:backgroundTint="@color/black"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/invite_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingTop="6dp"/>
+
+</LinearLayout>

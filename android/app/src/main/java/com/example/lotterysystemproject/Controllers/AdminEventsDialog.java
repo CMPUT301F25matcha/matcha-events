@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.lotterysystemproject.Models.EventAdmin;
-import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.R;
 
 import java.text.DateFormat;
 import java.util.Locale;

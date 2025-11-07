@@ -340,12 +340,4 @@ public class FirebaseManager {
             });
         }
     }
-
-
-
-
-
-
-
-
 }
