@@ -19,10 +19,21 @@ import com.example.lotterysystemproject.R;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Displays the entrant’s registration history for past and current events.
+ */
 public class EventRegistrationHistoryFragment extends Fragment {
 
     public EventRegistrationHistoryFragment() {}
 
+
+    /**
+     * Inflates layout for the registration history fragment.
+     * @param inflater  LayoutInflater to inflate XML views.
+     * @param container Parent view that this fragment’s UI will attach to.
+     * @param savedInstanceState Previous saved state (if any).
+     * @return Inflated View for this fragment.
+     */
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
@@ -30,6 +41,13 @@ public class EventRegistrationHistoryFragment extends Fragment {
         return inflater.inflate(R.layout.activity_registration_history, container, false);
     }
 
+    /**
+     * Initializes view components after layout inflation.
+     * Sets up a RecyclerView to display mock history data using and configures a back button that
+     * returns to the profile screen.
+     * @param view               Root view of the fragment.
+     * @param savedInstanceState Saved state bundle (if any).
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

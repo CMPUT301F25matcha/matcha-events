@@ -13,14 +13,28 @@ import com.example.lotterysystemproject.R;
 
 import java.util.List;
 
+/**
+ * Adapter class that binds EventHistoryItem objects to RecyclerView items
+ * for displaying a user's event registration history.
+ */
 public class EventHistoryAdapter extends RecyclerView.Adapter<EventHistoryAdapter.ViewHolder> {
 
     private final List<EventHistoryItem> items;
 
+    /**
+     * Constructs an EventHistoryAdapter with the given list of history items
+     * @param items a list of EventHistoryItem objects to be displayed.
+     */
     public EventHistoryAdapter(List<EventHistoryItem> items) {
         this.items = items;
     }
 
+    /**
+     * Inflates the layout for an individual history item view.
+     * @param parent   the parent view group into which the new view will be added
+     * @param viewType view type of the new view
+     * @return a new viewHolder instance containing inflated view
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -29,6 +43,11 @@ public class EventHistoryAdapter extends RecyclerView.Adapter<EventHistoryAdapte
         return new ViewHolder(view);
     }
 
+    /**
+     * Binds an EventHistoryItem to its corresponding ViewHolder.
+     * @param holder   ViewHolder containing the view references
+     * @param position position of the item within the adapter's data set
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         EventHistoryItem item = items.get(position);
@@ -37,14 +56,26 @@ public class EventHistoryAdapter extends RecyclerView.Adapter<EventHistoryAdapte
         holder.dateTime.setText("Invited: " + item.getDateTime());
     }
 
+    /**
+     * Returns total number of items in the data set held by the adapter.
+     * @return the number of items in items.
+     */
     @Override
     public int getItemCount() {
         return items.size();
     }
 
+    /**
+     * A RecyclerView.ViewHolder subclass that holds the views for each event history item.
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView eventName, status, dateTime;
 
+
+        /**
+         * Initializes view holder and binds its UI elements.
+         * @param itemView the item view inflated from XML.
+         */
         ViewHolder(View itemView) {
             super(itemView);
             eventName = itemView.findViewById(R.id.history_event_name);
