@@ -25,7 +25,7 @@ import android.text.TextWatcher;
 public class AdminBrowseProfiles extends Fragment {
 
     private AdminBrowseProfilesBinding binding;
-    private ProfilesAdapter adapter;
+    private AdminProfilesAdapter adapter;
     private final List<User> userList = new ArrayList<>();
     private final List<User> allUsers = new ArrayList<>();
     private FirebaseFirestore db;
@@ -52,7 +52,7 @@ public class AdminBrowseProfiles extends Fragment {
         binding.recyclerProfiles.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize adapter
-        adapter = new ProfilesAdapter(getContext(), userList);
+        adapter = new AdminProfilesAdapter(getContext(), userList);
 
         binding.recyclerProfiles.setAdapter(adapter);
 
@@ -83,13 +83,7 @@ public class AdminBrowseProfiles extends Fragment {
         });
 
         loadProfiles();
-        /*
-        binding.buttonSecond.setOnClickListener(v ->
-                NavHostFragment.findNavController(AdminBrowseProfiles.this)
-                        .navigate(R.id.action_thirdFragment_to_SecondFragment)
-        );
 
-         */
 
     }
 

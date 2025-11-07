@@ -42,6 +42,15 @@ android {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
     testImplementation("junit:junit:4.13.2")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
@@ -54,7 +63,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.recyclerview)
     implementation(libs.activity)
-    implementation(libs.firebase.messaging)
+//    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.robolectric)

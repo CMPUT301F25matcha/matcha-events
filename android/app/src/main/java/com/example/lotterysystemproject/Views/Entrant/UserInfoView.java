@@ -52,6 +52,7 @@ public class UserInfoView extends AppCompatActivity {
         binding = UserInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Existing buttons
         // Set up button click listeners, delegating to controller
         binding.buttonContinue.setOnClickListener(v -> controller.handleContinue(this, binding));
         binding.buttonSkip.setOnClickListener(v -> controller.handleSkip(this, binding));

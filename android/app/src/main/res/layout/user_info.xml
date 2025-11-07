@@ -178,6 +178,20 @@
             app:iconPadding="-50dp"
             app:iconTint="#524545" />
 
+        <!-- NEW: Organizer Button -->
+        <Button
+            android:id="@+id/button_organizer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#262424"
+            android:text="Log In As Organizer"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="12dp"
+            app:icon="@android:drawable/ic_menu_edit"
+            app:iconPadding="-50dp"
+            app:iconTint="#FFFFFF" />
+
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"

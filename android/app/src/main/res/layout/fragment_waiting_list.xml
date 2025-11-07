@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Header with count and draw button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <TextView
+            android:id="@+id/waiting_list_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waiting List (130)"
+            android:textSize="16sp"
+            android:fontFamily="@font/anuphan_semibold"
+            android:textColor="#262424" />
+
+        <Button
+            android:id="@+id/draw_lottery_button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="🎲 Draw X Winners"
+            android:textSize="14sp"
+            android:fontFamily="@font/anuphan_semibold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#262424"
+            android:layout_marginTop="12dp"
+            app:cornerRadius="12dp"
+            style="@style/Widget.Material3.Button" />
+
+        <!-- Search bar -->
+        <EditText
+            android:id="@+id/search_input"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_edit_text"
+            android:hint="🔍 Search..."
+            android:textColorHint="#B6ACAC"
+            android:fontFamily="@font/anuphan"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp" />
+
+    </LinearLayout>
+
+    <!-- Entrants list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/waiting_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF" />
+
+</LinearLayout>
