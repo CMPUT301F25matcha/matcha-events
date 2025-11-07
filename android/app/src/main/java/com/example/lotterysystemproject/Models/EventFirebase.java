@@ -22,20 +22,23 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Central data manager with two modes:
- *  - Mock mode (in-memory) for local dev/testing (no Firebase required)
- *  - Firebase mode for real Firestore/Storage
- *
- * Toggle with USE_FIREBASE.
+ * Central data manager for handling event and user data. This class is designed to operate in two modes:
+ * <ul>
+ *     <li><b>Mock Mode:</b> (Default) Uses an in-memory collection of mock data for local development and testing. This mode does not require a Firebase connection and simulates network latency using Handlers.</li>
+ *     <li><b>Firebase Mode:</b> Connects to a real Firebase Firestore and Storage backend for production use.</li>
+ * </ul>
+ * The mode is controlled by the static final boolean {@code USE_FIREBASE}. This class is implemented as a singleton.
  */
 public class EventFirebase {
+    /** Toggles between Firebase and mock mode. Set to false for testing, true for production. */
+    private static final boolean USE_FIREBASE = false;
 
-    // ===================== CONFIG =====================
-    private static final boolean USE_FIREBASE = false; // set true to use Firestore
-
-    // ===================== SINGLETON =====================
     private static EventFirebase instance;
 
+    /**
+     * Returns the singleton instance of the EventFirebase class.
+     * @return The single instance of EventFirebase.
+     */
     public static EventFirebase getInstance() {
         if (instance == null) {
             synchronized (EventFirebase.class) {
@@ -46,21 +49,31 @@ public class EventFirebase {
     }
 
     // ===================== FIREBASE (optional) =====================
+    /** Nullable instance of FirebaseFirestore, used only when in Firebase mode. */
     @Nullable private final FirebaseFirestore db;
+    /** Nullable instance of FirebaseStorage, used only when in Firebase mode. */
     @Nullable private final FirebaseStorage storage;
 
     // ===================== MOCK STATE =====================
+    /** In-memory cache for events, used in mock mode. Key is the event ID. */
     private final Map<String, Event> mockEvents = new HashMap<>();
+    /** Ordered list of event IDs, used in mock mode to maintain consistent order. */
     private final List<String> mockEventIds = new ArrayList<>();
 
-    // registrations grouped by userId
+    /** In-memory cache for registrations, grouped by user ID. Used in mock mode. */
     private final Map<String, List<Registration>> mockRegistrationsByUser = new HashMap<>();
-    // listeners grouped by userId
+    /** In-memory cache for registration listeners, grouped by user ID. Used in mock mode. */
     private final Map<String, List<RegistrationsListener>> mockRegListeners = new HashMap<>();
 
+    /** Handler to post operations on the main thread, used to simulate async behavior in mock mode. */
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private ListenerRegistration activeRegsListener; // only used in Firebase mode
+    /** Firestore listener registration, used only in Firebase mode to manage live updates. */
+    private ListenerRegistration activeRegsListener;
 
+    /**
+     * Private constructor to initialize the singleton instance.
+     * Sets up either the Firebase connections or initializes the mock data based on the USE_FIREBASE flag.
+     */
     private EventFirebase() {
         if (USE_FIREBASE) {
             db = FirebaseFirestore.getInstance();
@@ -73,9 +86,25 @@ public class EventFirebase {
     }
 
     // ===================== ACCESSORS =====================
+
+    /**
+     * Gets the FirebaseFirestore instance.
+     * @return The Firestore instance, or null if in mock mode.
+     */
     @Nullable public FirebaseFirestore getDatabase() { return db; }
+
+    /**
+     * Gets the FirebaseStorage instance.
+     * @return The FirebaseStorage instance, or null if in mock mode.
+     */
     @Nullable public FirebaseStorage getStorage() { return storage; }
 
+    /**
+     * Gets a reference to a specific Firestore collection.
+     * @param name The name of the collection.
+     * @return A {@link CollectionReference} to the specified collection.
+     * @throws IllegalStateException if called while in mock mode.
+     */
     public CollectionReference getCollection(String name) {
         if (!USE_FIREBASE || db == null) {
             throw new IllegalStateException("Firebase disabled; no collections available in mock mode.");
@@ -84,17 +113,37 @@ public class EventFirebase {
     }
 
     // ===================== CALLBACK TYPES =====================
+
+    /**
+     * A generic callback interface for Firebase operations that do not return data.
+     */
     public interface FirebaseCallback {
+        /** Called on successful completion of the operation. */
         void onSuccess();
+        /** Called when the operation fails. */
         void onError(Exception e);
     }
 
+    /**
+     * A listener interface for receiving updates to a list of registrations.
+     */
     public interface RegistrationsListener {
+        /**
+         * Called when the list of registrations has changed.
+         * @param items The updated list of {@link Registration} objects.
+         */
         void onChanged(List<Registration> items);
+        /** Called when an error occurs while listening for changes. */
         void onError(Exception e);
     }
 
     // ===================== MOCK SEED DATA =====================
+
+    /**
+     * Initializes the in-memory mock data for events.
+     * This method populates the {@code mockEvents} map with a predefined set of {@link Event} objects
+     * for testing and development purposes. It only runs if the mock data has not been previously initialized.
+     */
     private void initMockEvents() {
         if (!mockEventIds.isEmpty()) return;
 
@@ -162,6 +211,12 @@ public class EventFirebase {
     }
 
     // ===================== USERS =====================
+
+    /**
+     * Adds a user to the database. In mock mode, this simulates a successful operation after a short delay.
+     * @param user The {@link User} object to add.
+     * @param cb The callback to handle success or failure.
+     */
     public void addUser(User user, FirebaseCallback cb) {
         if (USE_FIREBASE && db != null) {
             db.collection("users").document(user.getId())
@@ -173,6 +228,12 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Updates user information in the database. In mock mode, this simulates a successful operation after a short delay.
+     * @param userId The ID of the user to update.
+     * @param updates A map of fields to update.
+     * @param cb The callback to handle success or failure.
+     */
     public void updateUser(String userId, Map<String, Object> updates, FirebaseCallback cb) {
         if (USE_FIREBASE && db != null) {
             db.collection("users").document(userId)
@@ -184,6 +245,12 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Retrieves a user from the database. In mock mode, this returns a predefined demo user after a short delay.
+     * @param userId The ID of the user to retrieve.
+     * @param onSuccess A consumer for the retrieved {@link User} object.
+     * @param onError A consumer for any exception that occurs.
+     */
     public void getUser(String userId, Consumer<User> onSuccess, Consumer<Exception> onError) {
         if (USE_FIREBASE && db != null) {
             db.collection("users").document(userId)
@@ -206,6 +273,11 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Deletes a user from the database. In mock mode, this simulates a successful operation after a short delay.
+     * @param userId The ID of the user to delete.
+     * @param cb The callback to handle success or failure.
+     */
     public void deleteUser(String userId, FirebaseCallback cb) {
         if (USE_FIREBASE && db != null) {
             db.collection("users").document(userId)
@@ -218,6 +290,12 @@ public class EventFirebase {
     }
 
     // ===================== EVENTS =====================
+
+    /**
+     * Retrieves all active events. In mock mode, this returns the list of pre-seeded mock events after a short delay.
+     * @param onSuccess A consumer for the list of {@link Event} objects.
+     * @param onError A consumer for any exception that occurs.
+     */
     public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         if (USE_FIREBASE && db != null) {
             db.collection("events")
@@ -247,6 +325,12 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Adds a user to an event's waiting list. In mock mode, this adds the user ID to the in-memory waiting list.
+     * @param eventId The ID of the event.
+     * @param userId The ID of the user to add to the waiting list.
+     * @param cb The callback to handle success or failure.
+     */
     public void joinWaitingList(String eventId, String userId, FirebaseCallback cb) {
         if (eventId == null || eventId.isEmpty() || userId == null || userId.isEmpty()) {
             if (cb != null) cb.onError(new IllegalArgumentException("Event ID and User ID required"));
@@ -257,7 +341,7 @@ public class EventFirebase {
             db.collection("events").document(eventId).get()
                     .addOnSuccessListener(doc -> {
                         if (!doc.exists()) { if (cb != null) cb.onError(new Exception("Event not found")); return; }
-                        // business rules can be added here
+                        // Business rules can be added here in a real implementation
                         if (cb != null) cb.onSuccess();
                     })
                     .addOnFailureListener(e -> { if (cb != null) cb.onError(e); });
@@ -274,6 +358,12 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Removes a user from an event's waiting list. This method only operates in mock mode.
+     * @param event The event from which to remove the user.
+     * @param userId The ID of the user to remove.
+     * @param cb The callback to handle success or failure.
+     */
     public static void leaveWaitingList(Event event, String userId, FirebaseCallback cb) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (event == null || userId == null) { if (cb != null) cb.onError(new IllegalArgumentException("event/userId null")); return; }
@@ -287,6 +377,13 @@ public class EventFirebase {
     }
 
     // ===================== REGISTRATIONS / HISTORY =====================
+
+    /**
+     * Listens for real-time updates to a user's event registrations.
+     * In mock mode, it adds the listener to a list and immediately returns the current mock data.
+     * @param userId The ID of the user whose registrations to listen for.
+     * @param listener The listener to be notified of changes.
+     */
     public void listenUserRegistrations(String userId, RegistrationsListener listener) {
         if (USE_FIREBASE && db != null) {
             if (activeRegsListener != null) { activeRegsListener.remove(); activeRegsListener = null; }
@@ -311,13 +408,26 @@ public class EventFirebase {
         }
     }
 
+    /**
+     * Stops listening for user registration updates. In Firebase mode, this removes the Firestore listener.
+     * In mock mode, this functionality is not implemented.
+     */
     public void stopListeningUserRegistrations() {
         if (USE_FIREBASE && activeRegsListener != null) {
             activeRegsListener.remove();
             activeRegsListener = null;
         }
+        // In mock mode, listeners are not actively removed in this implementation.
     }
 
+    /**
+     * Creates or updates a registration when a user joins an event.
+     * In mock mode, this creates a new {@link Registration} object and adds it to the in-memory list.
+     * @param userId The ID of the user.
+     * @param eventId The ID of the event.
+     * @param eventTitleSnapshot A snapshot of the event title at the time of registration.
+     * @param cb The callback to handle success or failure.
+     */
     public void upsertRegistrationOnJoin(String userId, String eventId, String eventTitleSnapshot, FirebaseCallback cb) {
         String docId = userId + "_" + eventId;
 
@@ -340,54 +450,21 @@ public class EventFirebase {
             r.setEventId(eventId);
             r.setEventTitleSnapshot(eventTitleSnapshot);
             r.setStatus("JOINED");
-            r.setRegisteredAt(Timestamp.now());
-            r.setUpdatedAt(Timestamp.now());
+            r.setRegisteredAt(new Timestamp(Calendar.getInstance().getTime()));
+            r.setUpdatedAt(new Timestamp(Calendar.getInstance().getTime()));
 
-            List<Registration> bucket = mockRegistrationsByUser.computeIfAbsent(userId, k -> new ArrayList<>());
-            int idx = -1;
-            for (int i = 0; i < bucket.size(); i++) {
-                if (eventId.equals(bucket.get(i).getEventId())) { idx = i; break; }
-            }
-            if (idx >= 0) bucket.set(idx, r); else bucket.add(0, r);
-
-            // notify listeners
-            List<RegistrationsListener> ls = mockRegListeners.get(userId);
-            if (ls != null) {
-                List<Registration> snapshot = new ArrayList<>(bucket);
-                mainHandler.post(() -> { for (RegistrationsListener l : ls) l.onChanged(snapshot); });
-            }
-            mainHandler.post(() -> { if (cb != null) cb.onSuccess(); });
-        }
-    }
-
-    public void updateRegistrationStatus(String userId, String eventId, String status, FirebaseCallback cb) {
-        String docId = userId + "_" + eventId;
-
-        if (USE_FIREBASE && db != null) {
-            Map<String, Object> upd = new HashMap<>();
-            upd.put("status", status);
-            upd.put("updatedAt", Timestamp.now());
-
-            db.collection("registrations").document(docId)
-                    .set(upd, SetOptions.merge())
-                    .addOnSuccessListener(v -> { if (cb != null) cb.onSuccess(); })
-                    .addOnFailureListener(e -> { if (cb != null) cb.onError(e); });
-        } else {
-            List<Registration> bucket = mockRegistrationsByUser.computeIfAbsent(userId, k -> new ArrayList<>());
-            for (Registration r : bucket) {
-                if (eventId.equals(r.getEventId())) {
-                    r.setStatus(status);
-                    r.setUpdatedAt(Timestamp.now());
-                    break;
+            List<Registration> userRegs = mockRegistrationsByUser.computeIfAbsent(userId, k -> new ArrayList<>());
+            userRegs.add(r);
+            
+            // Notify listeners about the change
+            List<RegistrationsListener> listeners = mockRegListeners.get(userId);
+            if (listeners != null) {
+                for (RegistrationsListener l : listeners) {
+                    mainHandler.post(() -> l.onChanged(new ArrayList<>(userRegs)));
                 }
             }
-            // notify listeners
-            List<RegistrationsListener> ls = mockRegListeners.get(userId);
-            if (ls != null) {
-                List<Registration> snapshot = new ArrayList<>(bucket);
-                mainHandler.post(() -> { for (RegistrationsListener l : ls) l.onChanged(snapshot); });
-            }
-            mainHandler.post(() -> { if (cb != null) cb.onSuccess(); });
+            
+            if (cb != null) mainHandler.post(cb::onSuccess);
         }
     }
 }

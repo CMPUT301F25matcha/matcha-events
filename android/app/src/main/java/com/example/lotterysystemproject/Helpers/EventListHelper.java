@@ -23,12 +23,20 @@ import java.util.Locale;
 public class EventListHelper {
     private static final String PREFS_NAME = "UserPrefs";
     private static final String KEY_USER_ID = "userId";
-    
+
     private final Context context;
     private final LinearLayout container;
     private final EventFirebase eventFirebase;
     private final SimpleDateFormat dateFormat;
+    private Runnable onEventsLoaded;
 
+    /**
+     * Constructs a new EventListHelper.
+     *
+     * @param context        The application context for inflating views and accessing resources.
+     * @param container      The LinearLayout container where event cards will be added.
+     * @param onEventsLoaded A callback to be executed after events have been loaded and rendered.
+     */
     public EventListHelper(Context context, LinearLayout container, Runnable onEventsLoaded) {
         this.context = context;
         this.container = container;
@@ -36,8 +44,6 @@ public class EventListHelper {
         this.eventFirebase = EventFirebase.getInstance();
         this.dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
     }
-
-    private Runnable onEventsLoaded;
 
     /**
      * Loads all events from Firestore and populates the container.
@@ -71,6 +77,7 @@ public class EventListHelper {
 
     /**
      * Gets the current user ID from SharedPreferences or returns null.
+     * @return The current user's unique ID, or null if not found.
      */
     private String getCurrentUserId() {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -79,6 +86,8 @@ public class EventListHelper {
 
     /**
      * Creates a view for a single event card.
+     * @param event The event data to display.
+     * @return A View representing the event card.
      */
     private View createEventCard(Event event) {
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -94,7 +103,7 @@ public class EventListHelper {
         // Set event data
         eventName.setText(event.getName() != null ? event.getName() : "Event Name");
         eventHostName.setText(event.getHostName() != null ? "Hosted by " + event.getHostName() : "Host Name");
-        
+
         // Format date
         if (event.getDate() != null) {
             String dateStr = dateFormat.format(event.getDate());
@@ -140,6 +149,9 @@ public class EventListHelper {
 
     /**
      * Handles joining the waiting list for an event.
+     * @param event The event to join.
+     * @param userId The ID of the user joining.
+     * @param button The button that was clicked, to update its state.
      */
     private void joinWaitingList(Event event, String userId, MaterialButton button) {
         button.setEnabled(false);
@@ -175,6 +187,7 @@ public class EventListHelper {
 
     /**
      * Shows an error state message when loading events fails.
+     * @param errorMessage The error message to display.
      */
     private void showErrorState(String errorMessage) {
         TextView errorTextView = new TextView(context);
@@ -185,4 +198,3 @@ public class EventListHelper {
         container.addView(errorTextView);
     }
 }
-
