@@ -41,12 +41,12 @@ public class UserInfoView extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check if user has already signed up
-        if (controller.isUserAlreadySignedUp(this)) {
-            // User exists, skip sign-up and go to main activity
-            controller.navigateToEntrantHome(this);
-            return;
-        }
+//        // Check if user has already signed up
+//        if (controller.isUserAlreadySignedUp(this)) {
+//            // User exists, skip sign-up and go to main activity
+//            controller.navigateToEntrantHome(this);
+//            return;
+//        }
 
         // First time user, show sign-up screen
         binding = UserInfoBinding.inflate(getLayoutInflater());
