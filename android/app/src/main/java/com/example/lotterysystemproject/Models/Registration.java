@@ -2,6 +2,10 @@ package com.example.lotterysystemproject.Models;
 
 import com.google.firebase.Timestamp;
 
+/**
+ * Represents an entrant’s registration record for a specific event.
+ * Each Registration links a user to an event and tracks the registration state over time
+ */
 public class Registration {
     private String userId;
     private String eventId;
@@ -9,10 +13,12 @@ public class Registration {
     private String eventTitleSnapshot;   // optional: preserve history if event title changes
     private Timestamp eventStartAt;      // optional: for display/sorting
     private Timestamp registeredAt;      // optional
-    private Timestamp updatedAt;         // recommended for ordering
+    private Timestamp updatedAt;         // for ordering (recommended)
 
+    /** Constructor required for Firebase. */
     public Registration() {}
 
+    // Getters
     public String getUserId() { return userId; }
     public String getEventId() { return eventId; }
     public String getStatus() { return status; }
@@ -21,6 +27,8 @@ public class Registration {
     public Timestamp getRegisteredAt() { return registeredAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }
 
+
+    // Setters
     public void setUserId(String userId) { this.userId = userId; }
     public void setEventId(String eventId) { this.eventId = eventId; }
     public void setStatus(String status) { this.status = status; }

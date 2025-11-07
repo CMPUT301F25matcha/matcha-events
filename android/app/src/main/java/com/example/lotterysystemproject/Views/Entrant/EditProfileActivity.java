@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * US 01.02.02: Entrant can update profile (name, email, phone).
+ * Allows entrants to edit and update their personal profile information such as name, email, and phone number.
  * Prefills from SharedPreferences (same source as Profile screen) and
  * writes back to SharedPreferences on save. Also attempts a Firestore update if available.
  */
@@ -37,6 +37,12 @@ public class EditProfileActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private EventFirebase fm;
 
+
+    /**
+     * Initializes the Edit Profile screen.
+     * Loads user data from SharedPreferences, pre-fills the form, and sets up listeners for Save and Cancel buttons.
+     * @param savedInstanceState the saved state bundle (if any).
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +71,9 @@ public class EditProfileActivity extends AppCompatActivity {
         cancelBtn.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Prefills form fields using values from SharedPreferences.
+     */
     private void prefillFromPrefs() {
         String name  = prefs.getString("userName",  "");
         String email = prefs.getString("userEmail", "");
@@ -75,6 +84,11 @@ public class EditProfileActivity extends AppCompatActivity {
         phoneEt.setText(phone);
     }
 
+    /**
+     * Validates user input and saves updated profile data.
+     * Updates both local and remote Firestore (once integrated).
+     * Displays appropriate error messages for invalid input and progress indicators during save.
+     */
     private void attemptSave() {
         String name  = trim(nameEt);
         String email = trim(emailEt);
@@ -86,7 +100,6 @@ public class EditProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailEt.setError("Valid email required"); emailEt.requestFocus(); return;
         }
-
 
         setLoading(true);
 
@@ -120,6 +133,10 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Toggles visibility of progress bar and enables/disables buttons during save operations.
+     * @param loading true to show loading state, false to restore interactivity.
+     */
     private void setLoading(boolean loading) {
         if (progress != null) progress.setVisibility(loading ? View.VISIBLE : View.GONE);
         if (saveBtn != null)  saveBtn.setEnabled(!loading);

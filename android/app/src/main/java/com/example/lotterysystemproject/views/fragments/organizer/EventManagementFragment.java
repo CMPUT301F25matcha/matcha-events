@@ -20,9 +20,16 @@ import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/**
+ * Fragment that manages an event's details, including its waiting list and selected entrants.
+ * <p>
+ * Provides a tabbed interface for organizers to view event participants,
+ * navigate between waiting and selected entrants, and display a QR code for event registration.
+ */
 public class EventManagementFragment extends Fragment {
 
     private EventViewModel eventViewModel;
@@ -35,8 +42,17 @@ public class EventManagementFragment extends Fragment {
     private Button qrCodeButton;
 
     private String eventId;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);
 
+    /**
+     * Inflates the layout for the fragment, initializes view models and UI elements,
+     * and loads event details and entrant data.
+     *
+     * @param inflater  LayoutInflater for inflating the view
+     * @param container Parent view group
+     * @param savedInstanceState Previous saved state, if available
+     * @return The root view for this fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -55,7 +71,7 @@ public class EventManagementFragment extends Fragment {
         // Load entrants for this event
         entrantViewModel.loadEntrants(eventId);
 
-        // Initialize views
+        // Initialize UI components
         backButton = view.findViewById(R.id.back_button);
         eventNameHeader = view.findViewById(R.id.event_name_header);
         eventDate = view.findViewById(R.id.event_date);
@@ -65,19 +81,19 @@ public class EventManagementFragment extends Fragment {
         viewPager = view.findViewById(R.id.view_pager);
         qrCodeButton = view.findViewById(R.id.qr_code_button);
 
-        // Setup tabs
+        // Configure tab layout and view pager
         setupTabs();
 
-        // Load event details
+        // Load and display event details
         loadEventDetails();
 
-        // Back button
+        // Navigate back
         backButton.setOnClickListener(v -> requireActivity().onBackPressed());
 
+        // Navigate to QR code display
         qrCodeButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("eventId", eventId);
-
             Navigation.findNavController(v).navigate(
                     R.id.action_eventManagement_to_qrCodeDisplay,
                     args
@@ -87,6 +103,10 @@ public class EventManagementFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Configures the tab layout and attaches it to the ViewPager.
+     * Displays two tabs: "Waiting" and "Selected".
+     */
     private void setupTabs() {
         TabsPagerAdapter adapter = new TabsPagerAdapter(this);
         viewPager.setAdapter(adapter);
@@ -103,8 +123,10 @@ public class EventManagementFragment extends Fragment {
         }).attach();
     }
 
+    /**
+     * Observes the event list and loads the details for the current event.
+     */
     private void loadEventDetails() {
-        // Get event details from EventViewModel
         eventViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             if (events != null) {
                 for (EventAdmin event : events) {
@@ -117,12 +139,22 @@ public class EventManagementFragment extends Fragment {
         });
     }
 
+    /**
+     * Displays the details of the specified event, including name, date, location, and enrollment count.
+     *
+     * @param event The event whose details will be shown
+     */
     private void displayEventDetails(EventAdmin event) {
         eventNameHeader.setText(event.getName());
         eventDate.setText("📅 " + dateFormat.format(event.getEventDate()));
         eventLocation.setText("📍 " + event.getLocation());
         eventEnrollment.setText("👥 " + event.getEnrolled() + "/" + event.getCapacity() + " enrolled");
     }
+
+    /**
+     * Switches the ViewPager to the "Selected" tab.
+     * Used when an entrant is drawn or selected from the waiting list.
+     */
     public void switchToSelectedTab() {
         if (viewPager != null) {
             viewPager.setCurrentItem(1); // 1 = Selected tab

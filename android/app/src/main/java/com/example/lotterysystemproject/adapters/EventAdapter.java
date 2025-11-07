@@ -6,24 +6,40 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.lotterysystemproject.Models.EventAdmin;
 import com.example.lotterysystemproject.R;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * RecyclerView adapter for displaying a list of events.
+ * Provides click handling and formatted display for event details.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private List<EventAdmin> events;
     private OnEventClickListener listener;
 
+    /**
+     * Interface for handling event item clicks.
+     */
     public interface OnEventClickListener {
+        /**
+         * Called when an event card is clicked.
+         *
+         * @param event The clicked event.
+         */
         void onEventClick(EventAdmin event);
     }
 
+    /**
+     * Constructs a new EventAdapter.
+     *
+     * @param events   Initial list of events to display.
+     * @param listener Listener for event click actions.
+     */
     public EventAdapter(List<EventAdmin> events, OnEventClickListener listener) {
         this.events = events != null ? events : new ArrayList<>();
         this.listener = listener;
@@ -48,11 +64,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         return events.size();
     }
 
+    /**
+     * Updates the adapter with a new list of events.
+     *
+     * @param newEvents Updated event list.
+     */
     public void updateEvents(List<EventAdmin> newEvents) {
         this.events = newEvents != null ? newEvents : new ArrayList<>();
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder representing an event item in the RecyclerView.
+     */
     static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView eventName, eventDateTime, enrollmentCount, eventStatus;
 
@@ -64,12 +88,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             eventStatus = itemView.findViewById(R.id.event_status);
         }
 
+        /**
+         * Binds event data to UI components.
+         *
+         * @param event    The event being displayed.
+         * @param listener Click listener for event selection.
+         */
         void bind(EventAdmin event, OnEventClickListener listener) {
             eventName.setText(getEmoji(event.getName()) + " " + event.getName());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);
             eventDateTime.setText(dateFormat.format(event.getEventDate()));
-
             enrollmentCount.setText("👥 " + event.getEnrolled() + "/" + event.getCapacity() + " enrolled");
 
             if (event.getStatus().equals("open")) {
@@ -79,9 +108,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             }
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onEventClick(event);
-                }
+                if (listener != null) listener.onEventClick(event);
             });
         }
 

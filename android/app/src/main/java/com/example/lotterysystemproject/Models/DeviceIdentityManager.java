@@ -6,7 +6,7 @@ import android.provider.Settings;
 /**
  * Simplest possible way to identify a user by device.
  * - Uses ANDROID_ID, which is unique to each device+app signing key.
- * - Requires no permissions or Firebase.
+ * - Currently requires no permissions or Firebase.
  * - Resets when the device is factory-reset or the app’s signing key changes.
  */
 public class DeviceIdentityManager {
@@ -19,11 +19,11 @@ public class DeviceIdentityManager {
         );
 
         if (androidId == null || androidId.isEmpty()) {
-            // Fallback if ANDROID_ID not available (rare)
+            // Fallback if ANDROID_ID not available
             androidId = java.util.UUID.randomUUID().toString().replace("-", "");
         }
 
-        // Optional: prefix to make IDs recognizable as app-generated
+        // Optional prefix that makes IDs recognizable as app-generated
         return "usr_" + androidId;
     }
 }

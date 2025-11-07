@@ -6,8 +6,17 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.lotterysystemproject.Views.fragments.organizer.SelectedListFragment;
 import com.example.lotterysystemproject.Views.fragments.organizer.WaitingListFragment;
 
+/**
+ * Adapter for managing tabs in the organizer view pager.
+ * Provides fragments for the waiting list and selected entrants list.
+ */
 public class TabsPagerAdapter extends FragmentStateAdapter {
 
+    /**
+     * Constructs a TabsPagerAdapter associated with the given fragment.
+     *
+     * @param fragment The parent fragment hosting the ViewPager2.
+     */
     public TabsPagerAdapter(@NonNull Fragment fragment) {
         super(fragment);
     }
@@ -27,6 +36,6 @@ public class TabsPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2; // Waiting + Selected tabs
+        return 2; // Waiting and Selected tabs
     }
 }
