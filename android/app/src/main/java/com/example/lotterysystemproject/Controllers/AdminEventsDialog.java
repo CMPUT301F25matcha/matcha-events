@@ -3,7 +3,6 @@ package com.example.lotterysystemproject.Controllers;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,20 +10,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.lotterysystemproject.FirebaseManager.AdminRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.Models.EventAdmin;
-import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.R;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
 public class AdminEventsDialog extends DialogFragment {
-
     private final EventAdmin eventAdmin;
+    private AdminRepository adminRepository;
 
-    public AdminEventsDialog(EventAdmin eventAdmin) {this.eventAdmin = eventAdmin;}
+    public AdminEventsDialog(EventAdmin eventAdmin) {
+        this.eventAdmin = eventAdmin;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adminRepository = RepositoryProvider.getAdminRepository();
+    }
 
     @NonNull
     @Override
@@ -41,41 +50,46 @@ public class AdminEventsDialog extends DialogFragment {
         Button removeEventButton = view.findViewById(R.id.dialog_event_remove_button);
         Button closeEventButton = view.findViewById(R.id.dialog_event_close_button);
 
+        // Set event details
         eventNameText.setText(eventAdmin.getName());
         String formattedDate = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
-                        .format(eventAdmin.getEventDate());
+                .format(eventAdmin.getEventDate());
         eventDateText.setText(formattedDate);
         eventTimeText.setText(eventAdmin.getTime());
         eventLocationText.setText(eventAdmin.getLocation());
         eventDescriptionText.setText(eventAdmin.getDescription());
 
-        // Handle Remove Event
-        removeEventButton.setOnClickListener(v -> {
-            FirebaseManager.getInstance().deleteEvent(eventAdmin.getId(), new FirebaseManager.FirebaseCallback() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(requireContext(), "Event removed sucessfullly", Toast.LENGTH_SHORT).show();
-                    Log.d("FirebaseManager", "Delete success");
-                    dismiss();
-                }
+        // Setup button listeners
+        setupRemoveButton(removeEventButton);
+        setupCloseButton(closeEventButton);
 
-                @Override
-                public void onError(Exception e) {
-                    Toast.makeText(requireContext(), "Failed to remove user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-
-                }
-            });
-        });
-
-        // Handle Close Button
-        closeEventButton.setOnClickListener(v -> dismiss());
-
-        // Build and return dialog
+        // Build and return the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setView(view);
         return builder.create();
     }
 
+    private void setupRemoveButton(Button removeEventButton) {
+        removeEventButton.setOnClickListener(v -> {
+            adminRepository.deleteEvent(eventAdmin.getId(),
+                    new AdminRepository.AdminCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(requireContext(),
+                                    "Event removed successfully", Toast.LENGTH_SHORT).show();
+                            dismiss();
+                        }
 
+                        @Override
+                        public void onError(Exception e) {
+                            Toast.makeText(requireContext(),
+                                    "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+    }
+
+    private void setupCloseButton(Button closeEventButton) {
+        closeEventButton.setOnClickListener(v -> dismiss());
+    }
 }

@@ -1,7 +1,7 @@
 package com.example.lotterysystemproject.FirebaseManager;
 
 /**
- * Factory class that provides the appropriate EventRepository implementation.
+ * Factory class that provides the appropriate repository implementations.
  * This allows for easy switching between mock and Firebase modes.
  */
 public class RepositoryProvider {
@@ -9,7 +9,8 @@ public class RepositoryProvider {
     /** Toggles between Firebase and mock mode. Set to false for testing, true for production. */
     private static final boolean USE_FIREBASE = false;
 
-    private static EventRepository instance;
+    private static EventRepository eventRepositoryInstance;
+    private static AdminRepository adminRepositoryInstance;
 
     /**
      * Returns the singleton instance of the EventRepository.
@@ -17,28 +18,59 @@ public class RepositoryProvider {
      *
      * @return The EventRepository instance (either Mock or Firebase implementation).
      */
-    public static EventRepository getInstance() {
-        if (instance == null) {
+    public static EventRepository getEventRepository() {
+        if (eventRepositoryInstance == null) {
             synchronized (RepositoryProvider.class) {
-                if (instance == null) {
+                if (eventRepositoryInstance == null) {
                     if (USE_FIREBASE) {
-                        instance = new FirebaseEventRepository();
+                        eventRepositoryInstance = new FirebaseEventRepository();
                     } else {
-                        instance = new MockEventRepository();
+                        eventRepositoryInstance = new MockEventRepository();
                     }
                 }
             }
         }
-        return instance;
+        return eventRepositoryInstance;
     }
 
     /**
-     * Resets the singleton instance. Useful for testing purposes.
+     * Returns the singleton instance of the AdminRepository.
+     * The implementation returned depends on the USE_FIREBASE flag.
+     *
+     * @return The AdminRepository instance (either Mock or Firebase implementation).
+     */
+    public static AdminRepository getAdminRepository() {
+        if (adminRepositoryInstance == null) {
+            synchronized (RepositoryProvider.class) {
+                if (adminRepositoryInstance == null) {
+                    if (USE_FIREBASE) {
+                        adminRepositoryInstance = new FirebaseAdminRepository();
+                    } else {
+                        adminRepositoryInstance = new MockAdminRepository();
+                    }
+                }
+            }
+        }
+        return adminRepositoryInstance;
+    }
+
+    /**
+     * Legacy method for backward compatibility.
+     * @deprecated Use getEventRepository() instead.
+     */
+    @Deprecated
+    public static EventRepository getInstance() {
+        return getEventRepository();
+    }
+
+    /**
+     * Resets the singleton instances. Useful for testing purposes.
      * WARNING: Only call this during testing or app restart.
      */
-    public static void resetInstance() {
+    public static void resetInstances() {
         synchronized (RepositoryProvider.class) {
-            instance = null;
+            eventRepositoryInstance = null;
+            adminRepositoryInstance = null;
         }
     }
 

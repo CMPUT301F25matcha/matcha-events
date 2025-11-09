@@ -70,7 +70,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Loads event details from EventFirebase.
+     * Loads event details from FirebaseEventRepository.
      * Fetches the event data and populates the UI.
      */
     private void loadEventDetails() {
@@ -175,7 +175,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Refreshes the event data from EventFirebase to ensure UI shows
+     * Refreshes the event data from FirebaseEventRepository to ensure UI shows
      * the most current waiting list state.
      *
      * @param onComplete Callback to execute after refresh completes

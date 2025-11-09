@@ -23,8 +23,6 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private ProgressBar progress;
     private Button btnDelete, btnCancel;
-
-    //private EventFirebase fm;
     private ProfilePrefs prefs;
     private String userId;
 
