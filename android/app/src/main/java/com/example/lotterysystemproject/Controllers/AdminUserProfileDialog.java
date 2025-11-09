@@ -12,7 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.lotterysystemproject.Models.EventFirebase;
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.Models.User;
 
@@ -47,7 +48,7 @@ public class AdminUserProfileDialog extends DialogFragment {
 
         // Handle Remove User
         removeButton.setOnClickListener(v -> {
-            EventFirebase.getInstance().deleteUser(user.getId(), new EventFirebase.FirebaseCallback() {
+            RepositoryProvider.getInstance().deleteUser(user.getId(), new EventRepository.RepositoryCallback() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(requireContext(), "User removed successfully", Toast.LENGTH_SHORT).show();

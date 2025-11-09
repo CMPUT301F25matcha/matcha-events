@@ -9,7 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lotterysystemproject.Models.Event;
-import com.example.lotterysystemproject.Models.EventFirebase;
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.R;
 import com.google.android.material.button.MaterialButton;
 import android.content.SharedPreferences;
@@ -26,14 +27,14 @@ public class EventListHelper {
     
     private final Context context;
     private final LinearLayout container;
-    private final EventFirebase eventFirebase;
+    private final EventRepository eventFirebase;
     private final SimpleDateFormat dateFormat;
 
     public EventListHelper(Context context, LinearLayout container, Runnable onEventsLoaded) {
         this.context = context;
         this.container = container;
         this.onEventsLoaded = onEventsLoaded;
-        this.eventFirebase = EventFirebase.getInstance();
+        this.eventFirebase = RepositoryProvider.getInstance();
         this.dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
     }
 
@@ -145,7 +146,7 @@ public class EventListHelper {
         button.setEnabled(false);
         button.setText("Joining...");
 
-        eventFirebase.joinWaitingList(event.getId(), userId, new EventFirebase.FirebaseCallback() {
+        eventFirebase.joinWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
                 button.setText("On Waiting List");

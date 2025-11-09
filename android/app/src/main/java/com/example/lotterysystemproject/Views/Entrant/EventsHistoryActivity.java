@@ -10,7 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lotterysystemproject.Models.DeviceIdentityManager;
-import com.example.lotterysystemproject.Models.EventFirebase;
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.Models.Registration;
 import com.example.lotterysystemproject.R;
 
@@ -22,7 +23,7 @@ public class EventsHistoryActivity extends AppCompatActivity {
     private LinearLayout container;
     private ProgressBar progress;
     private TextView empty;
-    private EventFirebase fm;
+    private EventRepository fm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,11 +34,11 @@ public class EventsHistoryActivity extends AppCompatActivity {
         progress  = findViewById(R.id.progress);
         empty     = findViewById(R.id.empty_state);
 
-        fm = EventFirebase.getInstance();
+        fm = RepositoryProvider.getInstance();
         String uid = DeviceIdentityManager.getUserId(this);
 
         progress.setVisibility(View.VISIBLE);
-        fm.listenUserRegistrations(uid, new EventFirebase.RegistrationsListener() {
+        fm.listenUserRegistrations(uid, new EventRepository.RegistrationsListener() {
             @Override public void onChanged(List<Registration> items) {
                 progress.setVisibility(View.GONE);
                 render(items);

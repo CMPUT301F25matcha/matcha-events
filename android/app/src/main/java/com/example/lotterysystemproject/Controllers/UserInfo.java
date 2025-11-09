@@ -170,7 +170,7 @@ public class UserInfo {
                 .apply();
 
         // TODO: Sync with Firebase Firestore when implemented
-        // EventFirebase.getInstance().saveUser(model, callback);
+        // RepositoryProvider.getInstance().saveUser(model, callback);
     }
 
     /**
