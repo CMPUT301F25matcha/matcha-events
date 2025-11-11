@@ -14,7 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.lotterysystemproject.Models.EventFirebase;
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.R;
 
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private String userId;
     private SharedPreferences prefs;
-    private EventFirebase fm;
+    private EventRepository fm;
 
 
     /**
@@ -48,7 +49,7 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        fm = EventFirebase.getInstance();
+        fm = RepositoryProvider.getInstance();
         prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
         // Resolve userId: intent extra → prefs → fallback
@@ -116,7 +117,7 @@ public class EditProfileActivity extends AppCompatActivity {
         updates.put("email", email);
         updates.put("phone", TextUtils.isEmpty(phone) ? null : phone);
 
-        fm.updateUser(userId, updates, new EventFirebase.FirebaseCallback() {
+        fm.updateUser(userId, updates, new EventRepository.RepositoryCallback() {
             @Override public void onSuccess() {
                 setLoading(false);
                 Toast.makeText(EditProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();

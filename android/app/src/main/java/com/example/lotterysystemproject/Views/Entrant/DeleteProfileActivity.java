@@ -23,8 +23,6 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private ProgressBar progress;
     private Button btnDelete, btnCancel;
-
-    //private EventFirebase fm;
     private ProfilePrefs prefs;
     private String userId;
 
@@ -39,7 +37,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_profile);
 
-        //fm = EventFirebase.getInstance();
+        //fm = RepositoryProvider.getInstance();
         prefs = new ProfilePrefs(getApplicationContext());
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
         if (userId == null || userId.trim().isEmpty()) {
@@ -122,7 +120,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
         setLoading(true);
 
         // 1) Revoke FCM token (best-effort)
-        fm.revokeFcmToken(new EventFirebase.FirebaseCallback() {
+        fm.revokeFcmToken(new EventRepository.RepositoryCallback() {
             @Override public void onSuccess() { step2Anonymize(); }
             @Override public void onError(Exception e) { step2Anonymize(); } // proceed anyway
         });
@@ -130,7 +128,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private void step2Anonymize() {
         // 2) Anonymize registrations
-        fm.anonymizeRegistrationsForUser(userId, new EventFirebase.FirebaseCallback() {
+        fm.anonymizeRegistrationsForUser(userId, new EventRepository.RepositoryCallback() {
             @Override public void onSuccess() { step3DeleteUser(); }
             @Override public void onError(Exception e) { step3DeleteUser(); } // proceed anyway
         });
@@ -138,7 +136,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private void step3DeleteUser() {
         // 3) Delete user document
-        fm.deleteUser(userId, new EventFirebase.FirebaseCallback() {
+        fm.deleteUser(userId, new EventRepository.RepositoryCallback() {
             @Override public void onSuccess() {
                 setLoading(false);
                 Toast.makeText(DeleteProfileActivity.this, "Profile deleted", Toast.LENGTH_LONG).show();

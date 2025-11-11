@@ -12,8 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.lotterysystemproject.FirebaseManager.AdminRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.Models.EventAdmin;
-import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.databinding.AdminBrowseEventsBinding;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -21,57 +22,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * AdminBrowseEvents is a Fragment that allows administrators to browse, search events stored
- * in Firebase.
- *
- * - It displays a list of EventAdmin items in a RecyclerView, supports live searching.
- * - Initializing and binding the RecyclerView and its adapter.
- * - Listening to real-time event updates from Firebase.
- * - Providing search functionality to filter events by name or location.
- */
 public class AdminBrowseEvents extends Fragment {
-
-    /** View binding for the admin browse events layout. */
     private AdminBrowseEventsBinding binding;
-
-    /** Adapter used to display event data in the RecyclerView. */
     private AdminEventsAdapter adapter;
-
-    /** Current list of events displayed in the RecyclerView. */
     private final List<EventAdmin> eventAdminList = new ArrayList<>();
-
-    /** Full list of all events retrieved from Firebase (used for filtering). */
     private final List<EventAdmin> allEventAdmins = new ArrayList<>();
+    private AdminRepository adminRepository;
 
-    /** Instance of FirebaseManager for interacting with the Firebase database. */
-    private FirebaseManager firebaseManager;
-
-
-
-    /**
-     * Inflates the fragment's layout and initializes the FirebaseManager
-     *
-     * @param inflater  The LayoutInflater used to inflate views in the fragment.
-     * @param container The parent ViewGroup into which the fragment's UI should be attached.
-     * @param savedInstanceState If not null, the fragment is being re-created from a previous state.
-     * @return The root view of the inflated layout.
-     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = AdminBrowseEventsBinding.inflate(inflater, container, false);
-        firebaseManager = FirebaseManager.getInstance();
+        adminRepository = RepositoryProvider.getAdminRepository();
         return binding.getRoot();
     }
 
-    /**
-     * Immediately called after the view is created. Sets up components including
-     * the RecyclerView, search bar, navigation, adapter.
-     *
-     * @param view The created view.
-     * @param savedInstanceState The saved state of the fragment, if any.
-     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -81,9 +46,13 @@ public class AdminBrowseEvents extends Fragment {
 
         // Initialize  Adapter
         adapter = new AdminEventsAdapter(getContext(), eventAdminList);
+
         binding.recyclerEvents.setAdapter(adapter);
 
-        // Handle back arrow/navigation
+        // Search bar
+
+
+        // Handle back arrow
         binding.backArrow.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminBrowseEvents.this).navigateUp()
         );
@@ -109,23 +78,15 @@ public class AdminBrowseEvents extends Fragment {
         });
 
 
-        //addSampleEventsToFirebase();
-
-        // Fetch events from Firebase
+       // addSampleEventsToFirebase();
+        // Fetch events
         fetchEvents();
 
 
     }
 
-    /**
-     * Fetches all events from Firebase.
-     *
-     * Updates both allEventAdmins and eventAdminList and refreshes the adapter.
-     * If no events are found, it automatically adds sample events to Firebase (temporary implementation)
-     *
-     */
     private void fetchEvents() {
-        firebaseManager.listenToAllEvents(events -> {
+        adminRepository.listenToAllEvents(events -> {
             allEventAdmins.clear();
             allEventAdmins.addAll(events);
 
@@ -133,7 +94,7 @@ public class AdminBrowseEvents extends Fragment {
             eventAdminList.addAll(events);
             adapter.notifyDataSetChanged();
 
-            // Populate Firebase with sample events if empty (temporary implementation)
+            // Add sample events only if Firestore is empty
             if (events.isEmpty()) {
                 addSampleEventsToFirebase();
             }
@@ -142,38 +103,26 @@ public class AdminBrowseEvents extends Fragment {
     }
 
 
-    /**
-     * Adds a set of predefined sample EventAdmin objects to Firebase.
-     * Only for testing purposes when no events exist.
-     */
     private void addSampleEventsToFirebase() {
         // Use existing instance
         // Create a few example events
         EventAdmin e1 = new EventAdmin("Charity Marathon", new Date(), "10:00 AM", "Downtown Park", 50);
-        e1.setId(firebaseManager.getDatabase().collection("events").document().getId());
+        e1.setId(adminRepository.getDatabase().collection("events").document().getId());
         e1.setDescription("A community marathon to raise funds for hospitals.");
 
         EventAdmin e2 = new EventAdmin("Winter Festival", new Date(), "5:00 PM", "City Hall", 100);
-        e2.setId(firebaseManager.getDatabase().collection("events").document().getId());
+        e2.setId(adminRepository.getDatabase().collection("events").document().getId());
         e2.setDescription("Enjoy local food, music, and winter festivities.");
 
         EventAdmin e3 = new EventAdmin("Tech Conference", new Date(), "9:00 AM", "UofA Campus", 200);
-        e3.setId(firebaseManager.getDatabase().collection("events").document().getId());
+        e3.setId(adminRepository.getDatabase().collection("events").document().getId());
         e3.setDescription("A day of talks, networking, and innovation.");
 
-        firebaseManager.addEvent(e1, null);
-        firebaseManager.addEvent(e2, null);
-        firebaseManager.addEvent(e3, null);
+        adminRepository.addEvent(e1, null);
+        adminRepository.addEvent(e2, null);
+        adminRepository.addEvent(e3, null);
     }
 
-    /**
-     * Filters events based on a search query entered by the admin.
-     *
-     * The method performs a case-insensitive search on event names and locations.
-     * If the query is empty, all events are displayed.
-     *
-     * @param query The text input used to filter events.
-     */
     private void filterEvents(String query) {
         eventAdminList.clear();
         if (query.isEmpty()) {
@@ -191,20 +140,22 @@ public class AdminBrowseEvents extends Fragment {
 
     }
 
-
-    /**
-     * Cleans up resources by nullifying the binding reference to prevent memory leaks.
-     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
-
-
-
-
+    private void loadEvents() {
+        adminRepository.getAllEvents(
+                events -> {
+                    // Update UI with events
+                },
+                error -> {
+                    // Handle error
+                }
+        );
+    }
 }
 
 

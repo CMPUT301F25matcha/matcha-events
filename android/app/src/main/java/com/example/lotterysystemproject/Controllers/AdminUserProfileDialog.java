@@ -12,49 +12,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Models.FirebaseManager;
 import com.example.lotterysystemproject.Models.User;
 
-
-/**
- * adminUserProfileDialog is a DialogFragment that displays detailed
- * information about a specific User.
- *
- * This dialog allows administrators to:
- * - View a user’s profile details such as name, email, phone number, and role (TBA).
- * - Remove a user account from the Firebase database via FirebaseManager
- * - Close the dialog to return to the user list.
- *
- * It is typically launched from AdminProfilesAdapter when the admin clicks
- * on the "View Details" button for a user.
- *
- */
 public class AdminUserProfileDialog extends DialogFragment {
 
-    /** The User instance whose details are displayed in the dialog. */
     private final User user;
 
-    /**
-     * Constructs a new {@code AdminUserProfileDialog} for the specified user.
-     *
-     * @param user The User whose profile details will be shown.
-     */
     public AdminUserProfileDialog(User user) {
         this.user = user;
     }
 
-    /**
-     * Creates and returns the dialog that displays user details.
-     *
-     * This method inflates the user profile layout, populates it with data from
-     * the given User object, and attaches listeners for removing the user
-     * or closing the dialog.
-     *
-     *
-     * @param savedInstanceState The saved instance state, if available.
-     * @return A fully configured Dialog instance for user profile display.
-     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -78,7 +48,7 @@ public class AdminUserProfileDialog extends DialogFragment {
 
         // Handle Remove User
         removeButton.setOnClickListener(v -> {
-            FirebaseManager.getInstance().deleteUser(user.getId(), new FirebaseManager.FirebaseCallback() {
+            RepositoryProvider.getInstance().deleteUser(user.getId(), new EventRepository.RepositoryCallback() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(requireContext(), "User removed successfully", Toast.LENGTH_SHORT).show();

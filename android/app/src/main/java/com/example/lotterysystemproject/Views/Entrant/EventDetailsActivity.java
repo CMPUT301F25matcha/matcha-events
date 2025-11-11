@@ -5,7 +5,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.lotterysystemproject.Models.Event;
-import com.example.lotterysystemproject.Models.EventFirebase;
+import com.example.lotterysystemproject.FirebaseManager.EventRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.databinding.EventDetailsBinding;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -69,11 +70,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Loads event details from EventFirebase.
+     * Loads event details from FirebaseEventRepository.
      * Fetches the event data and populates the UI.
      */
     private void loadEventDetails() {
-        EventFirebase.getInstance().getAllEvents(events -> {
+        RepositoryProvider.getInstance().getAllEvents(events -> {
             for (Event e : events) {
                 if (eventId.equals(e.getId())) {
                     event = e;
@@ -125,7 +126,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param userId The ID of the user joining the waiting list
      */
     private void joinWaitingList(String userId) {
-        EventFirebase.getInstance().joinWaitingList(event.getId(), userId, new EventFirebase.FirebaseCallback() {
+        RepositoryProvider.getInstance().joinWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
                 // Refresh event data to get updated waiting list
@@ -152,7 +153,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param userId The ID of the user leaving the waiting list
      */
     private void leaveWaitingList(String userId) {
-        EventFirebase.leaveWaitingList(event, userId, new EventFirebase.FirebaseCallback() {
+        EventRepository repository = RepositoryProvider.getInstance();
+        repository.leaveWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
                 // Refresh event data to get updated waiting list
@@ -173,13 +175,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Refreshes the event data from EventFirebase to ensure UI shows
+     * Refreshes the event data from FirebaseEventRepository to ensure UI shows
      * the most current waiting list state.
      *
      * @param onComplete Callback to execute after refresh completes
      */
     private void refreshEventData(Runnable onComplete) {
-        EventFirebase.getInstance().getAllEvents(events -> {
+        RepositoryProvider.getInstance().getAllEvents(events -> {
             for (Event e : events) {
                 if (eventId.equals(e.getId())) {
                     event = e;

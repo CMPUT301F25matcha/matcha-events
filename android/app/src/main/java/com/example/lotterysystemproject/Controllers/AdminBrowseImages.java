@@ -14,75 +14,29 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.lotterysystemproject.Models.FirebaseManager;
+import com.example.lotterysystemproject.FirebaseManager.AdminRepository;
+import com.example.lotterysystemproject.FirebaseManager.RepositoryProvider;
 import com.example.lotterysystemproject.databinding.AdminBrowseImagesBinding;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * AdminBrowseImages is a Fragment that allows administrators to
- * view, search, and delete images stored in Firebase Storage.
- *
- * This component retrieves all image URLs from Firebase through FirebaseManager,
- * displays them in a grid using AdminImagesAdapter, and enables multiple deletion
- * of selected images with user confirmation.
- *
- * - Display all uploaded images in a grid layout.
- * - Filter images by filename using a search bar.
- * - Select and delete multiple images with confirmation dialogs.
- *
- */
 public class AdminBrowseImages extends Fragment {
-
-    /** View binding for the admin browse images layout. */
     private AdminBrowseImagesBinding binding;
-
-    /** Adapter responsible for displaying image and handling selections. */
+    private AdminRepository adminRepository;
     private AdminImagesAdapter adapter;
-
-
-    /** List of currently visible image URLs shown in the RecyclerView. */
     private final List<String> imageUrls = new ArrayList<>();
-
-
-    /** Full list of all available image URLs retrieved from Firebase. */
     private final List<String> allImagesUrls = new ArrayList<>();
 
-
-    private FirebaseManager firebaseManager;
-
-
-
-    /**
-     * Called to inflate the fragment layout and initialize the Firebase manager.
-     *
-     * @param inflater  The LayoutInflater used to inflate views in the fragment.
-     * @param container The parent ViewGroup into which the fragment's UI should be attached.
-     * @param savedInstanceState If not null, the fragment is being re-created from a previous state.
-     * @return The root view of the inflated layout.
-     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = AdminBrowseImagesBinding.inflate(inflater, container, false);
-        firebaseManager = FirebaseManager.getInstance(); // initialize Firebase model
+        adminRepository = RepositoryProvider.getAdminRepository();
         return binding.getRoot();
     }
 
-
-
-    /**
-     * Called once the fragment's view has been created.
-     *
-     * This method sets up the RecyclerView, search functionality,
-     * back navigation, and Firebase image fetching.
-     *
-     * @param view The created view.
-     * @param savedInstanceState The saved state of the fragment, if any.
-     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -92,23 +46,20 @@ public class AdminBrowseImages extends Fragment {
         adapter = new AdminImagesAdapter(getContext(), imageUrls);
         binding.recyclerImages.setAdapter(adapter);
 
-        // Back button navigation
+        // Back button
         binding.backArrow.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminBrowseImages.this).navigateUp()
         );
 
-        // Show delete icon when one or more images are selected
+        // Show delete icon when something is selected
         adapter.setOnSelectionChangedListener(count ->
                 binding.deleteIcon.setVisibility(count > 0 ? View.VISIBLE : View.GONE)
         );
 
-        // Handle delete icon click
+        // Delete selected images
         binding.deleteIcon.setOnClickListener(v -> confirmDeleteImages());
 
-        // Fetch images from Firebase
-        fetchImages();
-
-        // Setup search filter
+        // Search filter listener
         TextInputEditText searchInput = binding.searchInput;
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -122,36 +73,33 @@ public class AdminBrowseImages extends Fragment {
                 filterImages(s.toString());
             }
         });
+
+        // Load images from repository
+        loadImages();
     }
 
     /**
-     * Retrieves all images from Firebase Storage.
-     *
-     * Populates imageUrls and allImagesUrls lists with the retrieved URLs
-     * and updates the RecyclerView adapter.
-     *
+     * Fetch all images from Firebase Storage via AdminRepository
      */
-    private void fetchImages() {
-        firebaseManager.getAllImages(urls -> {
-            imageUrls.clear();
-            allImagesUrls.clear();
-            imageUrls.addAll(urls);
-            allImagesUrls.addAll(urls);
-            adapter.notifyDataSetChanged();
-        }, e -> {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Failed to load images", Toast.LENGTH_SHORT).show();
-        });
+    private void loadImages() {
+        adminRepository.getAllImages(
+                urls -> {
+                    imageUrls.clear();
+                    allImagesUrls.clear();
+                    imageUrls.addAll(urls);
+                    allImagesUrls.addAll(urls);
+                    adapter.notifyDataSetChanged();
+                },
+                error -> {
+                    error.printStackTrace();
+                    Toast.makeText(requireContext(),
+                            "Failed to load images", Toast.LENGTH_SHORT).show();
+                }
+        );
     }
 
-
     /**
-     * Filters the list of images based on the user's search query.
-     *
-     * Matching is performed by comparing the lowercase filename
-     * portion of each image URL against the lowercase query text.
-     *
-     * @param query The search term entered by the user.
+     * Filter images by filename
      */
     private void filterImages(String query) {
         imageUrls.clear();
@@ -170,10 +118,7 @@ public class AdminBrowseImages extends Fragment {
     }
 
     /**
-     * Displays a confirmation dialog before deleting selected images.
-     *
-     * If the user confirms, the method delegates to deleteImages(List)
-     *
+     * Confirm deletion before proceeding
      */
     private void confirmDeleteImages() {
         List<String> selectedImages = adapter.getSelectedImages();
@@ -181,33 +126,33 @@ public class AdminBrowseImages extends Fragment {
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Images")
-                .setMessage("Are you sure you want to delete the selected images?")
-                .setPositiveButton("Delete", (dialog, which) -> deleteImages(selectedImages))
+                .setMessage("Are you sure you want to delete " + selectedImages.size() + " image(s)?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteSelectedImages(selectedImages))
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-
     /**
-     * Deletes the  list of selected images from Firebase Storage.
-     *
-     * Uses deleteMultipleImages from FirebaseManage to perform the deletion asynchronously,
-     * updates the lists, and refreshes the UI.
-     *
-     * @param selectedImages A list of image URLs selected for deletion.
+     * Delete selected images from Firebase Storage using AdminRepository
      */
-    private void deleteImages(List<String> selectedImages) {
-        firebaseManager.deleteMultipleImages(selectedImages, (deletedCount, e) -> {
-            if (e == null) {
+    private void deleteSelectedImages(List<String> selectedImages) {
+        adminRepository.deleteMultipleImages(selectedImages, (deletedCount, error) -> {
+            if (error == null) {
+                // Remove deleted images from lists
                 imageUrls.removeAll(selectedImages);
                 allImagesUrls.removeAll(selectedImages);
+
+                // Clear selection and update UI
                 adapter.getSelectedImages().clear();
                 adapter.notifyDataSetChanged();
-                Toast.makeText(getContext(), "Deleted " + deletedCount + " image(s)", Toast.LENGTH_SHORT).show();
+                binding.deleteIcon.setVisibility(View.GONE);
+
+                Toast.makeText(requireContext(),
+                        deletedCount + " image(s) deleted", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getContext(), "Error deleting images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(),
+                        "Error deleting images: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-            binding.deleteIcon.setVisibility(View.GONE);
         });
     }
 
