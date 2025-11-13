@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views.fragments.organizer;
+package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EventAdapter;
-import com.example.lotterysystemproject.Models.EventAdmin;
+import com.example.lotterysystemproject.models.EventAdmin;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 
 import java.util.ArrayList;

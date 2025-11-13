@@ -17,8 +17,8 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Views.Entrant.EditProfileActivity;
-import com.example.lotterysystemproject.Views.Entrant.ProfileHostActivity;
+import com.example.lotterysystemproject.views.entrant.EditProfileActivity;
+import com.example.lotterysystemproject.views.entrant.ProfileHostActivity;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -2,7 +2,7 @@ package com.example.lotterysystemproject.repositories;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.example.lotterysystemproject.Models.Entrant;
+import com.example.lotterysystemproject.models.Entrant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

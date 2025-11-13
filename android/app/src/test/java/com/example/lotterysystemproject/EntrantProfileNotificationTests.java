@@ -1,5 +1,5 @@
 package com.example.lotterysystemproject;
-import com.example.lotterysystemproject.Models.NotificationItem;
+import com.example.lotterysystemproject.models.NotificationItem;
 import com.example.lotterysystemproject.testfakes.FakeKeyValueStore;
 import com.example.lotterysystemproject.testfakes.TestProfileStore;
 import com.example.lotterysystemproject.testfakes.TestInvitationDecisionRepo;

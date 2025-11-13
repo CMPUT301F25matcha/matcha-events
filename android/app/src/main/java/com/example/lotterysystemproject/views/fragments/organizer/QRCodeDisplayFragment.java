@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views.fragments.organizer;
+package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.lotterysystemproject.Models.EventAdmin;
+import com.example.lotterysystemproject.models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.utils.QRCodeGenerator;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;

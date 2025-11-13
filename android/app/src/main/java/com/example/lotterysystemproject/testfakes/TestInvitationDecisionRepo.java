@@ -1,6 +1,6 @@
 package com.example.lotterysystemproject.testfakes;
 
-import com.example.lotterysystemproject.Models.NotificationItem;
+import com.example.lotterysystemproject.models.NotificationItem;
 
 /** Test-only repo for invite decisions (accept/decline) */
 public class TestInvitationDecisionRepo {

@@ -14,7 +14,7 @@
         android:theme="@style/Theme.LotterySystemProject">
 
         <activity
-            android:name=".Views.Entrant.UserInfoView"
+            android:name=".views.entrant.UserInfoView"
             android:exported="true"
             android:theme="@style/Theme.LotterySystemProject">
             <intent-filter>
@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name=".Views.Entrant.SearchableActivity"
+            android:name=".views.entrant.SearchableActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -34,44 +34,44 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <activity android:name=".Views.Entrant.EntrantMainActivity">
+        <activity android:name=".views.entrant.EntrantMainActivity">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
         </activity>
 
         <activity
-            android:name=".Views.Entrant.DeleteProfileActivity"
+            android:name=".views.entrant.DeleteProfileActivity"
             android:exported="false"
             android:label="Delete Profile" />
 
-        <activity android:name=".Views.Entrant.SearchResultsActivity" />
+        <activity android:name=".views.entrant.SearchResultsActivity" />
 
-        <activity android:name=".Views.Admin.AdminLoginActivity" />
-        <activity android:name=".Views.Entrant.EventDetailsActivity" />
+        <activity android:name=".views.admin.AdminLoginActivity" />
+        <activity android:name=".views.entrant.EventDetailsActivity" />
         <activity
-            android:name=".Views.Entrant.ProfileHostActivity"
+            android:name=".views.entrant.ProfileHostActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.Entrant.EntrantProfileActivity"
+            android:name=".views.entrant.EntrantProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.Entrant.NotificationsActivity"
+            android:name=".views.entrant.NotificationsActivity"
             android:exported="false"
             android:label="Notifications" />
 
 
 
         <activity
-            android:name=".Views.Entrant.RegistrationHistoryActivity"
+            android:name=".views.entrant.RegistrationHistoryActivity"
             android:exported="false"
             android:label="Registration History" />
         <activity
-            android:name=".Views.Entrant.EditProfileActivity"
+            android:name=".views.entrant.EditProfileActivity"
             android:exported="false"
             android:label="Edit Profile" />
         <activity
-            android:name=".Views.Entrant.EventsHistoryActivity"
+            android:name=".views.entrant.EventsHistoryActivity"
             android:exported="false"
             android:label="Events History" />
 
@@ -82,7 +82,7 @@
 
         <!-- Organizer Main Activity -->
         <activity
-            android:name=".Views.Organizer.OrganizerMainActivity"
+            android:name=".views.organizer.OrganizerMainActivity"
             android:exported="false" />
 
     </application>

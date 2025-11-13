@@ -3,8 +3,8 @@ package com.example.lotterysystemproject.adapters;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import com.example.lotterysystemproject.Views.fragments.organizer.SelectedListFragment;
-import com.example.lotterysystemproject.Views.fragments.organizer.WaitingListFragment;
+import com.example.lotterysystemproject.views.fragments.organizer.SelectedListFragment;
+import com.example.lotterysystemproject.views.fragments.organizer.WaitingListFragment;
 
 /**
  * Adapter for managing tabs in the organizer view pager.

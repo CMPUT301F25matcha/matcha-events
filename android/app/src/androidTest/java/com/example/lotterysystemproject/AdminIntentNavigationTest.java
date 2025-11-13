@@ -13,9 +13,9 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import com.example.lotterysystemproject.Controllers.AdminBrowseProfiles;
-import com.example.lotterysystemproject.Controllers.AdminDashboard;
-import com.example.lotterysystemproject.Views.Admin.AdminLoginActivity;
+import com.example.lotterysystemproject.controllers.AdminBrowseProfiles;
+import com.example.lotterysystemproject.controllers.AdminDashboard;
+import com.example.lotterysystemproject.views.admin.AdminLoginActivity;
 
 import org.junit.After;
 import org.junit.Before;

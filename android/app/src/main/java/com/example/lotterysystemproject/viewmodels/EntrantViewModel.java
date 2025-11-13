@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
-import com.example.lotterysystemproject.Models.Entrant;
+import com.example.lotterysystemproject.models.Entrant;
 import com.example.lotterysystemproject.repositories.EntrantRepository;
 import java.util.ArrayList;
 import java.util.List;

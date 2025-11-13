@@ -20,7 +20,7 @@ import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Views.Entrant.NotificationsActivity;
+import com.example.lotterysystemproject.views.entrant.NotificationsActivity;
 
 import org.hamcrest.Matcher;
 import org.junit.Test;

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/adminDashboardFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminDashboard"
+        android:name="com.example.lotterysystemproject.controllers.AdminDashboard"
         android:label="AdminDashboard"
         tools:layout="@layout/admin_dashboard">
 
@@ -27,20 +27,20 @@
 
     <fragment
         android:id="@+id/adminBrowseProfilesFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseProfiles"
+        android:name="com.example.lotterysystemproject.controllers.AdminBrowseProfiles"
         android:label="AdminBrowseProfiles"
         tools:layout="@layout/admin_browse_profiles" />
 
     <fragment
         android:id="@+id/adminBrowseEventsFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseEvents"
+        android:name="com.example.lotterysystemproject.controllers.AdminBrowseEvents"
         android:label="AdminBrowseEvents"
         tools:layout="@layout/admin_browse_events" />
 
 
     <fragment
         android:id="@+id/adminBrowseImagesFragment"
-        android:name="com.example.lotterysystemproject.Controllers.AdminBrowseImages"
+        android:name="com.example.lotterysystemproject.controllers.AdminBrowseImages"
         android:label="AdminBrowseImages"
         tools:layout="@layout/admin_browse_images" />
 

@@ -3,8 +3,8 @@ package com.example.lotterysystemproject;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.example.lotterysystemproject.Controllers.UserInfo;
-import com.example.lotterysystemproject.Models.User;
+import com.example.lotterysystemproject.controllers.UserInfo;
+import com.example.lotterysystemproject.models.User;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views.fragments.organizer;
+package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.lotterysystemproject.Models.EventAdmin;
+import com.example.lotterysystemproject.models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.TabsPagerAdapter;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;

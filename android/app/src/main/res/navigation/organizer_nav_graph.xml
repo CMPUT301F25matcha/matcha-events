@@ -8,7 +8,7 @@
     <!-- Dashboard -->
     <fragment
         android:id="@+id/OrganizerDashboardFragment"
-        android:name="com.example.lotterysystemproject.Views.fragments.organizer.OrganizerDashboardFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.OrganizerDashboardFragment"
         android:label="My Events"
         tools:layout="@layout/fragment_organizer_dashboard">
 
@@ -24,14 +24,14 @@
     <!-- Create Event -->
     <fragment
         android:id="@+id/createEventFragment"
-        android:name="com.example.lotterysystemproject.Views.fragments.organizer.CreateEventFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.CreateEventFragment"
         android:label="Create Event"
         tools:layout="@layout/fragment_create_event" />
 
     <!-- Event Management -->
     <fragment
         android:id="@+id/EventManagementFragment"
-        android:name="com.example.lotterysystemproject.Views.fragments.organizer.EventManagementFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.EventManagementFragment"
         android:label="Event Management"
         tools:layout="@layout/fragment_event_management">
 
@@ -43,7 +43,7 @@
     <!-- QR Code Display -->
     <fragment
         android:id="@+id/QRCodeDisplayFragment"
-        android:name="com.example.lotterysystemproject.Views.fragments.organizer.QRCodeDisplayFragment"
+        android:name="com.example.lotterysystemproject.views.fragments.organizer.QRCodeDisplayFragment"
         android:label="QR Codes"
         tools:layout="@layout/fragment_qr_code_display" />
 

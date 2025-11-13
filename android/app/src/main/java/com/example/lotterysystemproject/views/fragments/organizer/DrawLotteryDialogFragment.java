@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views.fragments.organizer;
+package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.lotterysystemproject.R;
-import com.example.lotterysystemproject.Models.Entrant;
+import com.example.lotterysystemproject.models.Entrant;
 import com.example.lotterysystemproject.repositories.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import java.util.List;

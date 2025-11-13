@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context=".Views.Admin.AdminBrowseProfilesView"
+    tools:context=".views.admin.AdminBrowseProfilesView"
     android:padding="16dp" >
 
     <!-- Header -->

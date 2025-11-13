@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.Views.fragments.organizer;
+package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.lotterysystemproject.Models.EventAdmin;
+import com.example.lotterysystemproject.models.EventAdmin;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.text.SimpleDateFormat;
