@@ -1,275 +1,279 @@
 package com.example.lotterysystemproject.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Model class representing an Event for the Entrant's in the system.
- * This class holds all the information related to an event, such as its name, date, location,
- * and participants. It is used to store and retrieve event data from Firestore.
+ * Model class representing an Event in the lottery system.
+ * Supports event creation, registration periods, waiting lists, and participant management.
+ * Implements requirements from user stories for Entrants, Organizers, and Admins.
  */
 public class Event {
-    /** The unique identifier of the event. */
     private String id;
-    /** The name of the event. */
     private String name;
-    /** The name of the host of the event. */
-    private String hostName;
-    /** The unique identifier of the event's host. */
-    private String hostId;
-    /** The date and time of the event. */
-    private Date date;
-    /** The location where the event will take place. */
-    private String location;
-    /** A detailed description of the event. */
     private String description;
-    /** The URL for the event's promotional image. */
-    private String imageUrl;
-    /** The category of the event (e.g., "Music", "Sports"). */
+    private String hostName;
+    private String hostId;
+    private String location;
     private String category;
-    /** The maximum number of participants allowed. */
+
+    // Event Timing
+    private Date eventDate;
+    private String eventTime;
+
+    // Registration Period
+    private Date registrationStart;
+    private Date registrationEnd;
+
+    // Capacity and Participants
     private int maxCapacity;
-    /** The current number of enrolled participants. */
-    private int currentCapacity;
-    /** A list of user IDs on the waiting list for the event. */
-    private List<String> waitingList; // List of user IDs on waiting list
-    /** A list of user IDs who are registered participants for the event. */
-    private List<String> participants; // List of user IDs who are participants
-    /** The status of the event, true if active, false otherwise. */
+    private int currentEnrolled; // Number of participants who accepted
+    private List<String> participants; // Entrants who accepted invitations
+    private List<String> waitingList; // Entrants interested in the event
+    private List<String> selectedEntrants; // Entrants chosen but awaiting response
+    private List<String> declinedEntrants; // Entrants who declined invitations
+    private int maxWaitingListSize; // Optional limit on waiting list size
+
+    // Event Details
+    private String posterImageUrl;
+
+    // QR Codes
+    private String promotionalQrCode; // Scanned to view event details and join waiting list
+    private String checkInQrCode; // Used for check-in verification
+
+    // Geolocation
+    private boolean geolocationRequired;
+
+    // Event Status
+    private String status; // "open" (accepting registrations), "closed", "completed", "cancelled"
     private boolean isActive;
-    /** The timestamp when the event was created. */
+
+    // Metadata
     private Date createdAt;
+    private Date updatedAt;
 
     /**
-     * Constructs a new Event object.
-     *
-     * @param id The unique identifier for the event.
-     * @param name The name of the event.
-     * @param hostName The name of the event's host.
-     * @param hostId The unique identifier of the event's host.
-     * @param date The date and time of the event.
-     * @param location The location of the event.
+     * Empty constructor for Firebase deserialization.
      */
-    public Event(String id, String name, String hostName, String hostId, Date date, String location) {
+    public Event() {
+        this.participants = new ArrayList<>();
+        this.waitingList = new ArrayList<>();
+        this.selectedEntrants = new ArrayList<>();
+        this.declinedEntrants = new ArrayList<>();
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+        this.isActive = true;
+        this.status = "open";
+        this.currentEnrolled = 0;
+        this.geolocationRequired = false;
+    }
+
+    /**
+     * Constructs a new Event object with basic information.
+     */
+    public Event(String id, String name, String description, String hostName, String hostId,
+                 Date eventDate, String eventTime, String location, int maxCapacity) {
+        this();
         this.id = id;
         this.name = name;
+        this.description = description;
         this.hostName = hostName;
         this.hostId = hostId;
-        this.date = date;
+        this.eventDate = eventDate;
+        this.eventTime = eventTime;
         this.location = location;
-        this.isActive = true;
-        this.waitingList = new java.util.ArrayList<>();
-        this.participants = new java.util.ArrayList<>();
-        this.createdAt = new Date();
+        this.maxCapacity = maxCapacity;
     }
 
-    // Getters
+    // ============ GETTERS & SETTERS ============
 
-    /**
-     * Gets the unique identifier of the event.
-     * @return The event ID.
-     */
     public String getId() { return id; }
-
-    /**
-     * Gets the name of the event.
-     * @return The event name.
-     */
-    public String getName() { return name; }
-
-    /**
-     * Gets the name of the event's host.
-     * @return The host's name.
-     */
-    public String getHostName() { return hostName; }
-
-    /**
-     * Gets the unique identifier of the event's host.
-     * @return The host's ID.
-     */
-    public String getHostId() { return hostId; }
-
-    /**
-     * Gets the date of the event.
-     * @return The event date.
-     */
-    public Date getDate() { return date; }
-
-    /**
-     * Gets the location of the event.
-     * @return The event location.
-     */
-    public String getLocation() { return location; }
-
-    /**
-     * Gets the description of the event.
-     * @return The event description.
-     */
-    public String getDescription() { return description; }
-
-    /**
-     * Gets the image URL for the event.
-     * @return The image URL.
-     */
-    public String getImageUrl() { return imageUrl; }
-
-    /**
-     * Gets the category of the event.
-     * @return The event category.
-     */
-    public String getCategory() { return category; }
-
-    /**
-     * Gets the maximum capacity of the event.
-     * @return The maximum capacity.
-     */
-    public int getMaxCapacity() { return maxCapacity; }
-
-    /**
-     * Gets the current number of participants.
-     * @return The current capacity.
-     */
-    public int getCurrentCapacity() { return currentCapacity; }
-
-    /**
-     * Gets the list of users on the waiting list.
-     * @return A list of user IDs.
-     */
-    public List<String> getWaitingList() { return waitingList; }
-
-    /**
-     * Gets the list of participants.
-     * @return A list of user IDs.
-     */
-    public List<String> getParticipants() { return participants; }
-
-    /**
-     * Checks if the event is active.
-     * @return true if the event is active, false otherwise.
-     */
-    public boolean isActive() { return isActive; }
-
-    /**
-     * Gets the creation date of the event.
-     * @return The creation date.
-     */
-    public Date getCreatedAt() { return createdAt; }
-
-    // Setters
-
-    /**
-     * Sets the unique identifier of the event.
-     * @param id The event ID.
-     */
     public void setId(String id) { this.id = id; }
 
-    /**
-     * Sets the name of the event.
-     * @param name The event name.
-     */
+    public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    /**
-     * Sets the name of the event's host.
-     * @param hostName The host's name.
-     */
-    public void setHostName(String hostName) { this.hostName = hostName; }
-
-    /**
-     * Sets the unique identifier of the event's host.
-     * @param hostId The host's ID.
-     */
-    public void setHostId(String hostId) { this.hostId = hostId; }
-
-    /**
-     * Sets the date of the event.
-     * @param date The event date.
-     */
-    public void setDate(Date date) { this.date = date; }
-
-    /**
-     * Sets the location of the event.
-     * @param location The event location.
-     */
-    public void setLocation(String location) { this.location = location; }
-
-    /**
-     * Sets the description of the event.
-     * @param description The event description.
-     */
+    public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    /**
-     * Sets the image URL for the event.
-     * @param imageUrl The image URL.
-     */
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getHostName() { return hostName; }
+    public void setHostName(String hostName) { this.hostName = hostName; }
 
-    /**
-     * Sets the category of the event.
-     * @param category The event category.
-     */
+    public String getHostId() { return hostId; }
+    public void setHostId(String hostId) { this.hostId = hostId; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    /**
-     * Sets the maximum capacity of the event.
-     * @param maxCapacity The maximum capacity.
-     */
+    public Date getEventDate() { return eventDate; }
+    public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
+
+    public String getEventTime() { return eventTime; }
+    public void setEventTime(String eventTime) { this.eventTime = eventTime; }
+    public Date getRegistrationStart() { return registrationStart; }
+    public void setRegistrationStart(Date registrationStart) { this.registrationStart = registrationStart; }
+
+    public Date getRegistrationEnd() { return registrationEnd; }
+    public void setRegistrationEnd(Date registrationEnd) { this.registrationEnd = registrationEnd; }
+
+    public int getMaxCapacity() { return maxCapacity; }
     public void setMaxCapacity(int maxCapacity) { this.maxCapacity = maxCapacity; }
 
-    /**
-     * Sets the current number of participants.
-     * @param currentCapacity The current capacity.
-     */
-    public void setCurrentCapacity(int currentCapacity) { this.currentCapacity = currentCapacity; }
+    public int getCurrentEnrolled() { return currentEnrolled; }
+    public void setCurrentEnrolled(int currentEnrolled) { this.currentEnrolled = currentEnrolled; }
 
-    /**
-     * Sets the list of users on the waiting list.
-     * @param waitingList A list of user IDs.
-     */
-    public void setWaitingList(List<String> waitingList) { this.waitingList = waitingList; }
-
-    /**
-     * Sets the list of participants.
-     * @param participants A list of user IDs.
-     */
+    public List<String> getParticipants() { return participants; }
     public void setParticipants(List<String> participants) { this.participants = participants; }
 
-    /**
-     * Sets the active status of the event.
-     * @param active true to set the event as active, false otherwise.
-     */
+    public List<String> getWaitingList() { return waitingList; }
+    public void setWaitingList(List<String> waitingList) { this.waitingList = waitingList; }
+
+    public List<String> getSelectedEntrants() { return selectedEntrants; }
+    public void setSelectedEntrants(List<String> selectedEntrants) { this.selectedEntrants = selectedEntrants; }
+
+    public List<String> getDeclinedEntrants() { return declinedEntrants; }
+    public void setDeclinedEntrants(List<String> declinedEntrants) { this.declinedEntrants = declinedEntrants; }
+
+    public int getMaxWaitingListSize() { return maxWaitingListSize; }
+    public void setMaxWaitingListSize(int maxWaitingListSize) { this.maxWaitingListSize = maxWaitingListSize; }
+
+    public String getPosterImageUrl() { return posterImageUrl; }
+    public void setPosterImageUrl(String posterImageUrl) { this.posterImageUrl = posterImageUrl; }
+
+    public String getPromotionalQrCode() { return promotionalQrCode; }
+    public void setPromotionalQrCode(String promotionalQrCode) { this.promotionalQrCode = promotionalQrCode; }
+
+    public String getCheckInQrCode() { return checkInQrCode; }
+    public void setCheckInQrCode(String checkInQrCode) { this.checkInQrCode = checkInQrCode; }
+
+    public boolean isGeolocationRequired() { return geolocationRequired; }
+    public void setGeolocationRequired(boolean geolocationRequired) { this.geolocationRequired = geolocationRequired; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 
-    /**
-     * Sets the creation date of the event.
-     * @param createdAt The creation date.
-     */
+    public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    // ============ HELPER METHODS ============
+
     /**
-     * Checks if the event has available spots (i.e., not at full capacity).
-     * @return true if there are available spots, false otherwise.
+     * Checks if the event is currently accepting registrations.
+     * @return true if current time is within registration period
      */
-    public boolean hasAvailableSpots() {
-        return currentCapacity < maxCapacity;
+    public boolean isRegistrationOpen() {
+        Date now = new Date();
+        return now.after(registrationStart) && now.before(registrationEnd) && "open".equals(status);
     }
 
     /**
-     * Checks if a specific user is on the event's waiting list.
-     * @param userId The unique identifier of the user to check.
-     * @return true if the user is on the waiting list, false otherwise.
+     * Checks if the event has available spots for enrollment.
+     * @return true if current enrolled count is less than max capacity
+     */
+    public boolean hasAvailableSpots() {
+        return currentEnrolled < maxCapacity;
+    }
+
+    /**
+     * Checks if the waiting list has reached its maximum size (if set).
+     * @return true if max waiting list size is set and reached
+     */
+    public boolean isWaitingListFull() {
+        return maxWaitingListSize > 0 && waitingList.size() >= maxWaitingListSize;
+    }
+
+    /**
+     * Checks if a specific user is on the waiting list.
+     * @param userId The user's unique identifier
+     * @return true if user is on waiting list
      */
     public boolean isUserOnWaitingList(String userId) {
         return waitingList != null && waitingList.contains(userId);
     }
 
     /**
-     * Checks if a specific user is a participant in the event.
-     * @param userId The unique identifier of the user to check.
-     * @return true if the user is a participant, false otherwise.
+     * Checks if a specific user is a confirmed participant.
+     * @param userId The user's unique identifier
+     * @return true if user is a participant
      */
     public boolean isUserParticipant(String userId) {
         return participants != null && participants.contains(userId);
+    }
+
+    /**
+     * Checks if a specific user has been selected in the lottery draw.
+     * @param userId The user's unique identifier
+     * @return true if user is in selected entrants list
+     */
+    public boolean isUserSelected(String userId) {
+        return selectedEntrants != null && selectedEntrants.contains(userId);
+    }
+
+    /**
+     * Adds a user to the waiting list.
+     * @param userId The user's unique identifier
+     * @return true if successfully added, false if already on list
+     */
+    public boolean addToWaitingList(String userId) {
+        if (waitingList == null) waitingList = new ArrayList<>();
+        if (waitingList.contains(userId)) return false;
+        if (isWaitingListFull()) return false;
+        return waitingList.add(userId);
+    }
+
+    /**
+     * Removes a user from the waiting list.
+     * @param userId The user's unique identifier
+     * @return true if successfully removed
+     */
+    public boolean removeFromWaitingList(String userId) {
+        if (waitingList == null) return false;
+        return waitingList.remove(userId);
+    }
+
+    /**
+     * Adds a user to participants (accepted an invitation).
+     * @param userId The user's unique identifier
+     * @return true if successfully added
+     */
+    public boolean addParticipant(String userId) {
+        if (participants == null) participants = new ArrayList<>();
+        if (participants.contains(userId)) return false;
+        boolean added = participants.add(userId);
+        if (added) currentEnrolled++;
+        return added;
+    }
+
+    /**
+     * Removes a user from participants (e.g., if they cancel).
+     * @param userId The user's unique identifier
+     * @return true if successfully removed
+     */
+    public boolean removeParticipant(String userId) {
+        if (participants == null) return false;
+        boolean removed = participants.remove(userId);
+        if (removed) currentEnrolled--;
+        return removed;
+    }
+
+    /**
+     * Marks a user as declined for future reference in the history.
+     * @param userId The user's unique identifier
+     */
+    public void markAsDeclined(String userId) {
+        if (declinedEntrants == null) declinedEntrants = new ArrayList<>();
+        if (!declinedEntrants.contains(userId)) {
+            declinedEntrants.add(userId);
+        }
     }
 }

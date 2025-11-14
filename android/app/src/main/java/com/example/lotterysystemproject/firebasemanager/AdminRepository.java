@@ -2,7 +2,7 @@ package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.annotation.Nullable;
 
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -48,24 +48,24 @@ public interface AdminRepository {
 
     /**
      * Adds a new event to the repository.
-     * @param eventAdmin The EventAdmin object to add.
+     * @param eventAdmin The Event object to add.
      * @param callback The callback to handle success or failure.
      */
-    void addEvent(EventAdmin eventAdmin, AdminCallback callback);
+    void addEvent(Event eventAdmin, AdminCallback callback);
 
     /**
      * Retrieves all events (including inactive ones) for admin browsing.
-     * @param onSuccess A consumer for the list of EventAdmin objects.
+     * @param onSuccess A consumer for the list of Event objects.
      * @param onError A consumer for any exception that occurs.
      */
-    void getAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError);
+    void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
 
     /**
      * Listens for real-time updates to all events for admin browsing.
-     * @param onSuccess A consumer for the list of EventAdmin objects when updated.
+     * @param onSuccess A consumer for the list of Event objects when updated.
      * @param onError A consumer for any exception that occurs.
      */
-    void listenToAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError);
+    void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
 
     /**
      * Deletes an event from the repository.

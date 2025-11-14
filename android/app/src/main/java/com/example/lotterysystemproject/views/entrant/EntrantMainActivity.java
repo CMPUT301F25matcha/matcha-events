@@ -58,7 +58,7 @@ public class EntrantMainActivity extends AppCompatActivity {
         });
 
         // Setup events list with callback to set up listeners
-        eventListHelper = new EventListHelper(this, binding.eventsListContainer, this::setupEventCardListeners);
+        eventListHelper = new EventListHelper(this, binding.eventsListContainer, this, this::setupEventCardListeners);
         eventListHelper.loadEvents();
 
         NavWiring.wire(

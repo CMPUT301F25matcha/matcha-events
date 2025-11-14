@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EntrantAdapter;
 import com.example.lotterysystemproject.models.Entrant;
-import com.example.lotterysystemproject.repositories.EntrantRepository;
+import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 
 /**

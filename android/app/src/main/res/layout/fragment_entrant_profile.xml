@@ -77,9 +77,16 @@
                 android:id="@+id/btn_edit_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:backgroundTint="@color/black"
                 android:text="Edit Profile" />
+
+            <Button
+                android:id="@+id/btn_organizer_signup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="@color/black"
+                android:text="Switch to Organizer" />
 
             <Button
                 android:id="@+id/btn_delete_profile"

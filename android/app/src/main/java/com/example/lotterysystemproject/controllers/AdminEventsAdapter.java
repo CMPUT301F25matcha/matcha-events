@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.annotation.NonNull;
 
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 
 import com.example.lotterysystemproject.R;
 
@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * AdminEventsAdapter is a RecyclerView adapter responsible for displaying
- * a list of EventAdmin objects in the admin browse events interface.
+ * a list of Event objects in the admin browse events interface.
  *
  * Each event is shown as a card containing its name, image, and a button to
  * view more details through a dialog.
@@ -35,19 +35,19 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
     /** The application or activity context used for layout inflation and dialog display. */
     private final Context context;
 
-    /** The list of EventAdmin objects displayed in the RecyclerView. */
-    private List<EventAdmin> eventAdmins;
+    /** The list of Event objects displayed in the RecyclerView. */
+    private List<Event> events;
 
 
     /**
      * Constructs a new AdminEventsAdapter
      *
      * @param context The context used to access resources and the fragment manager.
-     * @param eventAdmins  The list of events to display in the RecyclerView.
+     * @param events  The list of events to display in the RecyclerView.
      */
-    public AdminEventsAdapter(Context context, List<EventAdmin> eventAdmins) {
+    public AdminEventsAdapter(Context context, List<Event> events) {
         this.context = context;
-        this.eventAdmins = eventAdmins;
+        this.events = events;
     }
 
     /**
@@ -100,7 +100,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
     }
 
     /**
-     * Binds data from a specific EventAdmin object to a EventViewHolder.
+     * Binds data from a specific Event object to a EventViewHolder.
      *
      * Sets the event name and handles the click event for the "View Event" button,
      * which opens an AdminEventsDialog with detailed information about event.
@@ -111,16 +111,16 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
      */
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder viewHolder, final int position) {
-        EventAdmin eventAdmin = eventAdmins.get(position);
+        Event event = events.get(position);
 
-        viewHolder.eventName.setText(eventAdmin.getName());
+        viewHolder.eventName.setText(event.getName());
         //viewHolder.organizerName.setText(user.);
 
 
         // Handle "View Event" button click
         viewHolder.viewEventButton.setOnClickListener(v -> {
             // Show Event Dialog
-            AdminEventsDialog dialog = new AdminEventsDialog(eventAdmin);
+            AdminEventsDialog dialog = new AdminEventsDialog(event);
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "EventsDialog");
 
         });
@@ -130,11 +130,11 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
     /**
      * Returns the total number of events currently in the adapter's dataset.
      *
-     * @return The number of EventAdmin items displayed in the RecyclerView.
+     * @return The number of Event items displayed in the RecyclerView.
      */
     @Override
     public int getItemCount() {
-        return eventAdmins != null ? eventAdmins.size() : 0;
+        return events != null ? events.size() : 0;
     }
 
 

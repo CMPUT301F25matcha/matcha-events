@@ -64,6 +64,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.role = "entrant";
         this.signedUp = false;
     }
 

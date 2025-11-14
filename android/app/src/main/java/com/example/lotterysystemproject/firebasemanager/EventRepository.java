@@ -1,6 +1,7 @@
 package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.models.Registration;
@@ -104,10 +105,15 @@ public interface EventRepository {
 
     /**
      * Retrieves all active events.
-     * @param onSuccess A consumer for the list of Event objects.
+     */
+    LiveData<List<Event>> getAllEvents();
+
+    /**
+     * Adds an event to the repository.
+     * @param event The Event object to add.
      * @param onError A consumer for any exception that occurs.
      */
-    void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
+    void addEvent(Event event, Consumer<Exception> onError);
 
     /**
      * Adds a user to an event's waiting list.
@@ -147,4 +153,11 @@ public interface EventRepository {
      * @param callback The callback to handle success or failure.
      */
     void upsertRegistrationOnJoin(String userId, String eventId, String eventTitleSnapshot, RepositoryCallback callback);
+
+    /**
+     * Updates a user's role to organizer.
+     * @param userId The user's ID
+     * @param callback Callback to signal success or failure
+     */
+    void updateUserRoleToOrganizer(String userId, RepositoryCallback callback);
 }

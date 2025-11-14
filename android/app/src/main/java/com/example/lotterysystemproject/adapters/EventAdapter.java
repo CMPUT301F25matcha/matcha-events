@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Locale;
  */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
-    private List<EventAdmin> events;
+    private List<Event> events;
     private OnEventClickListener listener;
 
     /**
@@ -31,7 +31,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
          *
          * @param event The clicked event.
          */
-        void onEventClick(EventAdmin event);
+        void onEventClick(Event event);
     }
 
     /**
@@ -40,7 +40,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
      * @param events   Initial list of events to display.
      * @param listener Listener for event click actions.
      */
-    public EventAdapter(List<EventAdmin> events, OnEventClickListener listener) {
+    public EventAdapter(List<Event> events, OnEventClickListener listener) {
         this.events = events != null ? events : new ArrayList<>();
         this.listener = listener;
     }
@@ -55,7 +55,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        EventAdmin event = events.get(position);
+        Event event = events.get(position);
         holder.bind(event, listener);
     }
 
@@ -69,7 +69,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
      *
      * @param newEvents Updated event list.
      */
-    public void updateEvents(List<EventAdmin> newEvents) {
+    public void updateEvents(List<Event> newEvents) {
         this.events = newEvents != null ? newEvents : new ArrayList<>();
         notifyDataSetChanged();
     }
@@ -94,12 +94,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
          * @param event    The event being displayed.
          * @param listener Click listener for event selection.
          */
-        void bind(EventAdmin event, OnEventClickListener listener) {
+        void bind(Event event, OnEventClickListener listener) {
             eventName.setText(getEmoji(event.getName()) + " " + event.getName());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);
             eventDateTime.setText(dateFormat.format(event.getEventDate()));
-            enrollmentCount.setText("👥 " + event.getEnrolled() + "/" + event.getCapacity() + " enrolled");
+            enrollmentCount.setText("👥 " + event.getCurrentEnrolled() + "/" + event.getMaxCapacity() + " enrolled");
 
             if (event.getStatus().equals("open")) {
                 eventStatus.setText("⏳ Registration open");

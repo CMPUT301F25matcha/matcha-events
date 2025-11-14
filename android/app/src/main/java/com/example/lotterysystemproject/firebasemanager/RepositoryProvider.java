@@ -11,11 +11,10 @@ public class RepositoryProvider {
 
     private static EventRepository eventRepositoryInstance;
     private static AdminRepository adminRepositoryInstance;
+    private static EntrantRepository entrantRepositoryInstance;
 
     /**
      * Returns the singleton instance of the EventRepository.
-     * The implementation returned depends on the USE_FIREBASE flag.
-     *
      * @return The EventRepository instance (either Mock or Firebase implementation).
      */
     public static EventRepository getEventRepository() {
@@ -35,8 +34,6 @@ public class RepositoryProvider {
 
     /**
      * Returns the singleton instance of the AdminRepository.
-     * The implementation returned depends on the USE_FIREBASE flag.
-     *
      * @return The AdminRepository instance (either Mock or Firebase implementation).
      */
     public static AdminRepository getAdminRepository() {
@@ -52,6 +49,25 @@ public class RepositoryProvider {
             }
         }
         return adminRepositoryInstance;
+    }
+
+    /**
+     * Returns the singleton instance of the EntrantRepository.
+     * @return The EntrantRepository instance (either Mock or Firebase implementation).
+     */
+    public static EntrantRepository getEntrantRepository() {
+        if (entrantRepositoryInstance == null) {
+            synchronized (RepositoryProvider.class) {
+                if (entrantRepositoryInstance == null) {
+                    if (USE_FIREBASE) {
+                        entrantRepositoryInstance = new FirebaseEntrantRepository();
+                    } else {
+                        entrantRepositoryInstance = new MockEntrantRepository();
+                    }
+                }
+            }
+        }
+        return entrantRepositoryInstance;
     }
 
     /**
@@ -71,12 +87,12 @@ public class RepositoryProvider {
         synchronized (RepositoryProvider.class) {
             eventRepositoryInstance = null;
             adminRepositoryInstance = null;
+            entrantRepositoryInstance = null;
         }
     }
 
     /**
      * Checks if the current implementation is using Firebase.
-     *
      * @return true if using Firebase, false if using mock data.
      */
     public static boolean isUsingFirebase() {

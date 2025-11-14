@@ -178,7 +178,6 @@
             app:iconPadding="-50dp"
             app:iconTint="#524545" />
 
-        <!-- NEW: Organizer Button -->
         <Button
             android:id="@+id/button_organizer"
             android:layout_width="match_parent"

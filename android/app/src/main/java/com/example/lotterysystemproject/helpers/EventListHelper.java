@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
@@ -29,18 +31,21 @@ public class EventListHelper {
     private final LinearLayout container;
     private final EventRepository eventFirebase;
     private final SimpleDateFormat dateFormat;
+    private final LifecycleOwner lifecycleOwner;
     private Runnable onEventsLoaded;
 
     /**
      * Constructs a new EventListHelper.
      *
-     * @param context        The application context for inflating views and accessing resources.
-     * @param container      The LinearLayout container where event cards will be added.
-     * @param onEventsLoaded A callback to be executed after events have been loaded and rendered.
+     * @param context          The application context for inflating views and accessing resources.
+     * @param container        The LinearLayout container where event cards will be added.
+     * @param lifecycleOwner   The LifecycleOwner for observing LiveData (pass Fragment/Activity).
+     * @param onEventsLoaded   A callback to be executed after events have been loaded and rendered.
      */
-    public EventListHelper(Context context, LinearLayout container, Runnable onEventsLoaded) {
+    public EventListHelper(Context context, LinearLayout container, LifecycleOwner lifecycleOwner, Runnable onEventsLoaded) {
         this.context = context;
         this.container = container;
+        this.lifecycleOwner = lifecycleOwner;
         this.onEventsLoaded = onEventsLoaded;
         this.eventFirebase = RepositoryProvider.getInstance();
         this.dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
@@ -50,30 +55,29 @@ public class EventListHelper {
      * Loads all events from Firestore and populates the container.
      */
     public void loadEvents() {
-        eventFirebase.getAllEvents(
-                events -> {
-                    container.removeAllViews();
+        eventFirebase.getAllEvents().observe(lifecycleOwner, events -> {
+            container.removeAllViews();
 
-                    if (events == null || events.isEmpty()) {
-                        showEmptyState();
-                        if (onEventsLoaded != null) onEventsLoaded.run();
-                        return;
-                    }
+            if (events == null) {
+                showErrorState("Failed to load events");
+                if (onEventsLoaded != null) onEventsLoaded.run();
+                return;
+            }
 
-                    for (Event event : events) {
-                        View eventCardView = createEventCard(event);
-                        eventCardView.setTag(event.getId());  // SET TAG HERE
-                        container.addView(eventCardView);
-                    }
+            if (events.isEmpty()) {
+                showEmptyState();
+                if (onEventsLoaded != null) onEventsLoaded.run();
+                return;
+            }
 
-                    if (onEventsLoaded != null) onEventsLoaded.run();
-                },
-                error -> {
-                    container.removeAllViews();
-                    showErrorState(error.getMessage());
-                    if (onEventsLoaded != null) onEventsLoaded.run();
-                }
-        );
+            for (Event event : events) {
+                View eventCardView = createEventCard(event);
+                eventCardView.setTag(event.getId());
+                container.addView(eventCardView);
+            }
+
+            if (onEventsLoaded != null) onEventsLoaded.run();
+        });
     }
 
     /**
@@ -106,8 +110,8 @@ public class EventListHelper {
         eventHostName.setText(event.getHostName() != null ? "Hosted by " + event.getHostName() : "Host Name");
 
         // Format date
-        if (event.getDate() != null) {
-            String dateStr = dateFormat.format(event.getDate());
+        if (event.getEventDate() != null) {
+            String dateStr = dateFormat.format(event.getEventDate());
             if (event.getLocation() != null && !event.getLocation().isEmpty()) {
                 eventDate.setText(dateStr + " • " + event.getLocation());
             } else {
@@ -120,7 +124,7 @@ public class EventListHelper {
         // Load event image if available
         // Note: For production, consider using an image loading library like Glide or Picasso
         // For now, we'll use a placeholder. You can implement image loading later.
-        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+        if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
             // TODO: Implement image loading from URL
             // For now, the image view will show the placeholder background
         }
@@ -158,7 +162,7 @@ public class EventListHelper {
         button.setEnabled(false);
         button.setText("Joining...");
 
-        eventFirebase.joinWaitingList(event.getId(), userId, new com.example.lotterysystemproject.firebasemanager.EventRepository.RepositoryCallback() {
+        eventFirebase.joinWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
                 button.setText("On Waiting List");

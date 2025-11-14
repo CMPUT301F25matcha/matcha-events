@@ -15,18 +15,18 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.lotterysystemproject.firebasemanager.AdminRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
 public class AdminEventsDialog extends DialogFragment {
-    private final EventAdmin eventAdmin;
+    private final Event event;
     private AdminRepository adminRepository;
 
-    public AdminEventsDialog(EventAdmin eventAdmin) {
-        this.eventAdmin = eventAdmin;
+    public AdminEventsDialog(Event event) {
+        this.event = event;
     }
 
     @Override
@@ -51,13 +51,13 @@ public class AdminEventsDialog extends DialogFragment {
         Button closeEventButton = view.findViewById(R.id.dialog_event_close_button);
 
         // Set event details
-        eventNameText.setText(eventAdmin.getName());
+        eventNameText.setText(event.getName());
         String formattedDate = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
-                .format(eventAdmin.getEventDate());
+                .format(event.getEventDate());
         eventDateText.setText(formattedDate);
-        eventTimeText.setText(eventAdmin.getTime());
-        eventLocationText.setText(eventAdmin.getLocation());
-        eventDescriptionText.setText(eventAdmin.getDescription());
+        eventTimeText.setText(event.getEventTime());
+        eventLocationText.setText(event.getLocation());
+        eventDescriptionText.setText(event.getDescription());
 
         // Setup button listeners
         setupRemoveButton(removeEventButton);
@@ -71,7 +71,7 @@ public class AdminEventsDialog extends DialogFragment {
 
     private void setupRemoveButton(Button removeEventButton) {
         removeEventButton.setOnClickListener(v -> {
-            adminRepository.deleteEvent(eventAdmin.getId(),
+            adminRepository.deleteEvent(event.getId(),
                     new AdminRepository.AdminCallback() {
                         @Override
                         public void onSuccess() {

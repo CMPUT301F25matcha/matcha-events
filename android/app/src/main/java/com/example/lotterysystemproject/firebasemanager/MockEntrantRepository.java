@@ -1,43 +1,41 @@
-package com.example.lotterysystemproject.repositories;
+package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.lotterysystemproject.models.Entrant;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Repository class responsible for managing entrant data.
- * Simulates backend operations such as loading entrants,
- * drawing lotteries, canceling entrants, and drawing replacements.
+ * Mock implementation of EntrantRepository for testing and development.
+ * Simulates backend operations with in-memory data.
  */
-public class EntrantRepository {
+public class MockEntrantRepository implements EntrantRepository {
     private MutableLiveData<List<Entrant>> entrantsLiveData;
 
     /**
-     * Initializes the repository and prepares LiveData storage.
+     * Initializes the repository with LiveData storage.
      */
-    public EntrantRepository() {
+    public MockEntrantRepository() {
         entrantsLiveData = new MutableLiveData<>();
     }
 
     /**
-     * Returns a LiveData list of entrants for the given event ID.
+     * Returns LiveData list of entrants for the given event ID.
      * Loads mock data for testing purposes.
-     *
      * @param eventId ID of the event to fetch entrants for.
-     * @return LiveData containing a list of entrants.
+     * @return LiveData containing list of entrants.
      */
+    @Override
     public LiveData<List<Entrant>> getEntrants(String eventId) {
         loadMockData(eventId);
         return entrantsLiveData;
     }
 
     /**
-     * Loads mock entrant data for testing or demo purposes.
-     * Currently generates 130 mock entrants for event ID "1".
-     *
+     * Loads mock entrant data. Generates 130 mock entrants for event ID "1".
      * @param eventId ID of the event being loaded.
      */
     private void loadMockData(String eventId) {
@@ -64,14 +62,12 @@ public class EntrantRepository {
     }
 
     /**
-     * Performs a random lottery draw to select entrants.
-     * A quarter of selected entrants are automatically enrolled,
-     * and the rest are invited.
-     *
-     * @param eventId  ID of the event for which to draw entrants.
-     * @param count    Number of entrants to select.
+     * Performs random lottery draw. A quarter of selected entrants are automatically enrolled.
+     * @param eventId ID of the event for lottery draw.
+     * @param count Number of entrants to select.
      * @param listener Callback to report completion or errors.
      */
+    @Override
     public void drawLottery(String eventId, int count, OnLotteryCompleteListener listener) {
         List<Entrant> allEntrants = entrantsLiveData.getValue();
         if (allEntrants == null) {
@@ -110,14 +106,17 @@ public class EntrantRepository {
     }
 
     /**
-     * Cancels an entrant’s participation by ID.
-     *
+     * Cancels an entrant's participation by ID.
      * @param entrantId ID of the entrant to cancel.
-     * @param listener  Callback to signal success or failure.
+     * @param listener Callback to signal success or failure.
      */
+    @Override
     public void cancelEntrant(String entrantId, OnActionCompleteListener listener) {
         List<Entrant> allEntrants = entrantsLiveData.getValue();
-        if (allEntrants == null) return;
+        if (allEntrants == null) {
+            listener.onFailure("No entrants available");
+            return;
+        }
 
         for (Entrant e : allEntrants) {
             if (e.getId().equals(entrantId)) {
@@ -131,14 +130,17 @@ public class EntrantRepository {
     }
 
     /**
-     * Draws a replacement entrant from the waiting list.
-     *
-     * @param eventId  ID of the event for which to draw replacement.
-     * @param listener Callback to report the result or errors.
+     * Draws replacement entrant from waiting list.
+     * @param eventId ID of the event for replacement draw.
+     * @param listener Callback to report result or errors.
      */
+    @Override
     public void drawReplacement(String eventId, OnReplacementDrawnListener listener) {
         List<Entrant> allEntrants = entrantsLiveData.getValue();
-        if (allEntrants == null) return;
+        if (allEntrants == null) {
+            listener.onFailure("No entrants available");
+            return;
+        }
 
         List<Entrant> waitingList = new ArrayList<>();
         for (Entrant e : allEntrants) {
@@ -161,26 +163,23 @@ public class EntrantRepository {
     }
 
     /**
-     * Callback for reporting lottery completion results.
+     * Gets the current user info from the EventRepository's shared mock users.
+     * This ensures consistency between what's saved during sign-up and what's looked up later.
+     * @param deviceId The device ID to look up.
+     * @param listener Callback to report success or failure.
      */
-    public interface OnLotteryCompleteListener {
-        void onComplete(List<Entrant> winners);
-        void onFailure(String error);
-    }
+    @Override
+    public void getCurrentUserInfo(String deviceId, OnUserInfoListener listener) {
+        // Get the MockEventRepository instance to access its mock users
+        EventRepository eventRepo = RepositoryProvider.getEventRepository();
 
-    /**
-     * Callback for generic success or failure actions.
-     */
-    public interface OnActionCompleteListener {
-        void onSuccess();
-        void onFailure(String error);
-    }
-
-    /**
-     * Callback for when a replacement entrant is successfully drawn.
-     */
-    public interface OnReplacementDrawnListener {
-        void onSuccess(Entrant replacement);
-        void onFailure(String error);
+        // Only works if eventRepo is a MockEventRepository
+        if (eventRepo instanceof MockEventRepository) {
+            MockEventRepository mockRepo = (MockEventRepository) eventRepo;
+            // Access the mock users through a helper method we'll add
+            mockRepo.getUserInfo(deviceId, listener);
+        } else {
+            listener.onFailure("Not using MockEventRepository");
+        }
     }
 }

@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.utils.QRCodeGenerator;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
@@ -37,7 +37,7 @@ public class QRCodeDisplayFragment extends Fragment {
     private String eventId;
 
     /** The currently selected event. */
-    private EventAdmin currentEvent;
+    private Event currentEvent;
 
     /** Displays the event’s name as a title. */
     private TextView eventNameTitle;
@@ -97,7 +97,7 @@ public class QRCodeDisplayFragment extends Fragment {
     private void loadEventAndGenerateQRCodes() {
         eventViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             if (events != null) {
-                for (EventAdmin event : events) {
+                for (Event event : events) {
                     if (event.getId().equals(eventId)) {
                         currentEvent = event;
                         eventNameTitle.setText(event.getName());
@@ -116,9 +116,9 @@ public class QRCodeDisplayFragment extends Fragment {
      * while the check-in QR code is used by participants for event entry verification.
      * </p>
      *
-     * @param event The {@link EventAdmin} object for which to generate QR codes
+     * @param event The {@link Event} object for which to generate QR codes
      */
-    private void generateAndDisplayQRCodes(EventAdmin event) {
+    private void generateAndDisplayQRCodes(Event event) {
         // Generate promotional QR code
         String promoData = QRCodeGenerator.generatePromoData(event.getId(), event.getName());
         Bitmap promoQrBitmap = QRCodeGenerator.generateQRCode(promoData, 500, 500);

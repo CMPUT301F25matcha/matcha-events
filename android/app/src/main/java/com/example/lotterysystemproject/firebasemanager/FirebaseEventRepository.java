@@ -1,6 +1,10 @@
 package com.example.lotterysystemproject.firebasemanager;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.models.Registration;
@@ -15,6 +19,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +69,15 @@ public class FirebaseEventRepository implements EventRepository {
 
     @Override
     public void addUser(User user, RepositoryCallback callback) {
+        android.util.Log.d("Firebase", "Saving user: " + user.getId());
         db.collection("users").document(user.getId())
                 .set(user)
                 .addOnSuccessListener(v -> {
+                    android.util.Log.d("Firebase", "User saved successfully: " + user.getId());
                     if (callback != null) callback.onSuccess();
                 })
                 .addOnFailureListener(e -> {
+                    android.util.Log.e("Firebase", "Failed to save user", e);
                     if (callback != null) callback.onError(e);
                 });
     }
@@ -115,10 +123,28 @@ public class FirebaseEventRepository implements EventRepository {
                 });
     }
 
+    @Override
+    public void updateUserRoleToOrganizer(String userId, RepositoryCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("role", "organizer");
+        updates.put("updatedAt", new Date());
+
+        db.collection("users").document(userId)
+                .update(updates)
+                .addOnSuccessListener(v -> {
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) callback.onError(e);
+                });
+    }
+
     // ===================== EVENT OPERATIONS =====================
 
     @Override
-    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+    public LiveData<List<Event>> getAllEvents() {
+        MutableLiveData<List<Event>> liveData = new MutableLiveData<>();
+
         db.collection("events")
                 .whereEqualTo("isActive", true)
                 .get()
@@ -131,10 +157,24 @@ public class FirebaseEventRepository implements EventRepository {
                             out.add(e);
                         }
                     }
-                    if (onSuccess != null) onSuccess.accept(out);
+                    liveData.setValue(out);
                 })
                 .addOnFailureListener(e -> {
-                    if (onError != null) onError.accept(e);
+                    liveData.setValue(null); // or handle error differently
+                    // Optional: log the error
+                    Log.e("Repository", "Error fetching events", e);
+                });
+
+        return liveData;
+    }
+    @Override
+    public void addEvent(Event event, Consumer<Exception> onError) {
+        db.collection("events")
+                .add(event)
+                .addOnFailureListener(e -> {
+                    if (onError != null) {
+                        onError.accept(e);
+                    }
                 });
     }
 

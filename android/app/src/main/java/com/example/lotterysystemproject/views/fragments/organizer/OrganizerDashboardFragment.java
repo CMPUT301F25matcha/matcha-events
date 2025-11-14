@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.EventAdapter;
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 
 import java.util.ArrayList;
@@ -96,9 +96,9 @@ public class OrganizerDashboardFragment extends Fragment {
      * Handles event selection from the RecyclerView.
      * Navigates to the Event Management screen for the selected event.
      *
-     * @param event The selected {@link EventAdmin} instance
+     * @param event The selected {@link Event} instance
      */
-    private void onEventClick(EventAdmin event) {
+    private void onEventClick(Event event) {
         Bundle args = new Bundle();
         args.putString("eventId", event.getId());
 
@@ -113,7 +113,7 @@ public class OrganizerDashboardFragment extends Fragment {
      *
      * @param events The list of all events managed by the organizer
      */
-    private void updateStats(List<EventAdmin> events) {
+    private void updateStats(List<Event> events) {
         if (events == null || events.isEmpty()) {
             activeCount.setText("0");
             upcomingCount.setText("0");
@@ -128,7 +128,7 @@ public class OrganizerDashboardFragment extends Fragment {
         long now = System.currentTimeMillis();
         long oneDayFromNow = now + (24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
-        for (EventAdmin event : events) {
+        for (Event event : events) {
             long eventTime = event.getEventDate().getTime();
 
             if (eventTime < now) {

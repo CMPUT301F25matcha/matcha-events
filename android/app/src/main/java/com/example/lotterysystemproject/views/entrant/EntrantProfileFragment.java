@@ -3,6 +3,7 @@ package com.example.lotterysystemproject.views.entrant;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.lotterysystemproject.firebasemanager.EventRepository;
+import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.views.organizer.OrganizerMainActivity;
 
 /**
  * Represents entrant’s profile screen displayed within the profile navigation section of the app.
@@ -79,6 +83,35 @@ public class EntrantProfileFragment extends Fragment {
             Intent i = new Intent(requireContext(), DeleteProfileActivity.class);
             i.putExtra(DeleteProfileActivity.EXTRA_USER_ID, resolveUserId());
             startActivity(i); // or use startActivityForResult pattern below if callback wanted
+        });
+
+        Button organizerSignUpBtn = v.findViewById(R.id.btn_organizer_signup);
+        organizerSignUpBtn.setOnClickListener(click -> {
+            String userId = resolveUserId();
+
+            RepositoryProvider.getEventRepository().updateUserRoleToOrganizer(
+                    userId,
+                    new EventRepository.RepositoryCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(requireContext(),
+                                    "Successfully updated your role to an organizer, to go back to an Entrant hit ?",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("UserRole", "Successfully updated user role to organizer");
+                            Intent i = new Intent(requireContext(), OrganizerMainActivity.class);
+                            i.putExtra(DeleteProfileActivity.EXTRA_USER_ID, userId);
+                            startActivity(i);
+                        }
+
+                        @Override
+                        public void onError(Exception error) {
+                            Log.e("UserRole", "Failed to update role: " + error.getMessage());
+                            Toast.makeText(requireContext(),
+                                    "Failed to update role to organizer",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
         });
 
         bindProfileToViews(v);   // load saved data to UI

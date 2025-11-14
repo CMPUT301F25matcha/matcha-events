@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.models.Registration;
@@ -32,6 +34,9 @@ public class MockEventRepository implements EventRepository {
     /** Ordered list of event IDs, used in mock mode to maintain consistent order. */
     private final List<String> mockEventIds = new ArrayList<>();
 
+    /** In-memory cache for users, used in mock mode. Key is the user ID. */
+    private final Map<String, User> mockUsers = new HashMap<>();
+
     /** In-memory cache for registrations, grouped by user ID. */
     private final Map<String, List<Registration>> mockRegistrationsByUser = new HashMap<>();
     /** In-memory cache for registration listeners, grouped by user ID. */
@@ -45,6 +50,7 @@ public class MockEventRepository implements EventRepository {
      */
     public MockEventRepository() {
         initMockEvents();
+        initMockUsers();
     }
 
     // ===================== ACCESSORS =====================
@@ -69,6 +75,23 @@ public class MockEventRepository implements EventRepository {
     // ===================== MOCK SEED DATA =====================
 
     /**
+     * Initializes mock user data for testing.
+     */
+    private void initMockUsers() {
+        User entrantUser = new User("usr_entrant123", "John Entrant", "john@example.com", "555-1234");
+        entrantUser.setRole("entrant");
+        mockUsers.put("usr_entrant123", entrantUser);
+
+        User organizerUser = new User("usr_organizer456", "Jane Organizer", "jane@example.com", "555-5678");
+        organizerUser.setRole("organizer");
+        mockUsers.put("usr_organizer456", organizerUser);
+
+        User adminUser = new User("usr_admin789", "Admin User", "admin@example.com", "555-9999");
+        adminUser.setRole("admin");
+        mockUsers.put("usr_admin789", adminUser);
+    }
+
+    /**
      * Initializes the in-memory mock data for events.
      */
     private void initMockEvents() {
@@ -77,67 +100,109 @@ public class MockEventRepository implements EventRepository {
         Calendar cal = Calendar.getInstance();
 
         cal.set(2024, Calendar.DECEMBER, 20, 19, 0);
-        Event e1 = new Event("event1", "Winter Music Festival", "Music Promoters Inc", "host1", cal.getTime(), "Downtown Concert Hall");
-        e1.setDescription("Join us for an amazing winter music festival featuring top artists!");
+        Event e1 = new Event(
+                "event1",
+                "Winter Music Festival",
+                "Join us for an amazing winter music festival featuring top artists!",
+                "Music Promoters Inc",
+                "host1",
+                cal.getTime(),
+                "5:00PM",
+                "Downtown Concert Hall",
+                500
+        );
         e1.setCategory("Music");
-        e1.setMaxCapacity(500);
-        e1.setCurrentCapacity(350);
-        e1.setImageUrl("");
+        e1.setCurrentEnrolled(350);
         e1.setActive(true);
         mockEvents.put(e1.getId(), e1);
         mockEventIds.add(e1.getId());
 
         cal.set(2024, Calendar.DECEMBER, 22, 9, 0);
-        Event e2 = new Event("event2", "Tech Innovation Summit 2024", "Tech Hub", "host2", cal.getTime(), "Convention Center");
-        e2.setDescription("Explore the latest in technology and innovation with industry leaders.");
+        Event e2 = new Event(
+                "event2",
+                "Tech Innovation Summit 2024",
+                "Explore the latest in technology and innovation with industry leaders.",
+                "Tech Hub",
+                "host2",
+                cal.getTime(),
+                "5:00PM",
+                "Convention Center",
+                300
+        );
         e2.setCategory("Tech");
-        e2.setMaxCapacity(300);
-        e2.setCurrentCapacity(280);
-        e2.setImageUrl("");
+        e2.setCurrentEnrolled(280);
         e2.setActive(true);
         mockEvents.put(e2.getId(), e2);
         mockEventIds.add(e2.getId());
 
         cal.set(2024, Calendar.DECEMBER, 18, 12, 0);
-        Event e3 = new Event("event3", "Food & Wine Festival", "Culinary Events Co", "host3", cal.getTime(), "City Park");
-        e3.setDescription("Taste amazing dishes and wines from local and international vendors.");
+        Event e3 = new Event(
+                "event3",
+                "Food & Wine Festival",
+                "Taste amazing dishes and wines from local and international vendors.",
+                "Culinary Events Co",
+                "host3",
+                cal.getTime(),
+                "5:00PM",
+                "City Park",
+                400
+        );
         e3.setCategory("Food");
-        e3.setMaxCapacity(400);
-        e3.setCurrentCapacity(400);
-        e3.setImageUrl("");
+        e3.setCurrentEnrolled(400);
         e3.setActive(true);
         mockEvents.put(e3.getId(), e3);
         mockEventIds.add(e3.getId());
 
         cal.set(2024, Calendar.DECEMBER, 25, 10, 0);
-        Event e4 = new Event("event4", "Modern Art Exhibition", "Art Gallery Downtown", "host4", cal.getTime(), "Art Museum");
-        e4.setDescription("Discover contemporary art pieces from emerging and established artists.");
+        Event e4 = new Event(
+                "event4",
+                "Modern Art Exhibition",
+                "Discover contemporary art pieces from emerging and established artists.",
+                "Art Gallery Downtown",
+                "host4",
+                cal.getTime(),
+                "5:00PM",
+                "Art Museum",
+                200
+        );
         e4.setCategory("Art");
-        e4.setMaxCapacity(200);
-        e4.setCurrentCapacity(120);
-        e4.setImageUrl("");
+        e4.setCurrentEnrolled(120);
         e4.setActive(true);
         mockEvents.put(e4.getId(), e4);
         mockEventIds.add(e4.getId());
 
         cal.set(2024, Calendar.DECEMBER, 19, 14, 0);
-        Event e5 = new Event("event5", "Charity Basketball Tournament", "Sports Community Org", "host5", cal.getTime(), "Sports Arena");
-        e5.setDescription("Watch exciting basketball games while supporting local charities.");
+        Event e5 = new Event(
+                "event5",
+                "Charity Basketball Tournament",
+                "Watch exciting basketball games while supporting local charities.",
+                "Sports Community Org",
+                "host5",
+                cal.getTime(),
+                "5:00PM",
+                "Sports Arena",
+                1000
+        );
         e5.setCategory("Sports");
-        e5.setMaxCapacity(1000);
-        e5.setCurrentCapacity(750);
-        e5.setImageUrl("");
+        e5.setCurrentEnrolled(750);
         e5.setActive(true);
         mockEvents.put(e5.getId(), e5);
         mockEventIds.add(e5.getId());
 
         cal.set(2024, Calendar.DECEMBER, 21, 13, 0);
-        Event e6 = new Event("event6", "Digital Marketing Workshop", "Learn Academy", "host6", cal.getTime(), "Business Center");
-        e6.setDescription("Learn advanced digital marketing strategies from industry experts.");
+        Event e6 = new Event(
+                "event6",
+                "Digital Marketing Workshop",
+                "Learn advanced digital marketing strategies from industry experts.",
+                "Learn Academy",
+                "host6",
+                cal.getTime(),
+                "5:00PM",
+                "Business Center",
+                150
+        );
         e6.setCategory("Education");
-        e6.setMaxCapacity(150);
-        e6.setCurrentCapacity(90);
-        e6.setImageUrl("");
+        e6.setCurrentEnrolled(90);
         e6.setActive(true);
         mockEvents.put(e6.getId(), e6);
         mockEventIds.add(e6.getId());
@@ -148,6 +213,7 @@ public class MockEventRepository implements EventRepository {
     @Override
     public void addUser(User user, RepositoryCallback callback) {
         mainHandler.postDelayed(() -> {
+            mockUsers.put(user.getId(), user);
             if (callback != null) callback.onSuccess();
         }, 200);
     }
@@ -155,15 +221,41 @@ public class MockEventRepository implements EventRepository {
     @Override
     public void updateUser(String userId, Map<String, Object> updates, RepositoryCallback callback) {
         mainHandler.postDelayed(() -> {
-            if (callback != null) callback.onSuccess();
+            User user = mockUsers.get(userId);
+            if (user != null) {
+                // Apply updates to the user object
+                for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                    switch (entry.getKey()) {
+                        case "name":
+                            user.setName((String) entry.getValue());
+                            break;
+                        case "email":
+                            user.setEmail((String) entry.getValue());
+                            break;
+                        case "phone":
+                            user.setPhone((String) entry.getValue());
+                            break;
+                        case "role":
+                            user.setRole((String) entry.getValue());
+                            break;
+                        // Add more cases as needed for other fields
+                    }
+                }
+                if (callback != null) callback.onSuccess();
+            } else {
+                if (callback != null) callback.onError(new Exception("User not found"));
+            }
         }, 200);
     }
 
     @Override
     public void getUser(String userId, Consumer<User> onSuccess, Consumer<Exception> onError) {
         mainHandler.postDelayed(() -> {
-            if (onSuccess != null) {
-                onSuccess.accept(new User(userId, "Demo User", "demo@example.com", "123-456-7890"));
+            User user = mockUsers.get(userId);
+            if (user != null) {
+                if (onSuccess != null) onSuccess.accept(user);
+            } else {
+                if (onError != null) onError.accept(new Exception("User not found"));
             }
         }, 150);
     }
@@ -171,22 +263,62 @@ public class MockEventRepository implements EventRepository {
     @Override
     public void deleteUser(String userId, RepositoryCallback callback) {
         mainHandler.postDelayed(() -> {
-            if (callback != null) callback.onSuccess();
+            if (mockUsers.remove(userId) != null) {
+                if (callback != null) callback.onSuccess();
+            } else {
+                if (callback != null) callback.onError(new Exception("User not found"));
+            }
         }, 150);
+    }
+
+    @Override
+    public void updateUserRoleToOrganizer(String userId, RepositoryCallback callback) {
+        mainHandler.postDelayed(() -> {
+            User user = mockUsers.get(userId);
+            if (user != null) {
+                user.setRole("organizer");
+                if (callback != null) callback.onSuccess();
+            } else {
+                if (callback != null) callback.onError(new Exception("User not found"));
+            }
+        }, 200);
     }
 
     // ===================== EVENT OPERATIONS =====================
 
     @Override
-    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+    public LiveData<List<Event>> getAllEvents() {
+        MutableLiveData<List<Event>> liveData = new MutableLiveData<>();
+
         mainHandler.postDelayed(() -> {
             List<Event> out = new ArrayList<>();
             for (String id : mockEventIds) {
                 Event e = mockEvents.get(id);
                 if (e != null && e.isActive()) out.add(e);
             }
-            if (onSuccess != null) onSuccess.accept(out);
+            liveData.setValue(out);
         }, 300);
+
+        return liveData;
+    }
+
+    @Override
+    public void addEvent(Event event, Consumer<Exception> onError) {
+        mainHandler.postDelayed(() -> {
+            if (event.getId() == null || event.getId().isEmpty()) {
+                // Generate a new ID if one isn't provided
+                event.setId("event" + (mockEvents.size() + 1));
+            }
+            if (mockEvents.containsKey(event.getId())) {
+                if (onError != null) {
+                    onError.accept(new Exception("Event with this ID already exists."));
+                }
+                return;
+            }
+            mockEvents.put(event.getId(), event);
+            mockEventIds.add(event.getId());
+            // No error, so we don't call onError.
+        }, 200);
     }
 
     @Override
@@ -240,7 +372,10 @@ public class MockEventRepository implements EventRepository {
         mockRegListeners.computeIfAbsent(userId, k -> new ArrayList<>()).add(listener);
         List<Registration> cur = mockRegistrationsByUser.getOrDefault(userId, new ArrayList<>());
         mainHandler.post(() -> {
-            if (listener != null) listener.onChanged(new ArrayList<>(cur));
+            if (listener != null) {
+                assert cur != null;
+                listener.onChanged(new ArrayList<>(cur));
+            }
         });
     }
 
@@ -271,5 +406,23 @@ public class MockEventRepository implements EventRepository {
         }
 
         if (callback != null) mainHandler.post(callback::onSuccess);
+    }
+
+    // ===================== HELPER METHODS FOR MOCK ENTRANT REPO =====================
+
+    /**
+     * Helper method for MockEntrantRepository to access user info.
+     * This allows both repositories to share the same user data.
+     * @param deviceId The device ID to look up
+     * @param listener Callback with user info or error
+     */
+    public void getUserInfo(String deviceId, EntrantRepository.OnUserInfoListener listener) {
+        User user = mockUsers.get(deviceId);
+
+        if (user != null) {
+            listener.onSuccess(user.getId(), user.getName(), user.getRole());
+        } else {
+            listener.onFailure("User not found: " + deviceId);
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.lotterysystemproject.models.EventAdmin;
+
+import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
+import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
+import com.example.lotterysystemproject.models.DeviceIdentityManager;
+import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
 
 /**
  * Fragment that allows organizers to create new events.
@@ -220,6 +226,12 @@ public class CreateEventFragment extends Fragment {
         String priceStr = priceInput.getText().toString().trim();
         String maxWaitingListStr = maxWaitingListInput.getText().toString().trim();
 
+        // Validate inputs
+        if (name.isEmpty() || description.isEmpty() || location.isEmpty() || capacityStr.isEmpty()) {
+            Toast.makeText(getContext(), "Please fill in all required fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         int capacity;
         try {
             capacity = Integer.parseInt(capacityStr);
@@ -228,42 +240,77 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
+        double price = 0.0;
+        try {
+            price = Double.parseDouble(priceStr);
+        } catch (NumberFormatException ignored) {}
+
         int maxWaitingList = 100;
         try {
             maxWaitingList = Integer.parseInt(maxWaitingListStr);
         } catch (NumberFormatException ignored) {}
 
-        EventAdmin newEvent = new EventAdmin(
-                name,
-                eventDateTime.getTime(),
-                timeFormat.format(eventDateTime.getTime()),
-                location,
-                capacity
-        );
-        newEvent.setDescription(description);
-        newEvent.setRegistrationStart(regStartDate.getTime());
-        newEvent.setRegistrationEnd(regEndDate.getTime());
-        newEvent.setMaxWaitingList(maxWaitingList);
+        String deviceId = DeviceIdentityManager.getUserId(getContext());
 
-        if (!priceStr.isEmpty()) {
-            try {
-                double price = Double.parseDouble(priceStr);
-                newEvent.setPrice(price);
-            } catch (NumberFormatException ignored) {}
-        }
+        // Get the repository and fetch user info
+        EntrantRepository repository = RepositoryProvider.getEntrantRepository();
+        int finalMaxWaitingList = maxWaitingList;
+        double finalPrice = price;
+        int finalCapacity = capacity;
 
-        String promoQR = generateQRCode(name, "PROMO");
-        String checkinQR = generateQRCode(name, "CHECKIN");
-        newEvent.setQrCodePromo(promoQR);
-        newEvent.setQrCodeCheckin(checkinQR);
+        repository.getCurrentUserInfo(deviceId, new EntrantRepository.OnUserInfoListener() {
+            @Override
+            public void onSuccess(String hostId, String hostName, String role) {
+                // Check if user is an organizer
+                if (!"organizer".equals(role)) {
+                    Toast.makeText(getContext(), "Only organizers can create events", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        eventViewModel.createEvent(newEvent);
+                // Generate event ID locally (works in both mock and Firebase modes)
+                String eventId = "event_" + System.currentTimeMillis() + "_" + (int)(Math.random() * 10000);
 
-        Toast.makeText(getContext(),
-                "✓ Event created with QR codes!",
-                Toast.LENGTH_LONG).show();
+                Event newEvent = new Event(
+                        eventId,
+                        name,
+                        description,
+                        hostName,
+                        hostId,
+                        eventDateTime.getTime(),
+                        timeFormat.format(eventDateTime.getTime()),
+                        location,
+                        finalCapacity
+                );
 
-        requireActivity().onBackPressed();
+                newEvent.setRegistrationStart(regStartDate.getTime());
+                newEvent.setRegistrationEnd(regEndDate.getTime());
+                newEvent.setMaxWaitingListSize(finalMaxWaitingList);
+
+                // Generate QR codes
+                String promoQR = generateQRCode(name, "PROMO");
+                String checkinQR = generateQRCode(name, "CHECKIN");
+
+                newEvent.setPromotionalQrCode(promoQR);
+                newEvent.setCheckInQrCode(checkinQR);
+
+                // Save the event via ViewModel
+                eventViewModel.createEvent(newEvent);
+
+                Toast.makeText(getContext(),
+                        "✓ Event created with QR codes!",
+                        Toast.LENGTH_LONG).show();
+
+                requireActivity().onBackPressed();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("EventCreation", "Failed to fetch organizer info: " + error);
+                Toast.makeText(getContext(),
+                        "Error: Could not verify organizer. " + error,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**

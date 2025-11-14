@@ -3,16 +3,14 @@ package com.example.lotterysystemproject.controllers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.view.View;
 
+import com.example.lotterysystemproject.models.DeviceIdentityManager;
 import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.views.admin.AdminLoginActivity;
 import com.example.lotterysystemproject.views.entrant.EntrantMainActivity;
 import com.example.lotterysystemproject.views.organizer.OrganizerMainActivity;  // ✅ Add this import
 import com.example.lotterysystemproject.databinding.UserInfoBinding;
-
-import java.util.UUID;
 
 /**
  * Controller class for user information sign-up flow.
@@ -36,42 +34,25 @@ public class UserInfo {
      * Creates a new User object with a generated unique ID and the
      * information entered by the user.
      *
+     * @param context The application context
      * @param binding The view binding containing the input fields
      * @return A User object populated with the collected information
      */
-    public User collectUserInfo(UserInfoBinding binding) {
+    public User collectUserInfo(Context context, UserInfoBinding binding) {
         String name = binding.userName.getText() != null ? binding.userName.getText().toString().trim() : "";
         String email = binding.userEmail.getText() != null ? binding.userEmail.getText().toString().trim() : "";
         String phone = binding.userPhone.getText() != null ? binding.userPhone.getText().toString().trim() : "";
 
-        // Generate unique ID for testing purposes
-        String uniqueId = generateUniqueId();
+        // Generate unique ID using the provided context
+        String deviceId = DeviceIdentityManager.getUserId(context);
 
-        return new User(uniqueId, name, email, phone);
-    }
-
-    /**
-     * Generates a unique identifier for the user.
-     *
-     * For testing purposes, this generates a UUID. In production with Firebase,
-     * this will be replaced with Firebase Authentication UID.
-     *
-     * Implementation note: US 01.07.01 requires device-based identification.
-     * For a more persistent device ID, consider using:
-     * Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
-     *
-     * @return A unique identifier string
-     */
-    private String generateUniqueId() {
-        // Generate UUID for testing
-        // TODO: Replace with Firebase Authentication UID when Firebase is implemented
-        return UUID.randomUUID().toString();
+        return new User(deviceId, name, email, phone);
     }
 
     /**
      * Checks if a user has already completed the sign-up process.
      * This method checks SharedPreferences for an existing userId.
-     *
+     * <p>
      * Used on app startup to determine whether to show the sign-up screen
      * or navigate directly to the main activity.
      *
@@ -82,22 +63,6 @@ public class UserInfo {
         android.content.SharedPreferences prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userId = prefs.getString("userId", null);
         return userId != null;
-    }
-
-    /**
-     * Alternative method to generate a device-specific unique ID.
-     * This ID persists across app reinstalls on the same device.
-     *
-     * Note: This method requires a Context parameter and should be called
-     * from methods that have access to Context (like handleContinue/handleSkip).
-     *
-     * @param context Application context
-     * @return Device-specific unique identifier
-     */
-    private String generateDeviceId(Context context) {
-        // Get Android device ID (persists across app installs)
-        return Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
     }
 
     /**
@@ -147,10 +112,10 @@ public class UserInfo {
 
     /**
      * Persists user information in memory/storage.
-     *
+     * <p>
      * Currently saves user data to SharedPreferences for local storage.
      * In production, this should be synced with Firebase Firestore.
-     *
+     * <p>
      * The same SharedPreferences key ("UserPrefs") is used throughout the app
      * to maintain consistent user session data.
      *
@@ -200,12 +165,12 @@ public class UserInfo {
         Intent intent = new Intent(activity, AdminLoginActivity.class);
         activity.startActivity(intent);
     }
-// TODO: Admin activity launch
+
     /**
      * Handles the "Continue" button click.
      * Validates user input, persists data if valid, and navigates to home screen.
      * If validation fails, displays an error message.
-     *
+     * <p>
      * Related User Story: US 01.02.01 - Providing personal information
      *
      * @param activity The current activity
@@ -213,7 +178,9 @@ public class UserInfo {
      */
     public void handleContinue(Activity activity, UserInfoBinding binding) {
         hideValidationError(binding);
-        User model = collectUserInfo(binding);
+        User model = collectUserInfo(activity, binding);
+
+        android.util.Log.d("UserSignUp", "Device ID: " + model.getId());
 
         if (!validate(model)) {
             showValidationError(binding);
@@ -224,17 +191,35 @@ public class UserInfo {
         model.setRole("entrant"); // Default role for users who sign up
         persistInMemory(activity, model);
 
-        //Clear all old notifications (reset for this user)
-        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+        // Save user to Firebase
+        com.example.lotterysystemproject.firebasemanager.RepositoryProvider.getEventRepository()
+                .addUser(model, new com.example.lotterysystemproject.firebasemanager.EventRepository.RepositoryCallback() {
+                    @Override
+                    public void onSuccess() {
+                        android.util.Log.d("UserSignUp", "User saved to Firebase successfully");
+                        //Clear all old notifications (reset for this user)
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+                        navigateToEntrantHome(activity);
+                    }
 
-        navigateToEntrantHome(activity);
+                    @Override
+                    public void onError(Exception e) {
+                        android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
+                        android.widget.Toast.makeText(activity,
+                                "Warning: Could not sync user data. Will retry later.",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                        //Clear all old notifications (reset for this user)
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+                        navigateToEntrantHome(activity);
+                    }
+                });
     }
 
     /**
      * Handles the "Skip" button click.
      * Allows users to skip the sign-up process and continue with minimal information.
      * Creates a user profile without personal details and navigates to home screen.
-     *
+     * <p>
      * Related User Story: US 01.07.01 - Device-based identification without username/password
      *
      * @param activity The current activity
@@ -242,15 +227,33 @@ public class UserInfo {
      */
     public void handleSkip(Activity activity, UserInfoBinding binding) {
         hideValidationError(binding);
-        User model = collectUserInfo(binding);
+        User model = collectUserInfo(activity, binding);
 
         model.setSignedUp(false);
         model.setRole("entrant"); // Default role for users who skip
         persistInMemory(activity, model);
 
-        // Clear all old notifications (reset for this user)
-        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+        // Save user to Firebase
+        com.example.lotterysystemproject.firebasemanager.RepositoryProvider.getEventRepository()
+                .addUser(model, new com.example.lotterysystemproject.firebasemanager.EventRepository.RepositoryCallback() {
+                    @Override
+                    public void onSuccess() {
+                        android.util.Log.d("UserSignUp", "User saved to Firebase successfully");
+                        // Clear all old notifications (reset for this user)
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+                        navigateToEntrantHome(activity);
+                    }
 
-        navigateToEntrantHome(activity);
+                    @Override
+                    public void onError(Exception e) {
+                        android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
+                        android.widget.Toast.makeText(activity,
+                                "Warning: Could not sync user data. Will retry later.",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                        // Clear all old notifications (reset for this user)
+                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
+                        navigateToEntrantHome(activity);
+                    }
+                });
     }
 }

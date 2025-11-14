@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.models.Entrant;
-import com.example.lotterysystemproject.repositories.EntrantRepository;
+import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
 import java.util.List;
 

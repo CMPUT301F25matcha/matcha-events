@@ -2,8 +2,10 @@ package com.example.lotterysystemproject.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-import com.example.lotterysystemproject.models.EventAdmin;
-import com.example.lotterysystemproject.repositories.EventRepository;
+
+import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
+import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import java.util.List;
 
 /**
@@ -12,31 +14,27 @@ import java.util.List;
  */
 public class EventViewModel extends ViewModel {
     private EventRepository repository;
-    private LiveData<List<EventAdmin>> events;
+    private LiveData<List<Event>> events;
 
     /**
      * Initializes the EventViewModel and loads events from the repository.
      */
     public EventViewModel() {
-        repository = new EventRepository();
-        events = repository.getEvents();
+        repository = RepositoryProvider.getEventRepository();
+        events = repository.getAllEvents();
     }
 
     /**
      * Returns all available events.
      *
-     * @return LiveData list of {@link EventAdmin} objects.
+     * @return LiveData list of {@link Event} objects.
      */
-    public LiveData<List<EventAdmin>> getEvents() {
-        return events;
-    }
+    public LiveData<List<Event>> getEvents() {return events;}
 
     /**
      * Creates and adds a new event.
-     *
-     * @param event The event to add.
      */
-    public void createEvent(EventAdmin event) {
-        repository.addEvent(event);
+    public void createEvent(Event event) {
+        repository.addEvent(event, e -> {});
     }
 }

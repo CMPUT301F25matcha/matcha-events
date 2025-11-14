@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -25,7 +25,7 @@ public class MockAdminRepository implements AdminRepository {
 
     // ===================== MOCK STATE =====================
     /** In-memory cache for admin events. Key is the event ID. */
-    private final Map<String, EventAdmin> mockAdminEvents = new HashMap<>();
+    private final Map<String, Event> mockAdminEvents = new HashMap<>();
     /** Ordered list of event IDs for consistent ordering. */
     private final List<String> mockAdminEventIds = new ArrayList<>();
     /** In-memory cache for image URLs. */
@@ -65,54 +65,93 @@ public class MockAdminRepository implements AdminRepository {
 
         Calendar cal = Calendar.getInstance();
 
-        // Create mock admin events using EventAdmin's actual constructor and setters
+        // Create mock admin events using Event's updated constructor
         cal.set(2024, Calendar.DECEMBER, 20, 19, 0);
-        EventAdmin e1 = new EventAdmin("Winter Music Festival", cal.getTime(), "19:00", "Downtown Concert Hall", 500);
-        e1.setId("event1");
-        e1.setDescription("Join us for an amazing winter music festival featuring top artists!");
+        Event e1 = new Event(
+                "event1",
+                "Winter Music Festival",
+                "Join us for an amazing winter music festival featuring top artists!",
+                "Carti",
+                "host21",
+                cal.getTime(),
+                "19:00",
+                "Downtown Concert Hall",
+                350
+        );
         e1.setStatus("open");
-        e1.setEnrolled(350);
-        e1.setPosterUrl("https://example.com/images/event1_poster.jpg");
+        e1.setPosterImageUrl("https://example.com/images/event1_poster.jpg");
         mockAdminEvents.put(e1.getId(), e1);
         mockAdminEventIds.add(e1.getId());
 
         cal.set(2024, Calendar.DECEMBER, 22, 9, 0);
-        EventAdmin e2 = new EventAdmin("Tech Innovation Summit 2024", cal.getTime(), "09:00", "Convention Center", 300);
-        e2.setId("event2");
-        e2.setDescription("Explore the latest in technology and innovation with industry leaders.");
+        Event e2 = new Event(
+                "event2",
+                "Tech Innovation Summit 2024",
+                "Explore the latest in technology and innovation with industry leaders.",
+                "Tech Corp",
+                "host22",
+                cal.getTime(),
+                "09:00",
+                "Convention Center",
+                300
+        );
         e2.setStatus("open");
-        e2.setEnrolled(280);
-        e2.setPosterUrl("https://example.com/images/event2_poster.jpg");
+        e2.setCurrentEnrolled(280);
+        e2.setPosterImageUrl("https://example.com/images/event2_poster.jpg");
         mockAdminEvents.put(e2.getId(), e2);
         mockAdminEventIds.add(e2.getId());
 
         cal.set(2024, Calendar.DECEMBER, 18, 12, 0);
-        EventAdmin e3 = new EventAdmin("Food & Wine Festival", cal.getTime(), "12:00", "City Park", 400);
-        e3.setId("event3");
-        e3.setDescription("Taste amazing dishes and wines from local and international vendors.");
+        Event e3 = new Event(
+                "event3",
+                "Food & Wine Festival",
+                "Taste amazing dishes and wines from local and international vendors.",
+                "Culinary Events",
+                "host23",
+                cal.getTime(),
+                "12:00",
+                "City Park",
+                400
+        );
         e3.setStatus("open");
-        e3.setEnrolled(400);
-        e3.setPosterUrl("https://example.com/images/event3_poster.jpg");
+        e3.setCurrentEnrolled(400);
+        e3.setPosterImageUrl("https://example.com/images/event3_poster.jpg");
         mockAdminEvents.put(e3.getId(), e3);
         mockAdminEventIds.add(e3.getId());
 
         cal.set(2024, Calendar.DECEMBER, 25, 10, 0);
-        EventAdmin e4 = new EventAdmin("Modern Art Exhibition", cal.getTime(), "10:00", "Art Museum", 200);
-        e4.setId("event4");
-        e4.setDescription("Discover contemporary art pieces from emerging and established artists.");
+        Event e4 = new Event(
+                "event4",
+                "Modern Art Exhibition",
+                "Discover contemporary art pieces from emerging and established artists.",
+                "Art Gallery",
+                "host24",
+                cal.getTime(),
+                "10:00",
+                "Art Museum",
+                200
+        );
         e4.setStatus("open");
-        e4.setEnrolled(120);
-        e4.setPosterUrl("https://example.com/images/event4_poster.jpg");
+        e4.setCurrentEnrolled(120);
+        e4.setPosterImageUrl("https://example.com/images/event4_poster.jpg");
         mockAdminEvents.put(e4.getId(), e4);
         mockAdminEventIds.add(e4.getId());
 
         cal.set(2024, Calendar.DECEMBER, 19, 14, 0);
-        EventAdmin e5 = new EventAdmin("Charity Basketball Tournament", cal.getTime(), "14:00", "Sports Arena", 1000);
-        e5.setId("event5");
-        e5.setDescription("Watch exciting basketball games while supporting local charities.");
+        Event e5 = new Event(
+                "event5",
+                "Charity Basketball Tournament",
+                "Watch exciting basketball games while supporting local charities.",
+                "Sports Foundation",
+                "host25",
+                cal.getTime(),
+                "14:00",
+                "Sports Arena",
+                1000
+        );
         e5.setStatus("open");
-        e5.setEnrolled(750);
-        e5.setPosterUrl("https://example.com/images/event5_poster.jpg");
+        e5.setCurrentEnrolled(750);
+        e5.setPosterImageUrl("https://example.com/images/event5_poster.jpg");
         mockAdminEvents.put(e5.getId(), e5);
         mockAdminEventIds.add(e5.getId());
 
@@ -128,7 +167,7 @@ public class MockAdminRepository implements AdminRepository {
     // ===================== EVENT OPERATIONS =====================
 
     @Override
-    public void addEvent(EventAdmin eventAdmin, AdminCallback callback) {
+    public void addEvent(Event eventAdmin, AdminCallback callback) {
         if (eventAdmin == null || eventAdmin.getId() == null || eventAdmin.getId().isEmpty()) {
             if (callback != null) {
                 mainHandler.post(() -> callback.onError(new IllegalArgumentException("Event or EventID cannot be null")));
@@ -146,11 +185,11 @@ public class MockAdminRepository implements AdminRepository {
     }
 
     @Override
-    public void getAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
+    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         mainHandler.postDelayed(() -> {
-            List<EventAdmin> eventList = new ArrayList<>();
+            List<Event> eventList = new ArrayList<>();
             for (String id : mockAdminEventIds) {
-                EventAdmin event = mockAdminEvents.get(id);
+                Event event = mockAdminEvents.get(id);
                 if (event != null) {
                     eventList.add(event);
                 }
@@ -160,7 +199,7 @@ public class MockAdminRepository implements AdminRepository {
     }
 
     @Override
-    public void listenToAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
+    public void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         // In mock mode, just call getAllEvents once
         // In a real implementation, you might set up periodic updates
         getAllEvents(onSuccess, onError);

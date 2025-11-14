@@ -74,22 +74,27 @@ public class EventDetailsActivity extends AppCompatActivity {
      * Fetches the event data and populates the UI.
      */
     private void loadEventDetails() {
-        RepositoryProvider.getInstance().getAllEvents(events -> {
+        RepositoryProvider.getEventRepository().getAllEvents().observe(this, events -> {
+            if (events == null) {
+                Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+
             for (Event e : events) {
                 if (eventId.equals(e.getId())) {
                     event = e;
                     break;
                 }
             }
+
             if (event == null) {
                 Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
+
             populateDetails();
-        }, error -> {
-            Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show();
-            finish();
         });
     }
 
@@ -181,19 +186,22 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param onComplete Callback to execute after refresh completes
      */
     private void refreshEventData(Runnable onComplete) {
-        RepositoryProvider.getInstance().getAllEvents(events -> {
+        RepositoryProvider.getEventRepository().getAllEvents().observe(this, events -> {
+            if (events == null) {
+                if (onComplete != null) {
+                    onComplete.run();
+                }
+                return;
+            }
+
             for (Event e : events) {
                 if (eventId.equals(e.getId())) {
                     event = e;
                     break;
                 }
             }
+
             updateJoinButton();
-            if (onComplete != null) {
-                onComplete.run();
-            }
-        }, error -> {
-            // If refresh fails, still complete the operation
             if (onComplete != null) {
                 onComplete.run();
             }
@@ -207,7 +215,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void populateDetails() {
         binding.eventName.setText(event.getName());
         binding.eventLocation.setText(event.getLocation());
-        binding.eventDate.setText(event.getDate() != null ? dateFormat.format(event.getDate()) : "Date TBD");
+        binding.eventDate.setText(event.getEventDate() != null ? dateFormat.format(event.getEventDate()) : "Date TBD");
         updateJoinButton();
         // TODO: Load image, setup map, set state for notifications and joined status
     }

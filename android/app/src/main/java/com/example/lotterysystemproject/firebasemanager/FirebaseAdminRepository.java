@@ -2,7 +2,7 @@ package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.annotation.Nullable;
 
-import com.example.lotterysystemproject.models.EventAdmin;
+import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,7 +48,7 @@ public class FirebaseAdminRepository implements AdminRepository {
     // ===================== EVENT OPERATIONS =====================
 
     @Override
-    public void addEvent(EventAdmin eventAdmin, AdminCallback callback) {
+    public void addEvent(Event eventAdmin, AdminCallback callback) {
         if (eventAdmin == null || eventAdmin.getId() == null || eventAdmin.getId().isEmpty()) {
             if (callback != null) {
                 callback.onError(new IllegalArgumentException("Event or EventID cannot be null"));
@@ -67,13 +67,13 @@ public class FirebaseAdminRepository implements AdminRepository {
     }
 
     @Override
-    public void getAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
+    public void getAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<EventAdmin> eventAdminList = new ArrayList<>();
+                    List<Event> eventAdminList = new ArrayList<>();
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        EventAdmin eventAdmin = doc.toObject(EventAdmin.class);
+                        Event eventAdmin = doc.toObject(Event.class);
                         if (eventAdmin != null) {
                             eventAdminList.add(eventAdmin);
                         }
@@ -90,17 +90,17 @@ public class FirebaseAdminRepository implements AdminRepository {
     }
 
     @Override
-    public void listenToAllEvents(Consumer<List<EventAdmin>> onSuccess, Consumer<Exception> onError) {
+    public void listenToAllEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events").addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (e != null) {
                 if (onError != null) onError.accept(e);
                 return;
             }
 
-            List<EventAdmin> eventAdminList = new ArrayList<>();
+            List<Event> eventAdminList = new ArrayList<>();
             if (queryDocumentSnapshots != null) {
                 for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                    EventAdmin eventAdmin = doc.toObject(EventAdmin.class);
+                    Event eventAdmin = doc.toObject(Event.class);
                     if (eventAdmin != null) {
                         eventAdminList.add(eventAdmin);
                     }
