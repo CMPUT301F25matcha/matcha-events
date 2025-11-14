@@ -1,8 +1,8 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 import android.net.Uri;
 
-import com.example.matchamonday.models.User;
+import com.example.lotterysystemproject.models.User;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
-import com.example.matchamonday.models.User;
+import com.example.lotterysystemproject.models.User;
 
 public interface AuthRepository {
 

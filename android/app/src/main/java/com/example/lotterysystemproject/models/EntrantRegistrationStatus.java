@@ -1,4 +1,4 @@
-package com.example.matchamonday.models;
+package com.example.lotterysystemproject.models;
 
 /**
  * Combined status object containing both Entrant and Registration data

@@ -1,7 +1,7 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
-import com.example.matchamonday.models.Entrant;
-import com.example.matchamonday.models.Registration;
+import com.example.lotterysystemproject.models.Entrant;
+import com.example.lotterysystemproject.models.Registration;
 
 import java.util.List;
 

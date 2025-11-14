@@ -1,4 +1,4 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 /**
  * Callback interface for asynchronous repository operations

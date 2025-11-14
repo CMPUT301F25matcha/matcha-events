@@ -1,11 +1,11 @@
-package com.example.matchamonday.repositories.firebase;
+package com.example.lotterysystemproject.repositories.firebase;
 
 import android.content.Context;
 import android.provider.Settings;
 
-import com.example.matchamonday.models.User;
-import com.example.matchamonday.repositories.AuthRepository;
-import com.example.matchamonday.repositories.RepositoryCallback;
+import com.example.lotterysystemproject.models.User;
+import com.example.lotterysystemproject.repositories.AuthRepository;
+import com.example.lotterysystemproject.repositories.RepositoryCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.UUID;

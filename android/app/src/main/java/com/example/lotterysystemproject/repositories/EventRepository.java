@@ -1,8 +1,8 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 import android.net.Uri;
 
-import com.example.matchamonday.models.Event;
+import com.example.lotterysystemproject.models.Event;
 
 import java.util.List;
 

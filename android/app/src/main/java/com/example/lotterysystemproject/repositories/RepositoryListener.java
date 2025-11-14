@@ -1,4 +1,4 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 /**
  * Listener interface for real-time data updates

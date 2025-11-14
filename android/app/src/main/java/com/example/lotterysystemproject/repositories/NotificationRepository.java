@@ -1,4 +1,4 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 import java.util.List;
 

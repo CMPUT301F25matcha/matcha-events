@@ -1,6 +1,6 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
-import com.example.matchamonday.models.EntrantRegistrationStatus;
+import com.example.lotterysystemproject.models.EntrantRegistrationStatus;
 
 public interface EntrantRegistrationRepository {
 

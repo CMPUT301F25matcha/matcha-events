@@ -1,12 +1,12 @@
-package com.example.matchamonday.repositories.firebase;
+package com.example.lotterysystemproject.repositories.firebase;
 
 import android.util.Log;
 
-import com.example.matchamonday.models.Event;
-import com.example.matchamonday.models.NotificationLog;
-import com.example.matchamonday.models.User;
-import com.example.matchamonday.repositories.AdminRepository;
-import com.example.matchamonday.repositories.RepositoryCallback;
+import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.models.NotificationLog;
+import com.example.lotterysystemproject.models.User;
+import com.example.lotterysystemproject.repositories.AdminRepository;
+import com.example.lotterysystemproject.repositories.RepositoryCallback;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;

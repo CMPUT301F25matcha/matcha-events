@@ -1,8 +1,8 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
-import com.example.matchamonday.models.Event;
-import com.example.matchamonday.models.NotificationLog;
-import com.example.matchamonday.models.User;
+import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.models.NotificationLog;
+import com.example.lotterysystemproject.models.User;
 
 import java.util.List;
 

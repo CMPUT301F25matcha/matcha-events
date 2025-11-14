@@ -1,4 +1,4 @@
-package com.example.matchamonday.repositories;
+package com.example.lotterysystemproject.repositories;
 
 import com.google.firebase.firestore.GeoPoint;
 

@@ -1,4 +1,4 @@
-package com.example.matchamonday.models;
+package com.example.lotterysystemproject.models;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

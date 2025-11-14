@@ -1,4 +1,4 @@
-package com.example.matchamonday.models;
+package com.example.lotterysystemproject.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

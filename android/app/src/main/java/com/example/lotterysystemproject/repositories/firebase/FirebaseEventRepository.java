@@ -1,11 +1,11 @@
-package com.example.matchamonday.repositories.firebase;
+package com.example.lotterysystemproject.repositories.firebase;
 
 import android.net.Uri;
 
-import com.example.matchamonday.models.Event;
-import com.example.matchamonday.repositories.EventRepository;
-import com.example.matchamonday.repositories.RepositoryCallback;
-import com.example.matchamonday.repositories.RepositoryListener;
+import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.repositories.EventRepository;
+import com.example.lotterysystemproject.repositories.RepositoryCallback;
+import com.example.lotterysystemproject.repositories.RepositoryListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
