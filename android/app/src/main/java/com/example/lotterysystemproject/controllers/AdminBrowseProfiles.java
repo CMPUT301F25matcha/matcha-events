@@ -138,6 +138,7 @@ public class AdminBrowseProfiles extends Fragment {
                 for (DocumentSnapshot doc: queryDocumentSnapshots) {
                     User user = doc.toObject(User.class);
                     if (user != null) {
+                        user.setId(doc.getId());
                         userList.add(user);
                         allUsers.add(user);
                     }
