@@ -443,7 +443,7 @@ public class FirebaseNotificationRepository implements NotificationRepository {
         data.put("timestamp", String.valueOf(System.currentTimeMillis()));
         return data;
     }
-    // TODO fix this class and notif logs
+
     private NotificationLog createLog(Event event, Entrant entrant, String type,
                                       String title, String body, boolean success) {
         NotificationLog log = new NotificationLog();

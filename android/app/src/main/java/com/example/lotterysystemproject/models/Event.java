@@ -32,16 +32,15 @@ public class Event {
     private int lotteryDrawCount;       // How many to select
     private long lotteryDrawnAt;        // When lottery was run
 
-    // ADDED: Track event state
+    // Track event state
     private long createdAt;             // When event was created
     private boolean isActive;           // Soft delete flag
 
     private int currentEnrollmentCount; // For display (denormalized for performance)
     private int currentWaitingCount;    // Number on waiting list (denormalized)
 
-    // ADDED: QR codes for scanning (from user stories)
+    // QR codes for scanning (from user stories)
     private String promotionalQrCode;   // Scanned to join waiting list
-    private String checkInQrCode;       // For event check-in
 
     public Event(String name, String description, String organizerId, String category, int maxEntrants, int maxWaitingList, Date startDate, Date endDate) {
         this.name = name;

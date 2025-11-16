@@ -76,9 +76,10 @@ public class FirebaseEntrantRegistrationRepository implements EntrantRegistratio
         // Use batch write for atomicity
         WriteBatch batch = db.batch();
 
+        // TODO: check out how to implement toMap in entrant
         batch.set(db.collection(COLLECTION_ENTRANTS).document(entrantId),
                 entrant.toMap());
-
+        // TODO: check out how to implement toMap in registration
         batch.set(db.collection(COLLECTION_REGISTRATIONS).document(registrationId),
                 registration.toMap());
 
