@@ -3,6 +3,7 @@ package com.example.lotterysystemproject.adapters;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
 import com.example.lotterysystemproject.views.fragments.organizer.SelectedListFragment;
 import com.example.lotterysystemproject.views.fragments.organizer.WaitingListFragment;
 

@@ -172,8 +172,12 @@ public class Event {
      * @return true if current time is within registration period
      */
     public boolean isRegistrationOpen() {
+        if (registrationStart == null || registrationEnd == null) {
+            return false;
+        }
         Date now = new Date();
         return now.after(registrationStart) && now.before(registrationEnd) && "open".equals(status);
+
     }
 
     /**

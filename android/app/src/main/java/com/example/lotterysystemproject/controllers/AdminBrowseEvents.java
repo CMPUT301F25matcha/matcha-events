@@ -78,7 +78,7 @@ public class AdminBrowseEvents extends Fragment {
         });
 
 
-       // addSampleEventsToFirebase();
+        //addSampleEventsToFirebase();
         // Fetch events
         fetchEvents();
 

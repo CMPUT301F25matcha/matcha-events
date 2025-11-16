@@ -75,6 +75,7 @@ public class FirebaseAdminRepository implements AdminRepository {
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
                         Event eventAdmin = doc.toObject(Event.class);
                         if (eventAdmin != null) {
+                            eventAdmin.setId(doc.getId());
                             eventAdminList.add(eventAdmin);
                         }
                     }
@@ -102,6 +103,7 @@ public class FirebaseAdminRepository implements AdminRepository {
                 for (DocumentSnapshot doc : queryDocumentSnapshots) {
                     Event eventAdmin = doc.toObject(Event.class);
                     if (eventAdmin != null) {
+                        eventAdmin.setId(doc.getId());
                         eventAdminList.add(eventAdmin);
                     }
                 }
