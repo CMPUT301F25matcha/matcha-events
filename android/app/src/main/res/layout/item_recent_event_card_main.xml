@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="12dp"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_image_container"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        card_view:cardCornerRadius="12dp"
+        card_view:cardElevation="2dp"
+        card_view:cardBackgroundColor="@android:color/white"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/event_poster"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Event image"
+            android:src="@android:drawable/ic_menu_report_image" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event Name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#424242"
+        android:gravity="start"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/event_host_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Host Name"
+        android:textSize="12sp"
+        android:textColor="#9E9E9E"
+        android:gravity="start"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

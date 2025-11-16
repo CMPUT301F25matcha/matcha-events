@@ -334,46 +334,17 @@
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical" />
 
-            <HorizontalScrollView
-                android:id="@+id/recent_events_scroll_view"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_events_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:overScrollMode="never"
                 android:scrollbars="none"
-                android:fadeScrollbars="false">
-
-                <LinearLayout
-                    android:id="@+id/recent_events_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:gravity="center_vertical">
-
-                    <include
-                        android:id="@+id/recent_event_1"
-                        layout="@layout/item_recent_event" />
-
-                    <include
-                        android:id="@+id/recent_event_2"
-                        layout="@layout/item_recent_event" />
-
-                    <include
-                        android:id="@+id/recent_event_3"
-                        layout="@layout/item_recent_event" />
-
-                    <include
-                        android:id="@+id/recent_event_4"
-                        layout="@layout/item_recent_event" />
-
-                    <include
-                        android:id="@+id/recent_event_5"
-                        layout="@layout/item_recent_event" />
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
+                android:orientation="horizontal" />
 
             <LinearLayout
                 android:id="@+id/events_list_container"

@@ -222,6 +222,77 @@ public class FirebaseEventRepository implements EventRepository {
                 });
     }
 
+    @Override
+    public void getEventsByCategory(String category, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        db.collection("events")
+                .whereEqualTo("isActive", true)
+                .whereArrayContains("categories", category)
+                .get()
+                .addOnSuccessListener(q -> {
+                    List<Event> out = new ArrayList<>();
+                    for (DocumentSnapshot d : q.getDocuments()) {
+                        Event e = d.toObject(Event.class);
+                        if (e != null) {
+                            e.setId(d.getId());
+                            out.add(e);
+                        }
+                    }
+                    if (onSuccess != null) onSuccess.accept(out);
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept(e);
+                });
+    }
+
+    @Override
+    public void getActiveEvents(
+            Consumer<List<Event>> onSuccess,
+            Consumer<Exception> onError
+    ) {
+        db.collection("events")
+                .whereEqualTo("isActive", true)
+                .get()
+                .addOnSuccessListener(query -> {
+                    List<Event> events = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : query.getDocuments()) {
+                        Event event = doc.toObject(Event.class);
+                        if (event != null) {
+                            event.setId(doc.getId());
+                            events.add(event);
+                        }
+                    }
+
+                    if (onSuccess != null) onSuccess.accept(events);
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept(e);
+                });
+    }
+
+    @Override
+    public void getRecentEvents(int limit, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        db.collection("events")
+                .whereEqualTo("isActive", true)
+                .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnSuccessListener(q -> {
+                    List<Event> out = new ArrayList<>();
+                    for (DocumentSnapshot d : q.getDocuments()) {
+                        Event e = d.toObject(Event.class);
+                        if (e != null) {
+                            e.setId(d.getId());
+                            out.add(e);
+                        }
+                    }
+                    if (onSuccess != null) onSuccess.accept(out);
+                })
+                .addOnFailureListener(err -> {
+                    if (onError != null) onError.accept(err);
+                });
+    }
+
     // ===================== REGISTRATION OPERATIONS =====================
 
     @Override
