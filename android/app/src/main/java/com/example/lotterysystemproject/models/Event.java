@@ -106,8 +106,15 @@ public class Event {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public List<String> getCategories() { return categories; }
+    public void setCategories(List<String> categories) {this.categories = categories;}
+
+    public void addCategory(String category) {
+        if (categories == null) {
+            categories = new ArrayList<>();
+        }
+        categories.add(category);
+    }
 
     public Date getEventDate() { return eventDate; }
     public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
