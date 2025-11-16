@@ -131,6 +131,34 @@ public interface EventRepository {
      */
     void leaveWaitingList(String eventId, String userId, RepositoryCallback callback);
 
+    /**
+     * Retrieves events matching the provided category.
+     *
+     * @param category the category to filter by (exact match string)
+     * @param onSuccess consumer receiving the list of matching events
+     * @param onError consumer receiving any exception
+     */
+    void getEventsByCategory(String category, Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
+
+    /**
+     * Retrieves all active events (events where isActive == true).
+     *
+     * @param onSuccess callback providing the list of active events
+     * @param onError   callback providing an Exception, if any
+     */
+    void getActiveEvents(
+            java.util.function.Consumer<java.util.List<com.example.lotterysystemproject.models.Event>> onSuccess,
+            java.util.function.Consumer<Exception> onError
+    );
+
+    /**
+     * Gets the most recent events ordered by createdAt descending.
+     * @param limit maximum number of events to return
+     * @param onSuccess consumer receiving the events list
+     * @param onError consumer receiving any exception
+     */
+    void getRecentEvents(int limit, java.util.function.Consumer<java.util.List<com.example.lotterysystemproject.models.Event>> onSuccess, java.util.function.Consumer<Exception> onError);
+
     // ===================== REGISTRATION OPERATIONS =====================
 
     /**

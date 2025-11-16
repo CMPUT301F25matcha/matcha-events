@@ -7,7 +7,7 @@ package com.example.lotterysystemproject.firebasemanager;
 public class RepositoryProvider {
 
     /** Toggles between Firebase and mock mode. Set to false for testing, true for production. */
-    private static final boolean USE_FIREBASE = true;
+    private static final boolean USE_FIREBASE = false;
 
     private static EventRepository eventRepositoryInstance;
     private static AdminRepository adminRepositoryInstance;

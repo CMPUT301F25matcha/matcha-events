@@ -111,7 +111,7 @@ public class MockEventRepository implements EventRepository {
                 "Downtown Concert Hall",
                 500
         );
-        e1.setCategory("Music");
+        e1.addCategory("Music");
         e1.setCurrentEnrolled(350);
         e1.setActive(true);
         mockEvents.put(e1.getId(), e1);
@@ -129,7 +129,7 @@ public class MockEventRepository implements EventRepository {
                 "Convention Center",
                 300
         );
-        e2.setCategory("Tech");
+        e2.addCategory("Tech");
         e2.setCurrentEnrolled(280);
         e2.setActive(true);
         mockEvents.put(e2.getId(), e2);
@@ -147,7 +147,7 @@ public class MockEventRepository implements EventRepository {
                 "City Park",
                 400
         );
-        e3.setCategory("Food");
+        e3.addCategory("Food");
         e3.setCurrentEnrolled(400);
         e3.setActive(true);
         mockEvents.put(e3.getId(), e3);
@@ -165,7 +165,7 @@ public class MockEventRepository implements EventRepository {
                 "Art Museum",
                 200
         );
-        e4.setCategory("Art");
+        e4.addCategory("Art");
         e4.setCurrentEnrolled(120);
         e4.setActive(true);
         mockEvents.put(e4.getId(), e4);
@@ -183,7 +183,7 @@ public class MockEventRepository implements EventRepository {
                 "Sports Arena",
                 1000
         );
-        e5.setCategory("Sports");
+        e5.addCategory("Sports");
         e5.setCurrentEnrolled(750);
         e5.setActive(true);
         mockEvents.put(e5.getId(), e5);
@@ -201,7 +201,7 @@ public class MockEventRepository implements EventRepository {
                 "Business Center",
                 150
         );
-        e6.setCategory("Education");
+        e6.addCategory("Education");
         e6.setCurrentEnrolled(90);
         e6.setActive(true);
         mockEvents.put(e6.getId(), e6);
@@ -363,6 +363,69 @@ public class MockEventRepository implements EventRepository {
                 if (callback != null) callback.onError(new Exception("User not on waiting list"));
             }
         }, 200);
+    }
+
+    @Override
+    public void getEventsByCategory(String category, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        mainHandler.postDelayed(() -> {
+            try {
+                List<Event> result = new ArrayList<>();
+                for (String id : mockEventIds) {
+                    Event e = mockEvents.get(id);
+                    if (e != null && e.isActive() && e.getCategories() != null) {
+                        if (e.getCategories().contains(category)) {
+                            result.add(e);
+                        }
+                    }
+                }
+                if (onSuccess != null) onSuccess.accept(result);
+            } catch (Exception e) {
+                if (onError != null) onError.accept(e);
+            }
+        }, 200);
+    }
+
+    @Override
+    public void getActiveEvents(
+            Consumer<List<Event>> onSuccess,
+            Consumer<Exception> onError
+    ) {
+        mainHandler.postDelayed(() -> {
+            try {
+                List<Event> result = new ArrayList<>();
+                for (Event e : mockEvents.values()) {
+                    if (e != null && e.isActive()) {
+                        result.add(e);
+                    }
+                }
+                if (onSuccess != null) onSuccess.accept(result);
+            } catch (Exception ex) {
+                if (onError != null) onError.accept(ex);
+            }
+        }, 200);
+    }
+
+    @Override
+    public void getRecentEvents(int limit, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
+        mainHandler.postDelayed(() -> {
+            try {
+                List<Event> out = new ArrayList<>();
+                for (Event e : mockEvents.values()) {
+                    if (e != null && e.isActive()) out.add(e);
+                }
+                // sort by createdAt desc
+                out.sort((a, b) -> {
+                    if (a.getCreatedAt() == null && b.getCreatedAt() == null) return 0;
+                    if (a.getCreatedAt() == null) return 1;
+                    if (b.getCreatedAt() == null) return -1;
+                    return b.getCreatedAt().compareTo(a.getCreatedAt());
+                });
+                if (out.size() > limit) out = new ArrayList<>(out.subList(0, limit));
+                if (onSuccess != null) onSuccess.accept(out);
+            } catch (Exception e) {
+                if (onError != null) onError.accept(e);
+            }
+        }, 150);
     }
 
     // ===================== REGISTRATION OPERATIONS =====================
