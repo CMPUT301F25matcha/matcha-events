@@ -75,11 +75,6 @@
             android:exported="false"
             android:label="Events History" />
 
-        <activity
-            android:name=".TestActivity"
-            android:exported="true"
-            android:label="Test Activity" />
-
         <!-- Organizer Main Activity -->
         <activity
             android:name=".views.organizer.OrganizerMainActivity"
