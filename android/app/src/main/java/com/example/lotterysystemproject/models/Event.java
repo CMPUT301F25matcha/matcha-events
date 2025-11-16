@@ -16,7 +16,7 @@ public class Event {
     private String hostName;
     private String hostId;
     private String location;
-    private String category;
+    private List<String> categories;
 
     // Event Timing
     private Date eventDate;
