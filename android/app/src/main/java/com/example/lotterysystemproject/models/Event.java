@@ -35,6 +35,7 @@ public class Event {
     // Track event state
     private long createdAt;             // When event was created
     private boolean isActive;           // Soft delete flag
+    private String status;              // e.g., "active", "cancelled", "completed"
 
     private int currentEnrollmentCount; // For display (denormalized for performance)
     private int currentWaitingCount;    // Number on waiting list (denormalized)
@@ -51,6 +52,8 @@ public class Event {
         this.category = category;
         this.createdAt = System.currentTimeMillis();
         this.isActive = true;
+        //TODO: This should only be set to active if start date is now
+        this.status = "active";
         this.maxEntrants = maxEntrants;
         this.maxWaitingList = maxWaitingList;
         this.currentEnrollmentCount = 0;

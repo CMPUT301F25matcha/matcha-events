@@ -18,6 +18,8 @@ public class User {
     private String phoneNumber;
     private String profilePictureUrl;
     private String role; // "entrant", "organizer", "admin"
+    //TODO: Add date of creation of user
+    private Long createdAt;
     private boolean geolocationRequired;
     private boolean isNotificationEnabled;
     private boolean isActive;
