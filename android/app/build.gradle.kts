@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.lotterysystemproject"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.lotterysystemproject"
-        minSdk = 24
-        targetSdk = 36
+        minSdk = 34
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -43,6 +43,15 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
 
+    // JUnit
+    testImplementation("junit:junit:4.13.2")
+    // Robolectric (fixes Handler/Looper issues)
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    // AndroidX Core Testing (LiveData support)
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    // For CountDownLatch and concurrent testing
+    testImplementation("junit:junit:4.13.2")
+
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
@@ -55,7 +64,6 @@ dependencies {
 
     //glide for images
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    testImplementation("junit:junit:4.13.2")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.gms:play-services-base:18.5.0")
@@ -65,8 +73,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.recyclerview)
-    implementation(libs.activity)
+//    implementation(libs.recyclerview)
+//    implementation(libs.activity)
     implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     testImplementation(libs.androidx.test.core)
