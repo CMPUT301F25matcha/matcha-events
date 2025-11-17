@@ -90,6 +90,13 @@ public class AdminDashboard extends Fragment {
             NavHostFragment.findNavController(AdminDashboard.this)
                     .navigate(R.id.action_adminDashboard_to_adminBrowseImages);
         });
+
+        // Navigate to Manage Organizer section
+        binding.btnManageOrganizers.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminManageOrganizer);
+
+        });
     }
 
     @Override

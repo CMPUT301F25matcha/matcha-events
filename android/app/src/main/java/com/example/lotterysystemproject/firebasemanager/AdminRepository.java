@@ -3,6 +3,7 @@ package com.example.lotterysystemproject.firebasemanager;
 import androidx.annotation.Nullable;
 
 import com.example.lotterysystemproject.models.Event;
+import com.example.lotterysystemproject.models.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -92,6 +93,8 @@ public interface AdminRepository {
      */
     void getAllImages(Consumer<List<String>> onSuccess, Consumer<Exception> onError);
 
+
+
     /**
      * Deletes a single image from storage.
      * @param imageUrl The URL of the image to delete.
@@ -105,4 +108,6 @@ public interface AdminRepository {
      * @param onComplete A bi-consumer that receives the count of successfully deleted images and any error.
      */
     void deleteMultipleImages(List<String> imageUrls, BiConsumer<Integer, Exception> onComplete);
+
+    void getAllOrganizers(Consumer<List<User>> onSuccess, Consumer<Exception> onError);
 }

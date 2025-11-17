@@ -23,6 +23,10 @@
             android:id="@+id/action_adminDashboard_to_adminBrowseImages"
             app:destination="@id/adminBrowseImagesFragment" />
 
+        <action
+            android:id="@+id/action_adminDashboard_to_adminManageOrganizer"
+            app:destination="@id/adminManageOrganizerFragment" />
+
     </fragment>
 
     <fragment
@@ -43,5 +47,11 @@
         android:name="com.example.lotterysystemproject.controllers.AdminBrowseImages"
         android:label="AdminBrowseImages"
         tools:layout="@layout/admin_browse_images" />
+
+    <fragment
+        android:id="@+id/adminManageOrganizerFragment"
+        android:name="com.example.lotterysystemproject.controllers.AdminManageOrganizer"
+        android:label="AdminManageOrganizer"
+        tools:layout="@layout/admin_manage_organizers" />
 
 </navigation>

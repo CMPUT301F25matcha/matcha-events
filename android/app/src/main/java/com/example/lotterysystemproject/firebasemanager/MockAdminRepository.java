@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
-
+import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -273,4 +273,23 @@ public class MockAdminRepository implements AdminRepository {
             }
         }, 300);
     }
+
+    @Override
+    public void getAllOrganizers(Consumer<List<User>> onSuccess, Consumer<Exception> onError) {
+
+        List<User> organizers = new ArrayList<>();
+
+        User u1 = new User("org1", "Alice Organizer", "alice@example.com", "1234567890", System.currentTimeMillis());
+        u1.setRole("organizer");
+
+        User u2 = new User("org2", "Bob Organizer", "bob@example.com", "9876543210", System.currentTimeMillis());
+        u2.setRole("organizer");
+        organizers.add(u1);
+        organizers.add(u2);
+
+        mainHandler.postDelayed(() -> {
+            if (onSuccess != null) onSuccess.accept(organizers);
+        }, 200);
+    }
+
 }

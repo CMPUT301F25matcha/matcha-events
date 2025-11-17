@@ -2,6 +2,7 @@ package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.annotation.Nullable;
 
+import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -223,5 +224,23 @@ public class FirebaseAdminRepository implements AdminRepository {
                 }
             });
         }
+    }
+
+    @Override
+    public void getAllOrganizers(Consumer<List<User>> onSuccess, Consumer<Exception> onError) {
+        db.collection("users")
+                .whereEqualTo("role", "organizer")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<User> organizers = new ArrayList<>();
+                    for (DocumentSnapshot doc: queryDocumentSnapshots) {
+                        User user = doc.toObject(User.class);
+                        if (user != null) organizers.add(user);
+                    }
+                    if (onSuccess != null) onSuccess.accept(organizers);
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept((e));
+                });
     }
 }
