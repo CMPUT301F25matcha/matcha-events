@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.repositories.firebase;
+package com.example.lotterysystemproject.firebasemanager;
 
 import android.util.Log;
 
@@ -6,13 +6,9 @@ import com.example.lotterysystemproject.models.Entrant;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.models.NotificationLog;
 import com.example.lotterysystemproject.models.User;
-import com.example.lotterysystemproject.repositories.NotificationRepository;
-import com.example.lotterysystemproject.repositories.RegistrationRepository;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,11 +1,9 @@
-package com.example.lotterysystemproject.repositories.firebase;
+package com.example.lotterysystemproject.firebasemanager;
 
 import android.content.Context;
 import android.provider.Settings;
 
 import com.example.lotterysystemproject.models.User;
-import com.example.lotterysystemproject.repositories.AuthRepository;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.repositories;
+package com.example.lotterysystemproject.firebasemanager;
 
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.models.NotificationLog;

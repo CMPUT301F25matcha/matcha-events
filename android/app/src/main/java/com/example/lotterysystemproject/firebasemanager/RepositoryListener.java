@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.repositories;
+package com.example.lotterysystemproject.firebasemanager;
 
 /**
  * Listener interface for real-time data updates

@@ -1,7 +1,5 @@
-package com.example.lotterysystemproject.repositories.firebase;
+package com.example.lotterysystemproject.firebasemanager;
 
-import com.example.lotterysystemproject.repositories.GeolocationRepository;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 

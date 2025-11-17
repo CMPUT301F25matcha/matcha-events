@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.repositories;
+package com.example.lotterysystemproject.firebasemanager;
 
 /**
  * Callback interface for asynchronous repository operations

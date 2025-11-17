@@ -1,13 +1,9 @@
-package com.example.lotterysystemproject.repositories.firebase;
+package com.example.lotterysystemproject.firebasemanager;
 
 import android.net.Uri;
 
 import com.example.lotterysystemproject.models.User;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
-import com.example.lotterysystemproject.repositories.RepositoryListener;
-import com.example.lotterysystemproject.repositories.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 

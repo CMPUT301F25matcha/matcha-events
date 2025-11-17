@@ -1,12 +1,9 @@
-package com.example.lotterysystemproject.repositories.mock;
+package com.example.lotterysystemproject.firebasemanager;
 
 import android.net.Uri;
 import android.util.Log;
 
 import com.example.lotterysystemproject.models.User;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
-import com.example.lotterysystemproject.repositories.RepositoryListener;
-import com.example.lotterysystemproject.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,8 @@
-package com.example.lotterysystemproject.repositories.mock;
+package com.example.lotterysystemproject.firebasemanager;
 
 import android.util.Log;
 
 import com.example.lotterysystemproject.models.User;
-import com.example.lotterysystemproject.repositories.AuthRepository;
-import com.example.lotterysystemproject.repositories.RepositoryCallback;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
