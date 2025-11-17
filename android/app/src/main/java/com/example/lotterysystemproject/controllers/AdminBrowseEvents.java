@@ -94,10 +94,7 @@ public class AdminBrowseEvents extends Fragment {
             eventAdminList.addAll(events);
             adapter.notifyDataSetChanged();
 
-            // Add sample events only if Firestore is empty
-            if (events.isEmpty()) {
-                addSampleEventsToFirebase();
-            }
+
 
         }, e -> e.printStackTrace());
     }
