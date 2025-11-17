@@ -399,7 +399,8 @@ public class MockEntrantRepositoryTest {
     @Test
     public void testGetCurrentUserInfo() throws InterruptedException {
         // Create a user in EventRepository
-        User user = new User("test_device_123", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("test_device_123", null, null, null, timestamp);
         user.setName("John Doe");
         user.setRole("entrant");
 

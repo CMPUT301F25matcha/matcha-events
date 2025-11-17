@@ -7,11 +7,13 @@ package com.example.lotterysystemproject.firebasemanager;
 public class RepositoryProvider {
 
     /** Toggles between Firebase and mock mode. Set to false for testing, true for production. */
-    private static final boolean USE_FIREBASE = false;
+    private static final boolean USE_FIREBASE = true;
 
     private static EventRepository eventRepositoryInstance;
     private static AdminRepository adminRepositoryInstance;
     private static EntrantRepository entrantRepositoryInstance;
+    private static UserRepository userRepositoryInstance;
+
 
     /**
      * Returns the singleton instance of the EventRepository.
@@ -30,6 +32,25 @@ public class RepositoryProvider {
             }
         }
         return eventRepositoryInstance;
+    }
+
+    /**
+     * Returns the singleton instance of the UserRepository.
+     * @return The UserRepository instance (either Mock or Firebase implementation).
+     */
+    public static UserRepository getUserRepository() {
+        if (userRepositoryInstance == null) {
+            synchronized (RepositoryProvider.class) {
+                if (userRepositoryInstance == null) {
+                    if (USE_FIREBASE) {
+                        userRepositoryInstance = new FirebaseUserRepository();
+                    } else {
+                        userRepositoryInstance = new MockUserRepository();
+                    }
+                }
+            }
+        }
+        return userRepositoryInstance;
     }
 
     /**

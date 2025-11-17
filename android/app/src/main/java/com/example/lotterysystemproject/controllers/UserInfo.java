@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
+import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
+import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
+import com.example.lotterysystemproject.firebasemanager.UserRepository;
 import com.example.lotterysystemproject.models.DeviceIdentityManager;
 import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.views.admin.AdminLoginActivity;
@@ -38,6 +41,8 @@ public class UserInfo {
      * @param binding The view binding containing the input fields
      * @return A User object populated with the collected information
      */
+    private UserRepository userRepository;
+
     public User collectUserInfo(Context context, UserInfoBinding binding) {
         String name = binding.userName.getText() != null ? binding.userName.getText().toString().trim() : "";
         String email = binding.userEmail.getText() != null ? binding.userEmail.getText().toString().trim() : "";
@@ -45,8 +50,9 @@ public class UserInfo {
 
         // Generate unique ID using the provided context
         String deviceId = DeviceIdentityManager.getUserId(context);
+        long timestamp = System.currentTimeMillis();
 
-        return new User(deviceId, name, email, phone);
+        return new User(deviceId, name, email, phone, timestamp);
     }
 
     /**
@@ -179,7 +185,7 @@ public class UserInfo {
     public void handleContinue(Activity activity, UserInfoBinding binding) {
         hideValidationError(binding);
         User model = collectUserInfo(activity, binding);
-
+        UserRepository userRepository = RepositoryProvider.getUserRepository();
         android.util.Log.d("UserSignUp", "Device ID: " + model.getId());
 
         if (!validate(model)) {
@@ -192,27 +198,19 @@ public class UserInfo {
         persistInMemory(activity, model);
 
         // Save user to Firebase
-        com.example.lotterysystemproject.firebasemanager.RepositoryProvider.getEventRepository()
-                .addUser(model, new com.example.lotterysystemproject.firebasemanager.EventRepository.RepositoryCallback() {
-                    @Override
-                    public void onSuccess() {
-                        android.util.Log.d("UserSignUp", "User saved to Firebase successfully");
-                        //Clear all old notifications (reset for this user)
-                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
-                        navigateToEntrantHome(activity);
-                    }
+        userRepository.createOrUpdateUser(model, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // Handle success
+                navigateToEntrantHome(activity);
+            }
 
-                    @Override
-                    public void onError(Exception e) {
-                        android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
-                        android.widget.Toast.makeText(activity,
-                                "Warning: Could not sync user data. Will retry later.",
-                                android.widget.Toast.LENGTH_SHORT).show();
-                        //Clear all old notifications (reset for this user)
-                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
-                        navigateToEntrantHome(activity);
-                    }
-                });
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+                android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
+            }
+        });
     }
 
     /**
@@ -228,32 +226,24 @@ public class UserInfo {
     public void handleSkip(Activity activity, UserInfoBinding binding) {
         hideValidationError(binding);
         User model = collectUserInfo(activity, binding);
-
+        UserRepository userRepository = RepositoryProvider.getUserRepository();
         model.setSignedUp(false);
         model.setRole("entrant"); // Default role for users who skip
         persistInMemory(activity, model);
 
         // Save user to Firebase
-        com.example.lotterysystemproject.firebasemanager.RepositoryProvider.getEventRepository()
-                .addUser(model, new com.example.lotterysystemproject.firebasemanager.EventRepository.RepositoryCallback() {
-                    @Override
-                    public void onSuccess() {
-                        android.util.Log.d("UserSignUp", "User saved to Firebase successfully");
-                        // Clear all old notifications (reset for this user)
-                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
-                        navigateToEntrantHome(activity);
-                    }
+        userRepository.createOrUpdateUser(model, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // Handle success
+                navigateToEntrantHome(activity);
+            }
 
-                    @Override
-                    public void onError(Exception e) {
-                        android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
-                        android.widget.Toast.makeText(activity,
-                                "Warning: Could not sync user data. Will retry later.",
-                                android.widget.Toast.LENGTH_SHORT).show();
-                        // Clear all old notifications (reset for this user)
-                        com.example.lotterysystemproject.utils.NotificationsLocalStore.clearAll(activity);
-                        navigateToEntrantHome(activity);
-                    }
-                });
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+                android.util.Log.e("UserSignUp", "Failed to save user to Firebase", e);
+            }
+        });
     }
 }

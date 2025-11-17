@@ -52,7 +52,8 @@ public class MockEventRepositoryTest {
 
     @Test
     public void testAddUser() throws InterruptedException {
-        User user = new User("user1", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("user1", null, null, null, timestamp);
         user.setName("Alice");
         user.setEmail("alice@example.com");
 
@@ -76,7 +77,8 @@ public class MockEventRepositoryTest {
 
     @Test
     public void testGetUser() throws InterruptedException {
-        User user = new User("user1", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("user1", null, null, null, timestamp);
         user.setName("Alice");
         user.setEmail("alice@example.com");
         repository.addUser(user, null);
@@ -121,7 +123,8 @@ public class MockEventRepositoryTest {
 
     @Test
     public void testUpdateUser() throws InterruptedException {
-        User user = new User("user1", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("user1", null, null, null, timestamp);
         user.setName("Alice");
         repository.addUser(user, null);
         idleMainLooper();
@@ -161,7 +164,8 @@ public class MockEventRepositoryTest {
 
     @Test
     public void testDeleteUser() throws InterruptedException {
-        User user = new User("user1", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("user1", null, null, null, timestamp);
         repository.addUser(user, null);
         idleMainLooper();
 
@@ -195,7 +199,8 @@ public class MockEventRepositoryTest {
 
     @Test
     public void testUpdateUserRoleToOrganizer() throws InterruptedException {
-        User user = new User("user1", null, null, null);
+        long timestamp = System.currentTimeMillis();
+        User user = new User("user1", null, null, null, timestamp);
         repository.addUser(user, null);
         idleMainLooper();
 
