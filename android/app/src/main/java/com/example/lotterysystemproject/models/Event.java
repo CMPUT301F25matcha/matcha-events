@@ -47,7 +47,7 @@ public class Event {
 
     // Event Status
     private String status; // "open" (accepting registrations), "closed", "completed", "cancelled"
-    private boolean isActive;
+    private boolean active;
 
     // Metadata
     private Date createdAt;
@@ -63,7 +63,7 @@ public class Event {
         this.declinedEntrants = new ArrayList<>();
         this.createdAt = new Date();
         this.updatedAt = new Date();
-        this.isActive = true;
+        this.active = true;
         this.status = "open";
         this.currentEnrolled = 0;
         this.geolocationRequired = false;
@@ -163,8 +163,8 @@ public class Event {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }

@@ -146,7 +146,7 @@ public class FirebaseEventRepository implements EventRepository {
         MutableLiveData<List<Event>> liveData = new MutableLiveData<>();
 
         db.collection("events")
-                .whereEqualTo("isActive", true)
+                .whereEqualTo("active", true)
                 .get()
                 .addOnSuccessListener(q -> {
                     List<Event> out = new ArrayList<>();
@@ -225,7 +225,7 @@ public class FirebaseEventRepository implements EventRepository {
     @Override
     public void getEventsByCategory(String category, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
-                .whereEqualTo("isActive", true)
+                .whereEqualTo("active", true)
                 .whereArrayContains("categories", category)
                 .get()
                 .addOnSuccessListener(q -> {
@@ -250,7 +250,7 @@ public class FirebaseEventRepository implements EventRepository {
             Consumer<Exception> onError
     ) {
         db.collection("events")
-                .whereEqualTo("isActive", true)
+                .whereEqualTo("active", true)
                 .get()
                 .addOnSuccessListener(query -> {
                     List<Event> events = new ArrayList<>();
@@ -273,7 +273,7 @@ public class FirebaseEventRepository implements EventRepository {
     @Override
     public void getRecentEvents(int limit, Consumer<List<Event>> onSuccess, Consumer<Exception> onError) {
         db.collection("events")
-                .whereEqualTo("isActive", true)
+                .whereEqualTo("active", true)
                 .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()
