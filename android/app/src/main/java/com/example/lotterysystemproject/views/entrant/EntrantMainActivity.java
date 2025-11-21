@@ -60,7 +60,7 @@ public class EntrantMainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // init repository (ensure RepositoryProvider is implemented)
-        eventRepository = com.example.lotterysystemproject.firebasemanager.RepositoryProvider.getEventRepository();
+        eventRepository = RepositoryProvider.getEventRepository();
 
         // initialize helpers/managers
         recentEventsManager = new RecentEventsManager(eventRepository);

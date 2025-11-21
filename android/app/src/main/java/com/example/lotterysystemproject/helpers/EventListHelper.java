@@ -85,6 +85,7 @@ public class EventListHelper {
      * @return The current user's unique ID, or null if not found.
      */
     private String getCurrentUserId() {
+        //TODO: Switch to device id and not prefs
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(KEY_USER_ID, null);
     }

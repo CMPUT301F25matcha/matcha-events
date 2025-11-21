@@ -1,13 +1,17 @@
 package com.example.lotterysystemproject.views.entrant;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.lotterysystemproject.controllers.AdminUserProfileDialog;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.databinding.EventDetailsBinding;
+import com.example.lotterysystemproject.views.entrant.EntryCriteriaDialogue;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import android.content.SharedPreferences;
@@ -42,7 +46,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Fetch the event from the mock data
+        // Fetch the event from the firebase
         loadEventDetails();
 
         // Back button
@@ -65,6 +69,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             // TODO: Implement notifications toggle
         });
 
+        // View Entry Criteria (stub)
+        binding.viewEntryCriteria.setOnClickListener(v -> handleEntryCriteriaDialogue());
         // Join/leave waiting list logic
         binding.joinWaitingListButton.setOnClickListener(v -> handleWaitingListAction());
     }
@@ -216,6 +222,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         binding.eventName.setText(event.getName());
         binding.eventLocation.setText(event.getLocation());
         binding.eventDate.setText(event.getEventDate() != null ? dateFormat.format(event.getEventDate()) : "Date TBD");
+        binding.eventDescription.setText(event.getDescription());
         updateJoinButton();
         // TODO: Load image, setup map, set state for notifications and joined status
     }
@@ -228,12 +235,15 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void updateJoinButton() {
         String userId = getCurrentUserId();
+        boolean isUserOnWaitingList = event.isUserOnWaitingList(userId);
         int count = event.getWaitingList() != null ? event.getWaitingList().size() : 0;
-        if (event.isUserOnWaitingList(userId)) {
+
+        if (isUserOnWaitingList) {
             binding.joinWaitingListButton.setText("Leave Waiting List (" + count + ")");
         } else {
             binding.joinWaitingListButton.setText("Join Waiting List (" + count + ")");
         }
+        binding.notificationsSwitch.setVisibility(isUserOnWaitingList ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -244,6 +254,14 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String getCurrentUserId() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         return prefs.getString("userId", null);
+    }
+    
+    /**
+     * Handles displaying the entry criteria dialog.
+     */
+    private void handleEntryCriteriaDialogue() {
+        EntryCriteriaDialogue dialog = new EntryCriteriaDialogue();
+        dialog.show(getSupportFragmentManager(), "EntryCriteriaDialogue");
     }
 
     @Override
