@@ -18,13 +18,18 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
+import com.example.lotterysystemproject.firebasemanager.EventRepository;
+import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
+import com.example.lotterysystemproject.firebasemanager.UserRepository;
 import com.example.lotterysystemproject.models.DeviceIdentityManager;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -223,7 +228,6 @@ public class CreateEventFragment extends Fragment {
         String description = descriptionInput.getText().toString().trim();
         String location = locationInput.getText().toString().trim();
         String capacityStr = capacityInput.getText().toString().trim();
-        String priceStr = priceInput.getText().toString().trim();
         String maxWaitingListStr = maxWaitingListInput.getText().toString().trim();
 
         // Validate inputs
@@ -240,11 +244,6 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        double price = 0.0;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException ignored) {}
-
         int maxWaitingList = 100;
         try {
             maxWaitingList = Integer.parseInt(maxWaitingListStr);
@@ -253,34 +252,26 @@ public class CreateEventFragment extends Fragment {
         String deviceId = DeviceIdentityManager.getUserId(getContext());
 
         // Get the repository and fetch user info
-        EntrantRepository repository = RepositoryProvider.getEntrantRepository();
+        UserRepository repository = RepositoryProvider.getUserRepository();
         int finalMaxWaitingList = maxWaitingList;
-        double finalPrice = price;
         int finalCapacity = capacity;
 
-        repository.getCurrentUserInfo(deviceId, new EntrantRepository.OnUserInfoListener() {
+        repository.getUserById(deviceId, new RepositoryCallback<User>() {
             @Override
-            public void onSuccess(String hostId, String hostName, String role) {
+            public void onSuccess(User result) {
                 // Check if user is an organizer
-                if (!"organizer".equals(role)) {
+                if (!"organizer".equals(result.getRole())) {
                     Toast.makeText(getContext(), "Only organizers can create events", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // Generate event ID locally (works in both mock and Firebase modes)
                 String eventId = "event_" + System.currentTimeMillis() + "_" + (int)(Math.random() * 10000);
-
-                Event newEvent = new Event(
-                        eventId,
-                        name,
-                        description,
-                        hostName,
-                        hostId,
-                        eventDateTime.getTime(),
-                        timeFormat.format(eventDateTime.getTime()),
-                        location,
-                        finalCapacity
-                );
+                //TODO: Make sure to gather when the event is, as this is for display for Entrants, hard coded for now
+                Date date = regEndDate.getTime();
+                String eventTime = "5:00PM";
+                EventRepository eventRepository = RepositoryProvider.getEventRepository();
+                Event newEvent = new Event(eventId, name, description, result.getName(), result.getEmail(), date, eventTime, location, finalCapacity);
 
                 newEvent.setRegistrationStart(regStartDate.getTime());
                 newEvent.setRegistrationEnd(regEndDate.getTime());
@@ -293,7 +284,7 @@ public class CreateEventFragment extends Fragment {
                 newEvent.setPromotionalQrCode(promoQR);
                 newEvent.setCheckInQrCode(checkinQR);
 
-                // Save the event via ViewModel
+                // Save the event via ViewModel which saves to firebase
                 eventViewModel.createEvent(newEvent);
 
                 Toast.makeText(getContext(),
@@ -304,10 +295,10 @@ public class CreateEventFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(String error) {
-                Log.e("EventCreation", "Failed to fetch organizer info: " + error);
+            public void onFailure(Exception e) {
+                Log.e("EventCreation", "Failed to fetch organizer info: " + e);
                 Toast.makeText(getContext(),
-                        "Error: Could not verify organizer. " + error,
+                        "Error: Could not verify organizer. " + e,
                         Toast.LENGTH_LONG).show();
             }
         });

@@ -6,20 +6,47 @@ import com.example.lotterysystemproject.models.Entrant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mock implementation of EntrantRepository for testing and development.
  * Simulates backend operations with in-memory data.
  */
 public class MockEntrantRepository implements EntrantRepository {
-    private MutableLiveData<List<Entrant>> entrantsLiveData;
+    // Store entrants by event ID for better management
+    private final Map<String, MutableLiveData<List<Entrant>>> entrantsByEvent = new HashMap<>();
+    private final Map<String, List<Entrant>> entrantsData = new HashMap<>();
 
     /**
      * Initializes the repository with LiveData storage.
      */
     public MockEntrantRepository() {
-        entrantsLiveData = new MutableLiveData<>();
+        // Pre-initialize mock data for event "1"
+        initializeMockData();
+    }
+
+    /**
+     * Pre-initializes mock data so it's available immediately for lottery operations.
+     */
+    private void initializeMockData() {
+        List<Entrant> mockEntrants = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        long oneDay = 86_400_000L;
+
+        for (int i = 1; i <= 130; i++) {
+            Entrant entrant = new Entrant("Person " + i, "person" + i + "@email.com");
+            entrant.setId("waiting_" + i);
+            entrant.setEventId("1");
+            entrant.setStatus(Entrant.Status.WAITING);
+            entrant.setJoinedTimestamp(now - (i * oneDay));
+            entrant.setStatusTimestamp(now - (i * oneDay));
+            mockEntrants.add(entrant);
+        }
+
+        // Store the data
+        entrantsData.put("1", mockEntrants);
     }
 
     /**
@@ -30,35 +57,38 @@ public class MockEntrantRepository implements EntrantRepository {
      */
     @Override
     public LiveData<List<Entrant>> getEntrants(String eventId) {
-        loadMockData(eventId);
-        return entrantsLiveData;
+        // Get or create LiveData for this event
+        if (!entrantsByEvent.containsKey(eventId)) {
+            MutableLiveData<List<Entrant>> liveData = new MutableLiveData<>();
+            entrantsByEvent.put(eventId, liveData);
+
+            // Get the data for this event (or empty list if none exists)
+            List<Entrant> data = entrantsData.getOrDefault(eventId, new ArrayList<>());
+            liveData.setValue(data);
+        }
+
+        return entrantsByEvent.get(eventId);
     }
 
     /**
-     * Loads mock entrant data. Generates 130 mock entrants for event ID "1".
-     * @param eventId ID of the event being loaded.
+     * Gets the current entrant list for an event directly (not LiveData).
+     * Used internally by lottery operations.
      */
-    private void loadMockData(String eventId) {
-        List<Entrant> mockEntrants = new ArrayList<>();
-        long now = System.currentTimeMillis();
-        long oneDay = 86_400_000L;
+    private List<Entrant> getEntrantsList(String eventId) {
+        return entrantsData.getOrDefault(eventId, new ArrayList<>());
+    }
 
-        if (!eventId.equals("1")) {
-            entrantsLiveData.setValue(mockEntrants);
-            return;
+    /**
+     * Updates the entrant list and notifies observers.
+     */
+    private void updateEntrants(String eventId, List<Entrant> entrants) {
+        entrantsData.put(eventId, entrants);
+
+        // Update LiveData if it exists
+        MutableLiveData<List<Entrant>> liveData = entrantsByEvent.get(eventId);
+        if (liveData != null) {
+            liveData.setValue(entrants);
         }
-
-        for (int i = 1; i <= 130; i++) {
-            Entrant entrant = new Entrant("Person " + i, "person" + i + "@email.com");
-            entrant.setId("waiting_" + i);
-            entrant.setEventId(eventId);
-            entrant.setStatus(Entrant.Status.WAITING);
-            entrant.setJoinedTimestamp(now - (i * oneDay));
-            entrant.setStatusTimestamp(now - (i * oneDay));
-            mockEntrants.add(entrant);
-        }
-
-        entrantsLiveData.setValue(mockEntrants);
     }
 
     /**
@@ -69,8 +99,9 @@ public class MockEntrantRepository implements EntrantRepository {
      */
     @Override
     public void drawLottery(String eventId, int count, OnLotteryCompleteListener listener) {
-        List<Entrant> allEntrants = entrantsLiveData.getValue();
-        if (allEntrants == null) {
+        List<Entrant> allEntrants = getEntrantsList(eventId);
+
+        if (allEntrants.isEmpty()) {
             listener.onFailure("No entrants available");
             return;
         }
@@ -101,7 +132,7 @@ public class MockEntrantRepository implements EntrantRepository {
             winners.add(winner);
         }
 
-        entrantsLiveData.setValue(allEntrants);
+        updateEntrants(eventId, allEntrants);
         listener.onComplete(winners);
     }
 
@@ -112,21 +143,30 @@ public class MockEntrantRepository implements EntrantRepository {
      */
     @Override
     public void cancelEntrant(String entrantId, OnActionCompleteListener listener) {
-        List<Entrant> allEntrants = entrantsLiveData.getValue();
-        if (allEntrants == null) {
-            listener.onFailure("No entrants available");
-            return;
-        }
+        // Find the entrant across all events
+        boolean found = false;
 
-        for (Entrant e : allEntrants) {
-            if (e.getId().equals(entrantId)) {
-                e.setStatus(Entrant.Status.CANCELLED);
-                break;
+        for (Map.Entry<String, List<Entrant>> entry : entrantsData.entrySet()) {
+            String eventId = entry.getKey();
+            List<Entrant> entrants = entry.getValue();
+
+            for (Entrant e : entrants) {
+                if (e.getId().equals(entrantId)) {
+                    e.setStatus(Entrant.Status.CANCELLED);
+                    updateEntrants(eventId, entrants);
+                    found = true;
+                    break;
+                }
             }
+
+            if (found) break;
         }
 
-        entrantsLiveData.setValue(allEntrants);
-        listener.onSuccess();
+        if (found) {
+            listener.onSuccess();
+        } else {
+            listener.onFailure("Entrant not found");
+        }
     }
 
     /**
@@ -136,8 +176,9 @@ public class MockEntrantRepository implements EntrantRepository {
      */
     @Override
     public void drawReplacement(String eventId, OnReplacementDrawnListener listener) {
-        List<Entrant> allEntrants = entrantsLiveData.getValue();
-        if (allEntrants == null) {
+        List<Entrant> allEntrants = getEntrantsList(eventId);
+
+        if (allEntrants.isEmpty()) {
             listener.onFailure("No entrants available");
             return;
         }
@@ -158,7 +199,7 @@ public class MockEntrantRepository implements EntrantRepository {
         Entrant replacement = waitingList.get(0);
         replacement.setStatus(Entrant.Status.INVITED);
 
-        entrantsLiveData.setValue(allEntrants);
+        updateEntrants(eventId, allEntrants);
         listener.onSuccess(replacement);
     }
 
@@ -176,7 +217,7 @@ public class MockEntrantRepository implements EntrantRepository {
         // Only works if eventRepo is a MockEventRepository
         if (eventRepo instanceof MockEventRepository) {
             MockEventRepository mockRepo = (MockEventRepository) eventRepo;
-            // Access the mock users through a helper method we'll add
+            // Access the mock users through a helper method
             mockRepo.getUserInfo(deviceId, listener);
         } else {
             listener.onFailure("Not using MockEventRepository");

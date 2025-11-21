@@ -101,7 +101,6 @@
         app:cardUseCompatPadding="true"
         app:cardBackgroundColor="#FFF"
         >
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,31 +110,39 @@
             android:paddingTop="28dp"
             android:paddingBottom="32dp">
 
-            <!-- Event Name, Location, Date -->
-            <TextView
-                android:id="@+id/event_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Event Name"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#111" />
-            <TextView
-                android:id="@+id/event_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location"
-                android:textSize="15sp"
-                android:textColor="#4B4B4B"
-                android:layout_marginTop="2dp" />
-            <TextView
-                android:id="@+id/event_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date and Time"
-                android:textSize="15sp"
-                android:textColor="#4B4B4B"
-                android:layout_marginTop="2dp" />
+                android:orientation="vertical">
+
+                <!-- Event Name, Location, Date -->
+                <TextView
+                    android:id="@+id/event_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Event Name"
+                    android:textColor="#111"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/event_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Location"
+                    android:textColor="#4B4B4B"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/event_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Date and Time"
+                    android:textColor="#4B4B4B"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -179,6 +186,42 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="24dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/event_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Description..."
+                    android:layout_marginBottom="10dp"
+                    android:textSize="15sp"
+                    android:textColor="#343434" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/view_entry_criteria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="right"
+                    android:text="@string/view_entry_criteria"
+                    android:textSize="15sp"
+                    android:textColor="#d2dbde"/>
+            </LinearLayout>
 
             <!-- Join waiting list button -->
             <com.google.android.material.button.MaterialButton

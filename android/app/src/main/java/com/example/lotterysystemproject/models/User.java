@@ -45,6 +45,9 @@ public class User {
      */
     private String role;
 
+    private long createdAt;
+
+    private boolean isActive;
     /**
      * Default no-argument constructor required for Firebase serialization.
      */
@@ -59,13 +62,15 @@ public class User {
      * @param email User's email address
      * @param phone User's phone number (can be empty string if not provided)
      */
-    public User(String id, String name, String email, String phone) {
+    public User(String id, String name, String email, String phone, long timestamp) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.createdAt = timestamp;
         this.role = "entrant";
         this.signedUp = false;
+        this.isActive = true;
     }
 
     /**
@@ -167,6 +172,17 @@ public class User {
         this.signedUp = signedUp;
     }
 
+    public void setCreatedAt(long timestamp) {
+        this.createdAt = timestamp;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
     /**
      * Checks whether the user has completed the sign-up process.
      *
@@ -174,5 +190,9 @@ public class User {
      */
     public boolean getSignedUp() {
         return signedUp;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 }

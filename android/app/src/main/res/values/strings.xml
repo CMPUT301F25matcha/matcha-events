@@ -59,4 +59,5 @@
     <string name="profile_name_label">Name</string>
     <string name="profile_email_label">Email</string>
     <string name="profile_device_id_label">Device ID</string>
+    <string name="view_entry_criteria"><u>View Entry Criteria</u></string>
 </resources>

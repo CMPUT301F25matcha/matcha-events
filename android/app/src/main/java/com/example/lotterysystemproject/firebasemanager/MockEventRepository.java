@@ -50,7 +50,6 @@ public class MockEventRepository implements EventRepository {
      */
     public MockEventRepository() {
         initMockEvents();
-        initMockUsers();
     }
 
     // ===================== ACCESSORS =====================
@@ -73,23 +72,6 @@ public class MockEventRepository implements EventRepository {
     }
 
     // ===================== MOCK SEED DATA =====================
-
-    /**
-     * Initializes mock user data for testing.
-     */
-    private void initMockUsers() {
-        User entrantUser = new User("usr_entrant123", "John Entrant", "john@example.com", "555-1234");
-        entrantUser.setRole("entrant");
-        mockUsers.put("usr_entrant123", entrantUser);
-
-        User organizerUser = new User("usr_organizer456", "Jane Organizer", "jane@example.com", "555-5678");
-        organizerUser.setRole("organizer");
-        mockUsers.put("usr_organizer456", organizerUser);
-
-        User adminUser = new User("usr_admin789", "Admin User", "admin@example.com", "555-9999");
-        adminUser.setRole("admin");
-        mockUsers.put("usr_admin789", adminUser);
-    }
 
     /**
      * Initializes the in-memory mock data for events.
@@ -212,10 +194,11 @@ public class MockEventRepository implements EventRepository {
 
     @Override
     public void addUser(User user, RepositoryCallback callback) {
-        mainHandler.postDelayed(() -> {
-            mockUsers.put(user.getId(), user);
-            if (callback != null) callback.onSuccess();
-        }, 200);
+        // Execute immediately for better test reliability
+        mockUsers.put(user.getId(), user);
+        if (callback != null) {
+            callback.onSuccess();
+        }
     }
 
     @Override
@@ -317,7 +300,13 @@ public class MockEventRepository implements EventRepository {
             }
             mockEvents.put(event.getId(), event);
             mockEventIds.add(event.getId());
-            // No error, so we don't call onError.
+
+            // === FIX: ADD THIS BLOCK TO SIGNAL SUCCESS ===
+            if (onError != null) {
+                onError.accept(null);
+            }
+            // ============================================
+
         }, 200);
     }
 
@@ -436,7 +425,6 @@ public class MockEventRepository implements EventRepository {
         List<Registration> cur = mockRegistrationsByUser.getOrDefault(userId, new ArrayList<>());
         mainHandler.post(() -> {
             if (listener != null) {
-                assert cur != null;
                 listener.onChanged(new ArrayList<>(cur));
             }
         });
