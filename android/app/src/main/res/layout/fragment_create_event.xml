@@ -288,6 +288,17 @@
                 android:paddingEnd="12dp"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Poster Preview -->
+            <ImageView
+                android:id="@+id/event_poster_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="450dp"
+                android:background="#EDE9E9"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="12dp" />
+
             <!-- Upload Poster -->
             <Button
                 android:id="@+id/upload_poster_button"

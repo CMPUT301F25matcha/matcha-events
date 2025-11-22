@@ -94,10 +94,7 @@ public class AdminBrowseEvents extends Fragment {
             eventAdminList.addAll(events);
             adapter.notifyDataSetChanged();
 
-            // Add sample events only if Firestore is empty
-            if (events.isEmpty()) {
-                addSampleEventsToFirebase();
-            }
+
 
         }, e -> e.printStackTrace());
     }
@@ -157,7 +154,7 @@ public class AdminBrowseEvents extends Fragment {
         } else {
             for (Event eventAdmin : allEvents) {
                 if (eventAdmin.getName().toLowerCase().contains(query.toLowerCase()) ||
-                eventAdmin.getLocation().toLowerCase().contains(query.toLowerCase())) {
+                        eventAdmin.getLocation().toLowerCase().contains(query.toLowerCase())) {
                     eventAdminList.add(eventAdmin);
                 }
             }
@@ -184,7 +181,3 @@ public class AdminBrowseEvents extends Fragment {
         );
     }
 }
-
-
-
-

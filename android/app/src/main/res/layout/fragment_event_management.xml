@@ -42,71 +42,85 @@
             android:id="@+id/qr_code_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:textColor="#FFFFFF"
             android:background="?attr/selectableItemBackgroundBorderless"
             style="@style/Widget.Material3.Button.TextButton"
             app:icon="@drawable/outline_analytics_24"
-            android:textSize="20sp"
             app:iconTint="#FFFFFF"
-            app:iconSize="24dp"
             android:padding="0dp" />
     </LinearLayout>
 
-    <!-- Event Info Card -->
-    <LinearLayout
+    <!-- SCROLLABLE EVENT INFO -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="#F5F5F5">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/event_date"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📅 Jan 15, 2025 • 2:00 PM"
-            android:textSize="14sp"
-            android:fontFamily="@font/anuphan"
-            android:textColor="#262424" />
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#F5F5F5">
 
-        <TextView
-            android:id="@+id/event_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📍 Community Pool"
-            android:textSize="14sp"
-            android:fontFamily="@font/anuphan"
-            android:textColor="#262424"
-            android:layout_marginTop="4dp" />
+            <TextView
+                android:id="@+id/event_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text="📅 Jan 15, 2025 • 2:00 PM"
+                android:textColor="#262424"
+                android:fontFamily="@font/anuphan" />
 
-        <TextView
-            android:id="@+id/event_enrollment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="👥 18/20 enrolled"
-            android:textSize="14sp"
-            android:fontFamily="@font/anuphan"
-            android:textColor="#262424"
-            android:layout_marginTop="4dp" />
+            <TextView
+                android:id="@+id/event_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📍 Community Pool"
+                android:textSize="14sp"
+                android:textColor="#262424"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/anuphan" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/event_enrollment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👥 18/20 enrolled"
+                android:textSize="14sp"
+                android:textColor="#262424"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/anuphan" />
+
+
+            <ImageView
+                android:id="@+id/event_poster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="450dp"
+                android:background="#EDE9E9"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="12dp" />
+
+
+        </LinearLayout>
+    </ScrollView>
 
     <!-- Tabs -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:tabMode="fixed"
-        app:tabGravity="fill"
-        app:tabTextColor="#B6ACAC"
-        app:tabSelectedTextColor="#262424"
         app:tabIndicatorColor="#262424"
-        app:tabIndicatorHeight="3dp" />
-    <!-- ViewPager for tab content -->
+        app:tabSelectedTextColor="#262424"
+        app:tabTextColor="#B6ACAC" />
+
+    <!-- ViewPager -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
 </LinearLayout>
