@@ -68,7 +68,14 @@ public class CreateEventFragment extends Fragment {
 
     private Uri selectedImageUri = null;
     private ImageView eventPosterPreview;
-    private ActivityResultLauncher<String> pickImageLauncher;
+    private final ActivityResultLauncher<String> pickImageLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri;
+                    eventPosterPreview.setImageURI(uri);
+                    validateForm();
+                }
+            });
 
     /**
      * Inflates the layout and initializes the fragment components.
@@ -88,14 +95,6 @@ public class CreateEventFragment extends Fragment {
 
 
         initializeViews(view);
-        pickImageLauncher =
-                registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                    if (uri != null) {
-                        selectedImageUri = uri;
-                        eventPosterPreview.setImageURI(uri);
-                        validateForm();
-                    }
-                });
         setupListeners();
         setupValidation();
 

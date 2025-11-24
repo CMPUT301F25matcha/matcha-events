@@ -92,16 +92,31 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/anuphan" />
 
-
-            <ImageView
-                android:id="@+id/event_poster"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:maxHeight="450dp"
-                android:background="#EDE9E9"
-                android:scaleType="centerCrop"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp">
+                <ImageView
+                    android:id="@+id/event_poster"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="450dp"
+                    android:background="#EDE9E9"
+                    android:scaleType="centerCrop"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/edit_poster_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="10dp"
+                    android:text="Edit Poster"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#262424"
+                    android:visibility="visible" />
+            </FrameLayout>
 
 
         </LinearLayout>
