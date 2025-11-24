@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/admin_dashboard"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -13,19 +10,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <ImageView
             android:id="@+id/back_arrow"
-            android:layout_width="35dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_back_arrow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="@string/back_button_description" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:id="@+id/title"
@@ -33,97 +29,116 @@
             android:layout_height="wrap_content"
             android:text="@string/admin_dashboard"
             android:textColor="@android:color/black"
-            android:textSize="26sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/profile_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_account_circle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="@string/profile_icon_description" />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/black" />
+        android:layout_height="1dp"
+        android:background="#CCCCCC" />
 
-    <!-- Menu Options -->
+    <!-- Menu List -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="20dp"
+        android:orientation="vertical">
 
+        <!-- Single menu style to repeat -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_browse_profiles"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/browse_profiles"
+            android:textSize="18sp"
             android:gravity="start|center_vertical"
-            android:textColor="@android:color/black"
             app:icon="@drawable/ic_profiles"
+            app:iconSize="28dp"
+            app:iconPadding="16dp"
+            android:textColor="@android:color/black"
             app:iconTint="@android:color/black"
-            app:strokeColor="@android:color/transparent" />
+            app:strokeColor="#DDDDDD"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_browse_events"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/browse_events"
+            android:textSize="18sp"
             android:gravity="start|center_vertical"
-            android:textColor="@android:color/black"
             app:icon="@drawable/ic_calender"
+            app:iconSize="28dp"
+            app:iconPadding="16dp"
+            android:textColor="@android:color/black"
             app:iconTint="@android:color/black"
-            app:strokeColor="@android:color/transparent"/>
+            app:strokeColor="#DDDDDD"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_browse_images"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/browse_images"
+            android:textSize="18sp"
             android:gravity="start|center_vertical"
-            android:textColor="@android:color/black"
             app:icon="@drawable/ic_image"
+            app:iconSize="28dp"
+            app:iconPadding="16dp"
+            android:textColor="@android:color/black"
             app:iconTint="@android:color/black"
-            app:strokeColor="@android:color/transparent"/>
+            app:strokeColor="#DDDDDD"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_manage_organizers"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/manage_organizers"
+            android:textSize="18sp"
             android:gravity="start|center_vertical"
-            android:textColor="@android:color/black"
             app:icon="@drawable/ic_organizers"
+            app:iconSize="28dp"
+            app:iconPadding="16dp"
+            android:textColor="@android:color/black"
             app:iconTint="@android:color/black"
-            app:strokeColor="@android:color/transparent"/>
+            app:strokeColor="#DDDDDD"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_review_logs"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:text="@string/review_logs"
+            android:textSize="18sp"
             android:gravity="start|center_vertical"
-            android:textColor="@android:color/black"
             app:icon="@drawable/ic_notification"
+            app:iconSize="28dp"
+            app:iconPadding="16dp"
+            android:textColor="@android:color/black"
             app:iconTint="@android:color/black"
-            app:strokeColor="@android:color/transparent"/>
+            app:strokeColor="#DDDDDD"/>
 
     </LinearLayout>
 

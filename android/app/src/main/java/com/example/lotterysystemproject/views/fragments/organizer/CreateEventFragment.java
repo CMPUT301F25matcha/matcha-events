@@ -2,6 +2,7 @@ package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,7 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,6 +32,9 @@ import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,6 +66,10 @@ public class CreateEventFragment extends Fragment {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.US);
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
 
+    private Uri selectedImageUri = null;
+    private ImageView eventPosterPreview;
+    private ActivityResultLauncher<String> pickImageLauncher;
+
     /**
      * Inflates the layout and initializes the fragment components.
      */
@@ -73,7 +85,17 @@ public class CreateEventFragment extends Fragment {
         regStartDate = Calendar.getInstance();
         regEndDate = Calendar.getInstance();
 
+
+
         initializeViews(view);
+        pickImageLauncher =
+                registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                    if (uri != null) {
+                        selectedImageUri = uri;
+                        eventPosterPreview.setImageURI(uri);
+                        validateForm();
+                    }
+                });
         setupListeners();
         setupValidation();
 
@@ -101,6 +123,8 @@ public class CreateEventFragment extends Fragment {
         uploadPosterButton = view.findViewById(R.id.upload_poster_button);
         createEventButton = view.findViewById(R.id.create_event_button);
         backButton = view.findViewById(R.id.back_button);
+
+        eventPosterPreview = view.findViewById(R.id.event_poster_preview);
 
         updateDateTimeButtons();
     }
@@ -172,8 +196,11 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
+
+
         uploadPosterButton.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Upload Poster - Coming soon!", Toast.LENGTH_SHORT).show());
+                pickImageLauncher.launch("image/*")
+        );
 
         createEventButton.setOnClickListener(v -> createEvent());
     }
@@ -285,13 +312,19 @@ public class CreateEventFragment extends Fragment {
                 newEvent.setCheckInQrCode(checkinQR);
 
                 // Save the event via ViewModel which saves to firebase
-                eventViewModel.createEvent(newEvent);
+                if (selectedImageUri != null) {
+                    uploadPosterAndCreateEvent(newEvent);
+                } else {
+                    eventViewModel.createEvent(newEvent);
+                    Toast.makeText(getContext(),
+                            "✓ Event created with QR codes!",
+                            Toast.LENGTH_LONG).show();
+                    requireActivity().onBackPressed();
 
-                Toast.makeText(getContext(),
-                        "✓ Event created with QR codes!",
-                        Toast.LENGTH_LONG).show();
+                }
 
-                requireActivity().onBackPressed();
+
+
             }
 
             @Override
@@ -313,5 +346,24 @@ public class CreateEventFragment extends Fragment {
      */
     private String generateQRCode(String eventName, String type) {
         return type + "_" + eventName.replaceAll(" ", "_") + "_" + System.currentTimeMillis();
+    }
+
+    private void uploadPosterAndCreateEvent(Event event) {
+        StorageReference ref = FirebaseStorage.getInstance()
+                .getReference("event_posters/" + event.getId() + ".jpg");
+
+        ref.putFile(selectedImageUri)
+                .addOnSuccessListener(t -> {
+                    ref.getDownloadUrl().addOnSuccessListener(url -> {
+                        event.setPosterImageUrl(url.toString());
+                        eventViewModel.createEvent(event);
+
+                        Toast.makeText(getContext(), "Event created with poster!", Toast.LENGTH_LONG).show();
+                        requireActivity().onBackPressed();
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Poster upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 }

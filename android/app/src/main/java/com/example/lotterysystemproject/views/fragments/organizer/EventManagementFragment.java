@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.adapters.TabsPagerAdapter;
@@ -42,6 +44,8 @@ public class EventManagementFragment extends Fragment {
     private Button qrCodeButton;
 
     private String eventId;
+
+    private ImageView eventPoster;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy • h:mm a", Locale.US);
 
     /**
@@ -80,6 +84,7 @@ public class EventManagementFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tab_layout);
         viewPager = view.findViewById(R.id.view_pager);
         qrCodeButton = view.findViewById(R.id.qr_code_button);
+        eventPoster = view.findViewById(R.id.event_poster);
 
         // Configure tab layout and view pager
         setupTabs();
@@ -145,6 +150,13 @@ public class EventManagementFragment extends Fragment {
      * @param event The event whose details will be shown
      */
     private void displayEventDetails(Event event) {
+
+        // Load poster
+        if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(event.getPosterImageUrl())
+                    .into(eventPoster);
+        }
         eventNameHeader.setText(event.getName());
         eventDate.setText("📅 " + dateFormat.format(event.getEventDate()));
         eventLocation.setText("📍 " + event.getLocation());

@@ -2,6 +2,7 @@ package com.example.lotterysystemproject.firebasemanager;
 
 import androidx.annotation.Nullable;
 
+import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.models.Event;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -157,7 +158,7 @@ public class FirebaseAdminRepository implements AdminRepository {
 
     @Override
     public void getAllImages(Consumer<List<String>> onSuccess, Consumer<Exception> onError) {
-        storage.getReference().child("images")
+        storage.getReference().child("event_posters")
                 .listAll()
                 .addOnSuccessListener(listResult -> {
                     List<String> urls = new ArrayList<>();
@@ -223,5 +224,44 @@ public class FirebaseAdminRepository implements AdminRepository {
                 }
             });
         }
+    }
+
+    @Override
+    public void getAllOrganizers(Consumer<List<User>> onSuccess, Consumer<Exception> onError) {
+        db.collection("users")
+                .whereEqualTo("role", "organizer")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<User> organizers = new ArrayList<>();
+                    for (DocumentSnapshot doc: queryDocumentSnapshots) {
+                        User user = doc.toObject(User.class);
+                        if (user != null) organizers.add(user);
+                    }
+                    if (onSuccess != null) onSuccess.accept(organizers);
+                })
+                .addOnFailureListener(e -> {
+                    if (onError != null) onError.accept((e));
+                });
+    }
+
+    @Override
+    public void listenToAllOrganizers(Consumer<List<User>> onSuccess, Consumer<Exception> onError) {
+        db.collection("users")
+                .whereEqualTo("role", "organizer")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        if (onError != null) onError.accept(e);
+                        return;
+                    }
+
+                    List<User> organizers = new ArrayList<>();
+                    if (queryDocumentSnapshots != null) {
+                        for (DocumentSnapshot doc: queryDocumentSnapshots) {
+                            User user = doc.toObject(User.class);
+                            if (user != null) organizers.add(user);
+                        }
+                    }
+                    if (onSuccess != null) onSuccess.accept(organizers);
+                });
     }
 }
