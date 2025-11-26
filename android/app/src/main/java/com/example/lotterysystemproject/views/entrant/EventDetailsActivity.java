@@ -6,12 +6,20 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.controllers.AdminUserProfileDialog;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.databinding.EventDetailsBinding;
 import com.example.lotterysystemproject.views.entrant.EntryCriteriaDialogue;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import android.content.SharedPreferences;
@@ -26,7 +34,7 @@ import android.content.SharedPreferences;
  * - US 01.05.04: View total entrants on waiting list
  * - US 01.06.01: View event details by scanning QR code
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private EventDetailsBinding binding;
     private String eventId;
     private Event event;
@@ -94,16 +102,45 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            if (event == null) {
-                Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
+
 
             populateDetails();
         });
     }
 
+    private void initMap() {
+        if (event == null || isFinishing() || isDestroyed()) return;
+
+        // Only load map if we have valid coordinates
+        if (event.getLatitude() != 0.0 || event.getLongitude() != 0.0) {
+            binding.mapContainer.setVisibility(View.VISIBLE);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map_container);
+
+            if (mapFragment == null) {
+                mapFragment = SupportMapFragment.newInstance();
+                // Use commitAllowingStateLoss to avoid crashes if activity state saved
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.map_container, mapFragment)
+                        .commitAllowingStateLoss();
+            }
+
+            mapFragment.getMapAsync(this);
+        } else {
+            binding.mapContainer.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if (event != null) {
+            LatLng eventLocation = new LatLng(event.getLatitude(), event.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(eventLocation).title(event.getLocation()));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 15f));
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+        }
+    }
     /**
      * Handles the join/leave waiting list button click.
      * Checks user authentication, determines current state, and performs
@@ -224,6 +261,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         binding.eventDate.setText(event.getEventDate() != null ? dateFormat.format(event.getEventDate()) : "Date TBD");
         binding.eventDescription.setText(event.getDescription());
         updateJoinButton();
+        initMap();
         // TODO: Load image, setup map, set state for notifications and joined status
     }
 

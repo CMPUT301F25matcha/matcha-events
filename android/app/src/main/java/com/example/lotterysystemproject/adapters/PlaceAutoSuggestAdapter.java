@@ -1,6 +1,7 @@
 package com.example.lotterysystemproject.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -14,10 +15,9 @@ import java.util.List;
 
 public class PlaceAutoSuggestAdapter extends ArrayAdapter<String> implements Filterable {
     private final List<String> results;
-    // We store the actual Prediction objects to retrieve the Place ID later
     private final List<AutocompletePrediction> predictionList;
 
-    public PlaceAutoSuggestAdapter(Context context, int resId, PlacesClient placesClient) {
+    public PlaceAutoSuggestAdapter(Context context, int resId) {
         super(context, resId);
         this.results = new ArrayList<>();
         this.predictionList = new ArrayList<>();
@@ -33,9 +33,20 @@ public class PlaceAutoSuggestAdapter extends ArrayAdapter<String> implements Fil
         return results.get(pos);
     }
 
-    // Helper method to get the Place ID for a specific position
     public String getPlaceId(int pos) {
         return predictionList.get(pos).getPlaceId();
+    }
+
+    // This function updates the list and forces the dropdown to show
+    public void setData(List<AutocompletePrediction> predictions) {
+        this.results.clear();
+        this.predictionList.clear();
+        for (AutocompletePrediction prediction : predictions) {
+            this.results.add(prediction.getFullText(null).toString());
+            this.predictionList.add(prediction);
+        }
+        Log.d("PlacesDebug", "Adapter: Data updated with " + results.size() + " items.");
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -44,28 +55,12 @@ public class PlaceAutoSuggestAdapter extends ArrayAdapter<String> implements Fil
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
+                // We are managing data externally via the Fragment's API call,
+                // so we just return the current results to keep the dropdown open.
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    // Create the request to Google Places
-                    FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                            .setQuery(constraint.toString())
-                            .build();
-
-                    // We use a Task API, but Filter expects synchronous return.
-                    // For simplicity in UI responsiveness, we usually process this asynchronously.
-                    // However, standard Android Filters run on a background thread automatically.
-
-                    // NOTE: Implementation logic normally involves waiting for the Task.
-                    // But passing data back via the UI thread is safer.
-                    // Below is a simplified handling for the Adapter logic:
-
-                    try {
-                        // This logic is handled better by attaching a listener in the Fragment
-                        // However, to keep the Adapter self-contained, we return empty here
-                        // and notify data change when the API responds (see Step 3 logic).
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    filterResults.values = results;
+                    filterResults.count = results.size();
                 }
                 return filterResults;
             }
@@ -79,16 +74,5 @@ public class PlaceAutoSuggestAdapter extends ArrayAdapter<String> implements Fil
                 }
             }
         };
-    }
-
-    // Method to update data from the Fragment
-    public void setData(List<AutocompletePrediction> predictions) {
-        this.results.clear();
-        this.predictionList.clear();
-        for (AutocompletePrediction prediction : predictions) {
-            this.results.add(prediction.getFullText(null).toString());
-            this.predictionList.add(prediction);
-        }
-        notifyDataSetChanged();
     }
 }

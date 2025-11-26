@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
 
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAh33R6SyKaCWWfNaMwv6crlBPdJyxINxE"/>
         <activity
             android:name=".views.entrant.UserInfoView"
             android:exported="true"
