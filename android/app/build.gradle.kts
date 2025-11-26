@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -61,6 +62,9 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     //json
     implementation("com.google.code.gson:gson:2.10.1")
+
+    //google maps
+    implementation("com.google.android.libraries.places:places:3.3.0")
 
     //glide for images
     implementation("com.github.bumptech.glide:glide:4.15.1")

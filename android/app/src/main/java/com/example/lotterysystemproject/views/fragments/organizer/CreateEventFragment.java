@@ -1,7 +1,9 @@
 package com.example.lotterysystemproject.views.fragments.organizer;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.lotterysystemproject.adapters.PlaceAutoSuggestAdapter;
 import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
@@ -32,12 +36,24 @@ import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -52,7 +68,7 @@ import java.util.Locale;
 public class CreateEventFragment extends Fragment {
 
     /** UI components for event details */
-    private EditText eventNameInput, descriptionInput, locationInput, capacityInput, priceInput, maxWaitingListInput;
+    private EditText eventNameInput, descriptionInput, capacityInput, priceInput, maxWaitingListInput;
     private Button dateButton, timeButton, regStartButton, regEndButton;
     private Button uploadPosterButton, createEventButton, backButton;
 
@@ -70,6 +86,14 @@ public class CreateEventFragment extends Fragment {
     private ImageView eventPosterPreview;
     private ActivityResultLauncher<String> pickImageLauncher;
 
+    //google maps
+    private double selectedLatitude;
+    private double selectedLongitude;
+    private String selectedAddress;
+    private AutoCompleteTextView locationInput;
+    private PlaceAutoSuggestAdapter adapter;
+    private PlacesClient placesClient;
+    private AutocompleteSessionToken sessionToken;
     /**
      * Inflates the layout and initializes the fragment components.
      */
@@ -79,13 +103,16 @@ public class CreateEventFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event, container, false);
 
+        // Initialize Google Places SDK (Use your actual API Key)
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "YOUR_GOOGLE_CLOUD_API_KEY_HERE");
+        }
+
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
         eventDateTime = Calendar.getInstance();
         regStartDate = Calendar.getInstance();
         regEndDate = Calendar.getInstance();
-
-
 
         initializeViews(view);
         pickImageLauncher =
@@ -111,6 +138,45 @@ public class CreateEventFragment extends Fragment {
         eventNameInput = view.findViewById(R.id.event_name_input);
         descriptionInput = view.findViewById(R.id.description_input);
         locationInput = view.findViewById(R.id.location_input);
+
+        // 1. Initialize Places Client
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyAh33R6SyKaCWWfNaMwv6crlBPdJyxINxE");
+        }
+        placesClient = Places.createClient(requireContext());
+
+        sessionToken = AutocompleteSessionToken.newInstance();
+
+        // 2. Set up the Adapter
+        adapter = new PlaceAutoSuggestAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, placesClient);
+        locationInput.setAdapter(adapter);
+
+        // 3. Add TextWatcher to trigger API calls as user types
+        locationInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 2) { // Only search after 2 chars to save API quota
+                    fetchSuggestions(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // 4. Handle the user clicking a suggestion
+        locationInput.setOnItemClickListener((parent, v, position, id) -> {
+            // The user clicked a specific address in the dropdown
+            String placeId = adapter.getPlaceId(position);
+
+            // Now we must do a specific call to get the Lat/Lng (Coordinates)
+            // because the prediction list only gives us the Name and ID.
+            fetchPlaceDetails(placeId);
+        });
+
         capacityInput = view.findViewById(R.id.capacity_input);
         maxWaitingListInput = view.findViewById(R.id.max_waiting_list_input);
         priceInput = view.findViewById(R.id.price_input);
@@ -127,6 +193,50 @@ public class CreateEventFragment extends Fragment {
         eventPosterPreview = view.findViewById(R.id.event_poster_preview);
 
         updateDateTimeButtons();
+    }
+
+    private void fetchSuggestions(String query) {
+        // 3. Pass the session token here
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(sessionToken)
+                .setQuery(query)
+                .build();
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            adapter.setData(response.getAutocompletePredictions());
+        }).addOnFailureListener((exception) -> {
+            exception.printStackTrace();
+        });
+    }
+
+    private void fetchPlaceDetails(String placeId) {
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
+
+        // 4. Pass the SAME session token here to "close" the session
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields)
+                .setSessionToken(sessionToken)
+                .build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+
+            if (place.getLatLng() != null) {
+                // Save your data
+                double lat = place.getLatLng().latitude;
+                double lng = place.getLatLng().longitude;
+                locationInput.setText(place.getAddress());
+                locationInput.dismissDropDown(); // Close the list
+            }
+
+            // 5. CRITICAL: Create a new token for the next search.
+            // A token is invalid after it has been used in a FetchPlaceRequest.
+            sessionToken = AutocompleteSessionToken.newInstance();
+
+        }).addOnFailureListener((exception) -> {
+            exception.printStackTrace();
+            // Even on failure, it is safer to reset the token to avoid invalid token errors
+            sessionToken = AutocompleteSessionToken.newInstance();
+        });
     }
 
     /**
