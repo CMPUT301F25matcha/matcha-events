@@ -37,7 +37,12 @@ public class Entrant {
     private long joinedTimestamp;  // When they joined waiting list
     /** The timestamp when the entrant's status was last updated. */
     private long statusTimestamp;  // When status last changed
-
+    
+    // ===================== GEOLOCATION FIELDS =====================
+    /** The latitude coordinate where the entrant joined the waiting list. */
+    private double latitude;
+    /** The longitude coordinate where the entrant joined the waiting list. */
+    private double longitude;
     /**
      * Empty constructor required for Firebase.
      */
@@ -150,6 +155,64 @@ public class Entrant {
      * @param timestamp The status timestamp in milliseconds.
      */
     public void setStatusTimestamp(long timestamp) { this.statusTimestamp = timestamp; }
+
+    // ===================== GEOLOCATION GETTERS/SETTERS =====================
+
+    /**
+     * Gets the latitude where the entrant joined the waiting list.
+     *
+     * @return The latitude coordinate (0.0 if not set)
+     */
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     * Sets the latitude where the entrant joined the waiting list.
+     *
+     * @param latitude The latitude coordinate
+     */
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    /**
+     * Gets the longitude where the entrant joined the waiting list.
+     *
+     * @return The longitude coordinate (0.0 if not set)
+     */
+    public double getLongitude() {
+        return longitude;
+    }
+
+    /**
+     * Sets the longitude where the entrant joined the waiting list.
+     *
+     * @param longitude The longitude coordinate
+     */
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    /**
+     * Checks if this entrant has valid geolocation data.
+     *
+     * @return true if latitude and longitude are non-zero
+     */
+    public boolean hasLocation() {
+        return latitude != 0.0 && longitude != 0.0;
+    }
+
+    /**
+     * Sets both latitude and longitude in one call.
+     *
+     * @param latitude  The latitude coordinate
+     * @param longitude The longitude coordinate
+     */
+    public void setLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     /**
      * Helper method to get a human-readable string representing the time elapsed

@@ -67,6 +67,12 @@ dependencies {
     implementation("com.google.android.libraries.places:places:3.3.0")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
 
+    // marker clustering
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
+
+    // Location services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.gms:play-services-base:18.5.0")

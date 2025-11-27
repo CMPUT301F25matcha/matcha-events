@@ -107,14 +107,15 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Tabs -->
+    <!-- Tabs - NOW WITH 3 TABS -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabIndicatorColor="#262424"
         app:tabSelectedTextColor="#262424"
-        app:tabTextColor="#B6ACAC" />
+        app:tabTextColor="#B6ACAC"
+        app:tabMode="fixed" />
 
     <!-- ViewPager -->
     <androidx.viewpager2.widget.ViewPager2

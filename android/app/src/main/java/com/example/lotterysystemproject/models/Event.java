@@ -71,7 +71,7 @@ public class Event {
         this.active = true;
         this.status = "open";
         this.currentEnrolled = 0;
-        this.geolocationRequired = false;
+        this.geolocationRequired = true;
     }
 
     /**

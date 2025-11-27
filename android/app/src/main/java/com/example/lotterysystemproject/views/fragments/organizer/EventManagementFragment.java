@@ -31,6 +31,7 @@ import java.util.Locale;
  * <p>
  * Provides a tabbed interface for organizers to view event participants,
  * navigate between waiting and selected entrants, and display a QR code for event registration.
+ * NOW INCLUDES: Third tab showing a map of where entrants joined from (if geolocation enabled).
  */
 public class EventManagementFragment extends Fragment {
 
@@ -110,10 +111,10 @@ public class EventManagementFragment extends Fragment {
 
     /**
      * Configures the tab layout and attaches it to the ViewPager.
-     * Displays two tabs: "Waiting" and "Selected".
+     * Displays three tabs: "Waiting", "Selected", and "Map".
      */
     private void setupTabs() {
-        TabsPagerAdapter adapter = new TabsPagerAdapter(this);
+        TabsPagerAdapter adapter = new TabsPagerAdapter(this, eventId);
         viewPager.setAdapter(adapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
@@ -123,6 +124,9 @@ public class EventManagementFragment extends Fragment {
                     break;
                 case 1:
                     tab.setText("Selected");
+                    break;
+                case 2:
+                    tab.setText("Map");
                     break;
             }
         }).attach();
@@ -170,6 +174,16 @@ public class EventManagementFragment extends Fragment {
     public void switchToSelectedTab() {
         if (viewPager != null) {
             viewPager.setCurrentItem(1); // 1 = Selected tab
+        }
+    }
+
+    /**
+     * Switches the ViewPager to the "Map" tab.
+     * Useful for programmatically navigating to the map view.
+     */
+    public void switchToMapTab() {
+        if (viewPager != null) {
+            viewPager.setCurrentItem(2); // 2 = Map tab
         }
     }
 }
