@@ -179,10 +179,11 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
             return;
         }
 
-        requestInProgress = true;
-        binding.joinWaitingListButton.setEnabled(false);
-
         if (!event.isUserOnWaitingList(userId)) {
+            // User is NOT on the waiting list - JOIN action
+            requestInProgress = true;
+            binding.joinWaitingListButton.setEnabled(false);
+
             // Check if geolocation is required for this event
             if (event.isGeolocationRequired()) {
                 checkLocationPermissionAndCapture();
@@ -191,7 +192,9 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                 joinWaitingList(userId, null, null);
             }
         } else {
-            // Leave waiting list
+            // User IS on the waiting list - LEAVE action
+            requestInProgress = true;
+            binding.joinWaitingListButton.setEnabled(false);
             leaveWaitingList(userId);
         }
     }
@@ -229,10 +232,11 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                     captureCurrentLocation();
                 }
             } else {
-                // Permission denied
+                // Permission denied - reset state and update UI
                 waitingForLocation = false;
                 requestInProgress = false;
                 binding.joinWaitingListButton.setEnabled(true);
+                updateJoinButton(); // Restore button text
                 Toast.makeText(this,
                         "Location permission is required to join this event",
                         Toast.LENGTH_LONG).show();
@@ -249,6 +253,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                 != PackageManager.PERMISSION_GRANTED) {
             requestInProgress = false;
             binding.joinWaitingListButton.setEnabled(true);
+            updateJoinButton(); // Restore button text
             Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -272,6 +277,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                             // Location is null, possibly location services are off
                             requestInProgress = false;
                             binding.joinWaitingListButton.setEnabled(true);
+                            updateJoinButton(); // Restore button text
                             Toast.makeText(EventDetailsActivity.this,
                                     "Could not get location. Please enable location services.",
                                     Toast.LENGTH_LONG).show();
@@ -282,6 +288,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                     waitingForLocation = false;
                     requestInProgress = false;
                     binding.joinWaitingListButton.setEnabled(true);
+                    updateJoinButton(); // Restore button text
                     Toast.makeText(EventDetailsActivity.this,
                             "Failed to get location: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
@@ -299,7 +306,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
      * @param longitude The longitude where the user joined (null if not required)
      */
     private void joinWaitingList(String userId, Double latitude, Double longitude) {
-        RepositoryProvider.getInstance().joinWaitingList(event.getId(), userId,
+        RepositoryProvider.getEventRepository().joinWaitingList(event.getId(), userId,
                 new EventRepository.RepositoryCallback() {
                     @Override
                     public void onSuccess() {
@@ -312,6 +319,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                         refreshEventData(() -> {
                             requestInProgress = false;
                             binding.joinWaitingListButton.setEnabled(true);
+                            updateJoinButton(); // Update button text to "Leave Waiting List"
 
                             String message = latitude != null && longitude != null
                                     ? "Joined waiting list! (Location saved)"
@@ -324,6 +332,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                     public void onError(Exception e) {
                         requestInProgress = false;
                         binding.joinWaitingListButton.setEnabled(true);
+                        updateJoinButton(); // Restore button text
                         Toast.makeText(EventDetailsActivity.this,
                                 "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -364,7 +373,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
      * @param userId The ID of the user leaving the waiting list
      */
     private void leaveWaitingList(String userId) {
-        EventRepository repository = RepositoryProvider.getInstance();
+        EventRepository repository = RepositoryProvider.getEventRepository();
         repository.leaveWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
@@ -372,6 +381,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
                 refreshEventData(() -> {
                     requestInProgress = false;
                     binding.joinWaitingListButton.setEnabled(true);
+                    updateJoinButton(); // Update button text to "Join Waiting List"
                     Toast.makeText(EventDetailsActivity.this, "Left waiting list.", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -380,6 +390,7 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
             public void onError(Exception e) {
                 requestInProgress = false;
                 binding.joinWaitingListButton.setEnabled(true);
+                updateJoinButton(); // Restore button text
                 Toast.makeText(EventDetailsActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
