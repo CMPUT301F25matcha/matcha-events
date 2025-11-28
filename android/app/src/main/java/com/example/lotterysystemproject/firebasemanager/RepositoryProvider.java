@@ -25,8 +25,6 @@ public class RepositoryProvider {
                 if (eventRepositoryInstance == null) {
                     if (USE_FIREBASE) {
                         eventRepositoryInstance = new FirebaseEventRepository();
-                    } else {
-                        eventRepositoryInstance = new MockEventRepository();
                     }
                 }
             }
@@ -44,8 +42,6 @@ public class RepositoryProvider {
                 if (userRepositoryInstance == null) {
                     if (USE_FIREBASE) {
                         userRepositoryInstance = new FirebaseUserRepository();
-                    } else {
-                        userRepositoryInstance = new MockUserRepository();
                     }
                 }
             }
@@ -63,8 +59,6 @@ public class RepositoryProvider {
                 if (adminRepositoryInstance == null) {
                     if (USE_FIREBASE) {
                         adminRepositoryInstance = new FirebaseAdminRepository();
-                    } else {
-                        adminRepositoryInstance = new MockAdminRepository();
                     }
                 }
             }
@@ -82,8 +76,6 @@ public class RepositoryProvider {
                 if (entrantRepositoryInstance == null) {
                     if (USE_FIREBASE) {
                         entrantRepositoryInstance = new FirebaseEntrantRepository();
-                    } else {
-                        entrantRepositoryInstance = new MockEntrantRepository();
                     }
                 }
             }

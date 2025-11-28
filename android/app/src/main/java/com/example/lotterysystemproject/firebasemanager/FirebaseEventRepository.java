@@ -7,16 +7,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.lotterysystemproject.models.Event;
-import com.example.lotterysystemproject.models.Registration;
 import com.example.lotterysystemproject.models.User;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -36,8 +31,6 @@ public class FirebaseEventRepository implements EventRepository {
     // ===================== FIREBASE INSTANCES =====================
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
-    /** Firestore listener registration for managing live updates. */
-    private ListenerRegistration activeRegsListener;
 
     /**
      * Constructor initializes Firebase instances.
@@ -161,13 +154,13 @@ public class FirebaseEventRepository implements EventRepository {
                     liveData.setValue(out);
                 })
                 .addOnFailureListener(e -> {
-                    liveData.setValue(null); // or handle error differently
-                    // Optional: log the error
+                    liveData.setValue(null);
                     Log.e("Repository", "Error fetching events", e);
                 });
 
         return liveData;
     }
+
     @Override
     public void addEvent(Event event, Consumer<Exception> onError) {
         db.collection("events")
@@ -199,7 +192,9 @@ public class FirebaseEventRepository implements EventRepository {
                         if (callback != null) callback.onError(new Exception("Failed to parse event"));
                         return;
                     }
+
                     List<String> waitingList = event.getWaitingList();
+
                     // Step 2: Validate event state and capacity
                     if (!event.isActive()) {
                         if (callback != null) callback.onError(new Exception("Event is not active"));
@@ -265,33 +260,15 @@ public class FirebaseEventRepository implements EventRepository {
                                 entrantData.put("status", "WAITING");
                                 entrantData.put("joinedTimestamp", currentTime);
                                 entrantData.put("statusTimestamp", currentTime);
-                                entrantData.put("declineReason", null);
-                                entrantData.put("geolocationVerified", false);
+                                entrantData.put("latitude", 0.0);
+                                entrantData.put("longitude", 0.0);
 
-                                // Step 5: Create Registration record
-                                String registrationId = userId + "_" + eventId;
-
-                                Map<String, Object> registrationData = new HashMap<>();
-                                registrationData.put("userId", userId);
-                                registrationData.put("eventId", eventId);
-                                registrationData.put("status", "JOINED");
-                                registrationData.put("eventTitleSnapshot", event.getName());
-                                registrationData.put("eventLocationSnapshot", event.getLocation());
-                                registrationData.put("registeredAt", new Timestamp(new Date(currentTime)));
-                                registrationData.put("updatedAt", new Timestamp(new Date(currentTime)));
-                                registrationData.put("selectedAt", null);
-                                registrationData.put("enrolledAt", null);
-
-                                // Step 6: Batch write all updates
+                                // Step 5: Batch write all updates
                                 WriteBatch batch = db.batch();
 
                                 // Add entrant document
                                 DocumentReference entrantRef = db.collection("entrants").document(entrantId);
                                 batch.set(entrantRef, entrantData);
-
-                                // Add registration document
-                                DocumentReference registrationRef = db.collection("registrations").document(registrationId);
-                                batch.set(registrationRef, registrationData);
 
                                 // Update event's waiting list and count
                                 finalWaitingList.add(userId);
@@ -358,14 +335,6 @@ public class FirebaseEventRepository implements EventRepository {
                     entrantUpdates.put("status", "CANCELLED");
                     entrantUpdates.put("statusTimestamp", System.currentTimeMillis());
                     batch.update(entrantRef, entrantUpdates);
-
-                    // Update registration status to CANCELLED
-                    String registrationId = userId + "_" + eventId;
-                    DocumentReference registrationRef = db.collection("registrations").document(registrationId);
-                    Map<String, Object> registrationUpdates = new HashMap<>();
-                    registrationUpdates.put("status", "CANCELLED");
-                    registrationUpdates.put("updatedAt", new Timestamp(new Date()));
-                    batch.update(registrationRef, registrationUpdates);
 
                     // Remove user from event's waiting list
                     waitingList.remove(userId);
@@ -458,64 +427,6 @@ public class FirebaseEventRepository implements EventRepository {
                 })
                 .addOnFailureListener(err -> {
                     if (onError != null) onError.accept(err);
-                });
-    }
-
-    // ===================== REGISTRATION OPERATIONS =====================
-
-    @Override
-    public void listenUserRegistrations(String userId, RegistrationsListener listener) {
-        if (activeRegsListener != null) {
-            activeRegsListener.remove();
-            activeRegsListener = null;
-        }
-
-        activeRegsListener = db.collection("registrations")
-                .whereEqualTo("userId", userId)
-                .orderBy("updatedAt", Query.Direction.DESCENDING)
-                .addSnapshotListener((snap, err) -> {
-                    if (err != null) {
-                        if (listener != null) listener.onError(err);
-                        return;
-                    }
-                    List<Registration> out = new ArrayList<>();
-                    if (snap != null) {
-                        for (DocumentSnapshot d : snap.getDocuments()) {
-                            Registration r = d.toObject(Registration.class);
-                            if (r != null) out.add(r);
-                        }
-                    }
-                    if (listener != null) listener.onChanged(out);
-                });
-    }
-
-    @Override
-    public void stopListeningUserRegistrations() {
-        if (activeRegsListener != null) {
-            activeRegsListener.remove();
-            activeRegsListener = null;
-        }
-    }
-
-    @Override
-    public void upsertRegistrationOnJoin(String userId, String eventId, String eventTitleSnapshot, RepositoryCallback callback) {
-        String docId = userId + "_" + eventId;
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("userId", userId);
-        data.put("eventId", eventId);
-        data.put("eventTitleSnapshot", eventTitleSnapshot);
-        data.put("status", "JOINED");
-        data.put("registeredAt", Timestamp.now());
-        data.put("updatedAt", Timestamp.now());
-
-        db.collection("registrations").document(docId)
-                .set(data, SetOptions.merge())
-                .addOnSuccessListener(v -> {
-                    if (callback != null) callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    if (callback != null) callback.onError(e);
                 });
     }
 }

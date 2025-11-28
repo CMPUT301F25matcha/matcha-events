@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.example.lotterysystemproject.models.Event;
-import com.example.lotterysystemproject.models.Registration;
 import com.example.lotterysystemproject.models.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,19 +28,6 @@ public interface EventRepository {
         /** Called on successful completion of the operation. */
         void onSuccess();
         /** Called when the operation fails. */
-        void onError(Exception e);
-    }
-
-    /**
-     * A listener interface for receiving updates to a list of registrations.
-     */
-    interface RegistrationsListener {
-        /**
-         * Called when the list of registrations has changed.
-         * @param items The updated list of Registration objects.
-         */
-        void onChanged(List<Registration> items);
-        /** Called when an error occurs while listening for changes. */
         void onError(Exception e);
     }
 
@@ -101,10 +87,18 @@ public interface EventRepository {
      */
     void deleteUser(String userId, RepositoryCallback callback);
 
+    /**
+     * Updates a user's role to organizer.
+     * @param userId The user's ID
+     * @param callback Callback to signal success or failure
+     */
+    void updateUserRoleToOrganizer(String userId, RepositoryCallback callback);
+
     // ===================== EVENT OPERATIONS =====================
 
     /**
      * Retrieves all active events.
+     * @return LiveData containing list of active Event objects.
      */
     LiveData<List<Event>> getAllEvents();
 
@@ -116,24 +110,7 @@ public interface EventRepository {
     void addEvent(Event event, Consumer<Exception> onError);
 
     /**
-     * Adds a user to an event's waiting list.
-     * @param eventId The ID of the event.
-     * @param userId The ID of the user to add to the waiting list.
-     * @param callback The callback to handle success or failure.
-     */
-    void joinWaitingList(String eventId, String userId, RepositoryCallback callback);
-
-    /**
-     * Removes a user from an event's waiting list.
-     * @param eventId The ID of the event.
-     * @param userId The ID of the user to remove.
-     * @param callback The callback to handle success or failure.
-     */
-    void leaveWaitingList(String eventId, String userId, RepositoryCallback callback);
-
-    /**
      * Retrieves events matching the provided category.
-     *
      * @param category the category to filter by (exact match string)
      * @param onSuccess consumer receiving the list of matching events
      * @param onError consumer receiving any exception
@@ -142,14 +119,10 @@ public interface EventRepository {
 
     /**
      * Retrieves all active events (events where isActive == true).
-     *
      * @param onSuccess callback providing the list of active events
      * @param onError   callback providing an Exception, if any
      */
-    void getActiveEvents(
-            java.util.function.Consumer<java.util.List<com.example.lotterysystemproject.models.Event>> onSuccess,
-            java.util.function.Consumer<Exception> onError
-    );
+    void getActiveEvents(Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
 
     /**
      * Gets the most recent events ordered by createdAt descending.
@@ -157,35 +130,25 @@ public interface EventRepository {
      * @param onSuccess consumer receiving the events list
      * @param onError consumer receiving any exception
      */
-    void getRecentEvents(int limit, java.util.function.Consumer<java.util.List<com.example.lotterysystemproject.models.Event>> onSuccess, java.util.function.Consumer<Exception> onError);
+    void getRecentEvents(int limit, Consumer<List<Event>> onSuccess, Consumer<Exception> onError);
 
-    // ===================== REGISTRATION OPERATIONS =====================
-
-    /**
-     * Listens for real-time updates to a user's event registrations.
-     * @param userId The ID of the user whose registrations to listen for.
-     * @param listener The listener to be notified of changes.
-     */
-    void listenUserRegistrations(String userId, RegistrationsListener listener);
+    // ===================== WAITING LIST OPERATIONS =====================
 
     /**
-     * Stops listening for user registration updates.
-     */
-    void stopListeningUserRegistrations();
-
-    /**
-     * Creates or updates a registration when a user joins an event.
-     * @param userId The ID of the user.
+     * Adds a user to an event's waiting list.
+     * Creates an Entrant record to track the user's participation.
      * @param eventId The ID of the event.
-     * @param eventTitleSnapshot A snapshot of the event title at the time of registration.
+     * @param userId The ID of the user to add to the waiting list.
      * @param callback The callback to handle success or failure.
      */
-    void upsertRegistrationOnJoin(String userId, String eventId, String eventTitleSnapshot, RepositoryCallback callback);
+    void joinWaitingList(String eventId, String userId, RepositoryCallback callback);
 
     /**
-     * Updates a user's role to organizer.
-     * @param userId The user's ID
-     * @param callback Callback to signal success or failure
+     * Removes a user from an event's waiting list.
+     * Updates the Entrant record status to CANCELLED.
+     * @param eventId The ID of the event.
+     * @param userId The ID of the user to remove.
+     * @param callback The callback to handle success or failure.
      */
-    void updateUserRoleToOrganizer(String userId, RepositoryCallback callback);
+    void leaveWaitingList(String eventId, String userId, RepositoryCallback callback);
 }

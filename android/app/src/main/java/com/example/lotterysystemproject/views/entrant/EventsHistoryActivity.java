@@ -10,12 +10,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lotterysystemproject.models.DeviceIdentityManager;
-import com.example.lotterysystemproject.firebasemanager.EventRepository;
-import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
-import com.example.lotterysystemproject.models.Registration;
+import com.example.lotterysystemproject.models.Entrant;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.example.lotterysystemproject.R;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventsHistoryActivity extends AppCompatActivity {
@@ -23,7 +26,8 @@ public class EventsHistoryActivity extends AppCompatActivity {
     private LinearLayout container;
     private ProgressBar progress;
     private TextView empty;
-    private EventRepository fm;
+    private FirebaseFirestore db;
+    private ListenerRegistration entrantsListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,25 +38,40 @@ public class EventsHistoryActivity extends AppCompatActivity {
         progress  = findViewById(R.id.progress);
         empty     = findViewById(R.id.empty_state);
 
-        fm = RepositoryProvider.getInstance();
+        db = FirebaseFirestore.getInstance();
         String uid = DeviceIdentityManager.getUserId(this);
 
         progress.setVisibility(View.VISIBLE);
-        fm.listenUserRegistrations(uid, new EventRepository.RegistrationsListener() {
-            @Override public void onChanged(List<Registration> items) {
-                progress.setVisibility(View.GONE);
-                render(items);
-            }
-            @Override public void onError(Exception e) {
-                progress.setVisibility(View.GONE);
-                empty.setText("Failed to load history: " + e.getMessage());
-                empty.setVisibility(View.VISIBLE);
-            }
-        });
 
+        // Listen to entrants collection filtered by userId
+        entrantsListener = db.collection("entrants")
+                .whereEqualTo("userId", uid)
+                .orderBy("statusTimestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((snapshots, error) -> {
+                    progress.setVisibility(View.GONE);
+
+                    if (error != null) {
+                        empty.setText("Failed to load history: " + error.getMessage());
+                        empty.setVisibility(View.VISIBLE);
+                        return;
+                    }
+
+                    List<Entrant> entrants = new ArrayList<>();
+                    if (snapshots != null) {
+                        for (DocumentSnapshot doc : snapshots.getDocuments()) {
+                            Entrant entrant = doc.toObject(Entrant.class);
+                            if (entrant != null) {
+                                entrant.setId(doc.getId());
+                                entrants.add(entrant);
+                            }
+                        }
+                    }
+
+                    render(entrants);
+                });
     }
 
-    private void render(List<Registration> items) {
+    private void render(List<Entrant> items) {
         container.removeAllViews();
         if (items == null || items.isEmpty()) {
             empty.setVisibility(View.VISIBLE);
@@ -61,22 +80,64 @@ public class EventsHistoryActivity extends AppCompatActivity {
         empty.setVisibility(View.GONE);
         DateFormat df = android.text.format.DateFormat.getMediumDateFormat(this);
 
-        for (Registration r : items) {
+        for (Entrant entrant : items) {
             View card = getLayoutInflater().inflate(R.layout.item_recent_event, container, false);
 
-            TextView title  = card.findViewById(R.id.history_event_name);    // was item_title
-            TextView status = card.findViewById(R.id.history_event_status);  // was item_subtitle
-            TextView time   = card.findViewById(R.id.history_event_time);    // was item_meta
+            TextView title  = card.findViewById(R.id.history_event_name);
+            TextView status = card.findViewById(R.id.history_event_status);
+            TextView time   = card.findViewById(R.id.history_event_time);
 
-            if (title  != null) title.setText(
-                    r.getEventTitleSnapshot() == null ? "(untitled)" : r.getEventTitleSnapshot()
-            );
-            if (status != null) status.setText(
-                    "Status: " + (r.getStatus() == null ? "—" : r.getStatus())
-            );
-            if (time   != null) time.setText(
-                    r.getUpdatedAt() == null ? "" : "Invited: " + df.format(r.getUpdatedAt().toDate())
-            );
+            // Fetch event name from events collection
+            if (title != null) {
+                // Show loading state first
+                title.setText("Loading...");
+
+                if (entrant.getEventId() != null) {
+                    db.collection("events").document(entrant.getEventId()).get()
+                            .addOnSuccessListener(eventDoc -> {
+                                if (eventDoc.exists()) {
+                                    String eventName = eventDoc.getString("name");
+                                    String eventLocation = eventDoc.getString("location");
+
+                                    // Build display text
+                                    StringBuilder displayText = new StringBuilder();
+                                    if (eventName != null && !eventName.isEmpty()) {
+                                        displayText.append(eventName);
+                                    } else {
+                                        displayText.append("(Untitled Event)");
+                                    }
+
+                                    // Optionally add location
+                                    if (eventLocation != null && !eventLocation.isEmpty()) {
+                                        displayText.append(" @ ").append(eventLocation);
+                                    }
+
+                                    title.setText(displayText.toString());
+                                } else {
+                                    title.setText("(Event not found)");
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                title.setText("(Failed to load event)");
+                            });
+                } else {
+                    title.setText("(Unknown event)");
+                }
+            }
+
+            if (status != null) {
+                status.setText("Status: " +
+                        (entrant.getStatus() == null ? "—" : entrant.getStatus().toString()));
+            }
+
+            if (time != null) {
+                long timestamp = entrant.getStatusTimestamp();
+                if (timestamp > 0) {
+                    time.setText("Updated: " + df.format(new java.util.Date(timestamp)));
+                } else {
+                    time.setText("");
+                }
+            }
 
             container.addView(card);
         }
@@ -85,6 +146,9 @@ public class EventsHistoryActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (fm != null) fm.stopListeningUserRegistrations();
+        if (entrantsListener != null) {
+            entrantsListener.remove();
+            entrantsListener = null;
+        }
     }
 }
