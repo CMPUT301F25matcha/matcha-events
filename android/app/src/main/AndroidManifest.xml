@@ -9,6 +9,10 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
 
+    <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="${MAPS_API_KEY}" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,6 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotterySystemProject">
 
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAh33R6SyKaCWWfNaMwv6crlBPdJyxINxE"/>
         <activity
             android:name=".views.entrant.UserInfoView"
             android:exported="true"

@@ -1,5 +1,7 @@
 package com.example.lotterysystemproject.models;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +40,9 @@ public class Event {
     // Event Details
     private String posterImageUrl;
 
+    //Location
+    private double latitude;
+    private double longitude;
     // QR Codes
     private String promotionalQrCode; // Scanned to view event details and join waiting list
 
@@ -66,7 +71,7 @@ public class Event {
         this.active = true;
         this.status = "open";
         this.currentEnrolled = 0;
-        this.geolocationRequired = false;
+        this.geolocationRequired = true;
     }
 
     /**
@@ -94,6 +99,11 @@ public class Event {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 

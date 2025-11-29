@@ -2,6 +2,8 @@ package com.example.lotterysystemproject.views.fragments.organizer;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,24 +25,35 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
+import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.adapters.PlaceAutoSuggestAdapter;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.firebasemanager.UserRepository;
 import com.example.lotterysystemproject.models.DeviceIdentityManager;
 import com.example.lotterysystemproject.models.Event;
-import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.models.User;
 import com.example.lotterysystemproject.viewmodels.EventViewModel;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Fragment that allows organizers to create new events.
@@ -52,7 +66,7 @@ import java.util.Locale;
 public class CreateEventFragment extends Fragment {
 
     /** UI components for event details */
-    private EditText eventNameInput, descriptionInput, locationInput, capacityInput, priceInput, maxWaitingListInput;
+    private EditText eventNameInput, descriptionInput, capacityInput, maxWaitingListInput, priceInput;
     private Button dateButton, timeButton, regStartButton, regEndButton;
     private Button uploadPosterButton, createEventButton, backButton;
 
@@ -77,6 +91,14 @@ public class CreateEventFragment extends Fragment {
                 }
             });
 
+    // Google Places & Maps
+    private double selectedLatitude = 0.0;
+    private double selectedLongitude = 0.0;
+    private AutoCompleteTextView locationInput;
+    private PlaceAutoSuggestAdapter adapter;
+    private PlacesClient placesClient;
+    private AutocompleteSessionToken sessionToken;
+
     /**
      * Inflates the layout and initializes the fragment components.
      */
@@ -86,15 +108,25 @@ public class CreateEventFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event, container, false);
 
+        // Initialize Google Places SDK
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "AIzaSyAh33R6SyKaCWWfNaMwv6crlBPdJyxINxE");
+        }
+
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
 
         eventDateTime = Calendar.getInstance();
         regStartDate = Calendar.getInstance();
         regEndDate = Calendar.getInstance();
 
-
-
         initializeViews(view);
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                selectedImageUri = uri;
+                eventPosterPreview.setImageURI(uri);
+                validateForm();
+            }
+        });
         setupListeners();
         setupValidation();
 
@@ -110,6 +142,35 @@ public class CreateEventFragment extends Fragment {
         eventNameInput = view.findViewById(R.id.event_name_input);
         descriptionInput = view.findViewById(R.id.description_input);
         locationInput = view.findViewById(R.id.location_input);
+
+        // Initialize Places Client
+        placesClient = Places.createClient(requireContext());
+        sessionToken = AutocompleteSessionToken.newInstance();
+
+        // Setup PlaceAutoSuggestAdapter
+        adapter = new PlaceAutoSuggestAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line);
+        locationInput.setAdapter(adapter);
+
+        locationInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 2) {
+                    fetchSuggestions(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        locationInput.setOnItemClickListener((parent, v, position, id) -> {
+            String placeId = adapter.getPlaceId(position);
+            fetchPlaceDetails(placeId);
+        });
+
         capacityInput = view.findViewById(R.id.capacity_input);
         maxWaitingListInput = view.findViewById(R.id.max_waiting_list_input);
         priceInput = view.findViewById(R.id.price_input);
@@ -126,6 +187,49 @@ public class CreateEventFragment extends Fragment {
         eventPosterPreview = view.findViewById(R.id.event_poster_preview);
 
         updateDateTimeButtons();
+    }
+
+    private void fetchSuggestions(String query) {
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(sessionToken)
+                .setQuery(query)
+                .build();
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            List<AutocompletePrediction> predictions = response.getAutocompletePredictions();
+            adapter.setData(predictions);
+            if (locationInput.getWindowToken() != null) {
+                locationInput.showDropDown();
+            }
+        }).addOnFailureListener((exception) -> {
+            Log.e("PlacesDebug", "API Error: " + exception.getMessage());
+        });
+    }
+
+    private void fetchPlaceDetails(String placeId) {
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
+
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields)
+                .setSessionToken(sessionToken)
+                .build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+
+            if (place.getLatLng() != null) {
+                // Store coordinates
+                selectedLatitude = place.getLatLng().latitude;
+                selectedLongitude = place.getLatLng().longitude;
+                locationInput.setText(place.getAddress());
+                locationInput.dismissDropDown();
+            }
+            // Create a new token for the next session
+            sessionToken = AutocompleteSessionToken.newInstance();
+
+        }).addOnFailureListener((exception) -> {
+            exception.printStackTrace();
+            sessionToken = AutocompleteSessionToken.newInstance();
+        });
     }
 
     /**
@@ -195,8 +299,6 @@ public class CreateEventFragment extends Fragment {
             picker.show();
         });
 
-
-
         uploadPosterButton.setOnClickListener(v ->
                 pickImageLauncher.launch("image/*")
         );
@@ -247,7 +349,7 @@ public class CreateEventFragment extends Fragment {
     }
 
     /**
-     * Creates a new event using input data and saves it via the ViewModel.
+     * Creates a new event using input data.
      */
     private void createEvent() {
         String name = eventNameInput.getText().toString().trim();
@@ -291,78 +393,106 @@ public class CreateEventFragment extends Fragment {
                     return;
                 }
 
-                // Generate event ID locally (works in both mock and Firebase modes)
                 String eventId = "event_" + System.currentTimeMillis() + "_" + (int)(Math.random() * 10000);
-                //TODO: Make sure to gather when the event is, as this is for display for Entrants, hard coded for now
                 Date date = regEndDate.getTime();
                 String eventTime = "5:00PM";
-                EventRepository eventRepository = RepositoryProvider.getEventRepository();
+
                 Event newEvent = new Event(eventId, name, description, result.getName(), result.getEmail(), date, eventTime, location, finalCapacity);
 
                 newEvent.setRegistrationStart(regStartDate.getTime());
                 newEvent.setRegistrationEnd(regEndDate.getTime());
                 newEvent.setMaxWaitingListSize(finalMaxWaitingList);
 
+                // Set coordinates if they were picked via Places API
+                newEvent.setLatitude(selectedLatitude);
+                newEvent.setLongitude(selectedLongitude);
+
                 // Generate QR codes
                 String promoQR = generateQRCode(name, "PROMO");
-
-
                 newEvent.setPromotionalQrCode(promoQR);
 
 
-                // Save the event via ViewModel which saves to firebase
-                if (selectedImageUri != null) {
-                    uploadPosterAndCreateEvent(newEvent);
-                } else {
-                    eventViewModel.createEvent(newEvent);
-                    Toast.makeText(getContext(),
-                            "✓ Event created with QR codes!",
-                            Toast.LENGTH_LONG).show();
-                    requireActivity().onBackPressed();
-
-                }
-
-
-
+                // Start the creation process (Geocoding -> Image Upload -> Save)
+                processEventCreation(newEvent);
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.e("EventCreation", "Failed to fetch organizer info: " + e);
-                Toast.makeText(getContext(),
-                        "Error: Could not verify organizer. " + e,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Error: Could not verify organizer. " + e, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     /**
-     * Generates a mock QR code string for testing purposes.
-     *
-     * @param eventName The name of the event.
-     * @param type The QR code type (e.g., "PROMO", "CHECKIN").
-     * @return The generated QR code string.
+     * Determines if Geocoding is needed, then proceeds to upload/save.
+     * Use background thread for Geocoding to prevent UI freeze/Crash.
      */
-    private String generateQRCode(String eventName, String type) {
-        return type + "_" + eventName.replaceAll(" ", "_") + "_" + System.currentTimeMillis();
+    private void processEventCreation(Event event) {
+        // If coordinates are missing (0,0) but we have a location string (manual entry),
+        // try to geocode it on a background thread.
+        if ((event.getLatitude() == 0 && event.getLongitude() == 0) &&
+                event.getLocation() != null && !event.getLocation().isEmpty()) {
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                try {
+                    List<Address> addresses = geocoder.getFromLocationName(event.getLocation(), 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        Address address = addresses.get(0);
+                        event.setLatitude(address.getLatitude());
+                        event.setLongitude(address.getLongitude());
+                    }
+                } catch (IOException e) {
+                    Log.e("CreateEvent", "Geocoding failed", e);
+                }
+
+                // Proceed to next step on Main Thread
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> uploadPosterAndFinalize(event));
+                }
+            });
+        } else {
+            // Coordinates already set (via Places) or location empty
+            uploadPosterAndFinalize(event);
+        }
     }
 
-    private void uploadPosterAndCreateEvent(Event event) {
-        StorageReference ref = FirebaseStorage.getInstance()
-                .getReference("event_posters/" + event.getId() + ".jpg");
+    /**
+     * Uploads the poster (if selected) and then saves the event to ViewModel.
+     */
+    private void uploadPosterAndFinalize(Event event) {
+        if (selectedImageUri != null) {
+            StorageReference ref = FirebaseStorage.getInstance()
+                    .getReference("event_posters/" + event.getId() + ".jpg");
 
-        ref.putFile(selectedImageUri)
-                .addOnSuccessListener(t -> {
-                    ref.getDownloadUrl().addOnSuccessListener(url -> {
-                        event.setPosterImageUrl(url.toString());
-                        eventViewModel.createEvent(event);
-
-                        Toast.makeText(getContext(), "Event created with poster!", Toast.LENGTH_LONG).show();
-                        requireActivity().onBackPressed();
+            ref.putFile(selectedImageUri)
+                    .addOnSuccessListener(t -> {
+                        ref.getDownloadUrl().addOnSuccessListener(url -> {
+                            event.setPosterImageUrl(url.toString());
+                            saveEventToViewModel(event);
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Poster upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        // Proceed even if poster fails?
+                        // For now, we stop to let user retry or we could call saveEventToViewModel(event) here too.
                     });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Poster upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+        } else {
+            saveEventToViewModel(event);
+        }
+    }
+
+    private void saveEventToViewModel(Event event) {
+        eventViewModel.createEvent(event);
+        Toast.makeText(getContext(), "✓ Event created successfully!", Toast.LENGTH_LONG).show();
+        if (getActivity() != null) {
+            requireActivity().onBackPressed();
+        }
+    }
+
+    private String generateQRCode(String eventName, String type) {
+        return type + "_" + eventName.replaceAll(" ", "_") + "_" + System.currentTimeMillis();
     }
 }

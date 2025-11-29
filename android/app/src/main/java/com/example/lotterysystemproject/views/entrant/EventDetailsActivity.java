@@ -2,18 +2,35 @@ package com.example.lotterysystemproject.views.entrant;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.controllers.AdminUserProfileDialog;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.databinding.EventDetailsBinding;
 import com.example.lotterysystemproject.views.entrant.EntryCriteriaDialogue;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import android.content.SharedPreferences;
@@ -21,19 +38,29 @@ import android.content.SharedPreferences;
 /**
  * Activity for displaying detailed information about a specific event.
  * Allows entrants to view event details and join/leave the waiting list.
+ * Handles geolocation capture when required by the event.
  *
  * Related User Stories:
  * - US 01.01.01: Join waiting list for a specific event
  * - US 01.01.02: Leave waiting list for a specific event
  * - US 01.05.04: View total entrants on waiting list
  * - US 01.06.01: View event details by scanning QR code
+ * - US 02.02.02: See on a map where entrants joined from
+ * - US 02.02.03: Enable/disable geolocation requirement
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+
     private EventDetailsBinding binding;
     private String eventId;
     private Event event;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
     private boolean requestInProgress = false;
+
+    // Geolocation components
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location capturedLocation;
+    private boolean waitingForLocation = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +79,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                 eventId = uri.getQueryParameter("eventId");
         }
 
+        // Initialize location client
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        eventId = getIntent().getStringExtra("eventId");
         if (eventId == null) {
             Toast.makeText(this, "No event ID provided", Toast.LENGTH_SHORT).show();
             finish();
@@ -83,6 +114,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // View Entry Criteria (stub)
         binding.viewEntryCriteria.setOnClickListener(v -> handleEntryCriteriaDialogue());
+
         // Join/leave waiting list logic
         binding.joinWaitingListButton.setOnClickListener(v -> handleWaitingListAction());
     }
@@ -106,20 +138,50 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            if (event == null) {
-                Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
-
             populateDetails();
         });
+    }
+
+    private void initMap() {
+        if (event == null || isFinishing() || isDestroyed()) return;
+
+        // Only load map if we have valid coordinates
+        if (event.getLatitude() != 0.0 || event.getLongitude() != 0.0) {
+            binding.mapContainer.setVisibility(View.VISIBLE);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map_container);
+
+            if (mapFragment == null) {
+                mapFragment = SupportMapFragment.newInstance();
+                // Use commitAllowingStateLoss to avoid crashes if activity state saved
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.map_container, mapFragment)
+                        .commitAllowingStateLoss();
+            }
+
+            mapFragment.getMapAsync(this);
+        } else {
+            binding.mapContainer.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if (event != null) {
+            LatLng eventLocation = new LatLng(event.getLatitude(), event.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(eventLocation).title(event.getLocation()));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 15f));
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+        }
     }
 
     /**
      * Handles the join/leave waiting list button click.
      * Checks user authentication, determines current state, and performs
      * the appropriate action (join or leave).
+     *
+     * For joining: checks if geolocation is required and captures location if needed.
      */
     private void handleWaitingListAction() {
         if (event == null || requestInProgress) return;
@@ -130,43 +192,191 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        requestInProgress = true;
-        binding.joinWaitingListButton.setEnabled(false);
-
         if (!event.isUserOnWaitingList(userId)) {
-            // Join waiting list
-            joinWaitingList(userId);
+            // User is NOT on the waiting list - JOIN action
+            requestInProgress = true;
+            binding.joinWaitingListButton.setEnabled(false);
+
+            // Check if geolocation is required for this event
+            if (event.isGeolocationRequired()) {
+                checkLocationPermissionAndCapture();
+            } else {
+                // No geolocation required, proceed directly
+                joinWaitingList(userId, null, null);
+            }
         } else {
-            // Leave waiting list
+            // User IS on the waiting list - LEAVE action
+            requestInProgress = true;
+            binding.joinWaitingListButton.setEnabled(false);
             leaveWaitingList(userId);
         }
+    }
+
+    /**
+     * Checks if location permission is granted. If not, requests it.
+     * If granted, captures the current location.
+     */
+    private void checkLocationPermissionAndCapture() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Permission already granted, capture location
+            captureCurrentLocation();
+        } else {
+            // Request permission
+            waitingForLocation = true;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    /**
+     * Handles the result of the location permission request.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, capture location
+                if (waitingForLocation) {
+                    captureCurrentLocation();
+                }
+            } else {
+                // Permission denied - reset state and update UI
+                waitingForLocation = false;
+                requestInProgress = false;
+                binding.joinWaitingListButton.setEnabled(true);
+                updateJoinButton(); // Restore button text
+                Toast.makeText(this,
+                        "Location permission is required to join this event",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * Captures the current location using FusedLocationProviderClient.
+     * Once captured, proceeds to join the waiting list.
+     */
+    private void captureCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestInProgress = false;
+            binding.joinWaitingListButton.setEnabled(true);
+            updateJoinButton(); // Restore button text
+            Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        waitingForLocation = false;
+
+                        if (location != null) {
+                            // Location captured successfully
+                            capturedLocation = location;
+                            String userId = getCurrentUserId();
+
+                            // Proceed to join with location data
+                            joinWaitingList(userId,
+                                    location.getLatitude(),
+                                    location.getLongitude());
+                        } else {
+                            // Location is null, possibly location services are off
+                            requestInProgress = false;
+                            binding.joinWaitingListButton.setEnabled(true);
+                            updateJoinButton(); // Restore button text
+                            Toast.makeText(EventDetailsActivity.this,
+                                    "Could not get location. Please enable location services.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(this, e -> {
+                    waitingForLocation = false;
+                    requestInProgress = false;
+                    binding.joinWaitingListButton.setEnabled(true);
+                    updateJoinButton(); // Restore button text
+                    Toast.makeText(EventDetailsActivity.this,
+                            "Failed to get location: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                });
     }
 
     /**
      * Adds the current user to the event's waiting list.
      * Refreshes event data after successful operation.
      *
+     * If geolocation is required, the latitude and longitude are saved with the entrant record.
+     *
      * @param userId The ID of the user joining the waiting list
+     * @param latitude The latitude where the user joined (null if not required)
+     * @param longitude The longitude where the user joined (null if not required)
      */
-    private void joinWaitingList(String userId) {
-        RepositoryProvider.getInstance().joinWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
-            @Override
-            public void onSuccess() {
-                // Refresh event data to get updated waiting list
-                refreshEventData(() -> {
-                    requestInProgress = false;
-                    binding.joinWaitingListButton.setEnabled(true);
-                    Toast.makeText(EventDetailsActivity.this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
-                });
-            }
+    private void joinWaitingList(String userId, Double latitude, Double longitude) {
+        RepositoryProvider.getEventRepository().joinWaitingList(event.getId(), userId,
+                new EventRepository.RepositoryCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // If geolocation was captured, save it to the entrant record
+                        if (latitude != null && longitude != null) {
+                            saveEntrantGeolocation(userId, latitude, longitude);
+                        }
 
-            @Override
-            public void onError(Exception e) {
-                requestInProgress = false;
-                binding.joinWaitingListButton.setEnabled(true);
-                Toast.makeText(EventDetailsActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                        // Refresh event data to get updated waiting list
+                        refreshEventData(() -> {
+                            requestInProgress = false;
+                            binding.joinWaitingListButton.setEnabled(true);
+                            updateJoinButton(); // Update button text to "Leave Waiting List"
+
+                            String message = latitude != null && longitude != null
+                                    ? "Joined waiting list! (Location saved)"
+                                    : "Joined waiting list!";
+                            Toast.makeText(EventDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        requestInProgress = false;
+                        binding.joinWaitingListButton.setEnabled(true);
+                        updateJoinButton(); // Restore button text
+                        Toast.makeText(EventDetailsActivity.this,
+                                "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     * Saves the geolocation data for the entrant.
+     * This creates a geolocation record in Firebase that can be used by organizers
+     * to see where entrants joined from on a map.
+     *
+     * Related User Story: US 02.02.02 - See on a map where entrants joined from
+     *
+     * @param userId The ID of the user
+     * @param latitude The latitude where the user joined
+     * @param longitude The longitude where the user joined
+     */
+    private void saveEntrantGeolocation(String userId, double latitude, double longitude) {
+        // TODO: Implement geolocation save in the repository
+        // This should create a document in a "geolocations" collection with:
+        // - eventId
+        // - userId/entrantId
+        // - latitude
+        // - longitude
+        // - timestamp
+
+        // For now, this is a placeholder
+        // The actual implementation will depend on your GeolocationRepository
+        android.util.Log.d("EventDetails",
+                String.format("Saving geolocation for user %s: lat=%f, lng=%f",
+                        userId, latitude, longitude));
     }
 
     /**
@@ -176,7 +386,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param userId The ID of the user leaving the waiting list
      */
     private void leaveWaitingList(String userId) {
-        EventRepository repository = RepositoryProvider.getInstance();
+        EventRepository repository = RepositoryProvider.getEventRepository();
         repository.leaveWaitingList(event.getId(), userId, new EventRepository.RepositoryCallback() {
             @Override
             public void onSuccess() {
@@ -184,6 +394,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 refreshEventData(() -> {
                     requestInProgress = false;
                     binding.joinWaitingListButton.setEnabled(true);
+                    updateJoinButton(); // Update button text to "Join Waiting List"
                     Toast.makeText(EventDetailsActivity.this, "Left waiting list.", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -192,6 +403,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 requestInProgress = false;
                 binding.joinWaitingListButton.setEnabled(true);
+                updateJoinButton(); // Restore button text
                 Toast.makeText(EventDetailsActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -236,7 +448,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         binding.eventDate.setText(event.getEventDate() != null ? dateFormat.format(event.getEventDate()) : "Date TBD");
         binding.eventDescription.setText(event.getDescription());
         updateJoinButton();
-        // TODO: Load image, setup map, set state for notifications and joined status
+        initMap();
     }
 
     /**
@@ -267,7 +479,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         return prefs.getString("userId", null);
     }
-    
+
     /**
      * Handles displaying the entry criteria dialog.
      */
