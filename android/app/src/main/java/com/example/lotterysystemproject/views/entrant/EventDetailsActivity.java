@@ -1,5 +1,7 @@
 package com.example.lotterysystemproject.views.entrant;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -39,7 +41,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         binding = EventDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        eventId = getIntent().getStringExtra("eventId");
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent intent = getIntent();
+        eventId = intent.getStringExtra("eventId");
+
+        // just in case we receive from app link
+        if (eventId == null){
+            Uri uri = intent.getData();
+            if(uri != null)
+                eventId = uri.getQueryParameter("eventId");
+        }
+
         if (eventId == null) {
             Toast.makeText(this, "No event ID provided", Toast.LENGTH_SHORT).show();
             finish();

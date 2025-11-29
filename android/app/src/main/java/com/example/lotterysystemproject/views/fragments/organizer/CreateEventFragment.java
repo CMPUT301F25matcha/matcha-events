@@ -305,10 +305,10 @@ public class CreateEventFragment extends Fragment {
 
                 // Generate QR codes
                 String promoQR = generateQRCode(name, "PROMO");
-                String checkinQR = generateQRCode(name, "CHECKIN");
+
 
                 newEvent.setPromotionalQrCode(promoQR);
-                newEvent.setCheckInQrCode(checkinQR);
+
 
                 // Save the event via ViewModel which saves to firebase
                 if (selectedImageUri != null) {

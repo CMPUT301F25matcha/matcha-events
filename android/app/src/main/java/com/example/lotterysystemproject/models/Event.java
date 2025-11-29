@@ -40,7 +40,7 @@ public class Event {
 
     // QR Codes
     private String promotionalQrCode; // Scanned to view event details and join waiting list
-    private String checkInQrCode; // Used for check-in verification
+
 
     // Geolocation
     private boolean geolocationRequired;
@@ -154,8 +154,6 @@ public class Event {
     public String getPromotionalQrCode() { return promotionalQrCode; }
     public void setPromotionalQrCode(String promotionalQrCode) { this.promotionalQrCode = promotionalQrCode; }
 
-    public String getCheckInQrCode() { return checkInQrCode; }
-    public void setCheckInQrCode(String checkInQrCode) { this.checkInQrCode = checkInQrCode; }
 
     public boolean isGeolocationRequired() { return geolocationRequired; }
     public void setGeolocationRequired(boolean geolocationRequired) { this.geolocationRequired = geolocationRequired; }

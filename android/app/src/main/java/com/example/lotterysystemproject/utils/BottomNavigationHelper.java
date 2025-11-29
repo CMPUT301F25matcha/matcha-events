@@ -1,12 +1,20 @@
 package com.example.lotterysystemproject.utils;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.views.entrant.EntrantExploreActivity;
+import com.example.lotterysystemproject.views.entrant.EntrantMainActivity;
+import com.example.lotterysystemproject.views.entrant.EntrantProfileActivity;
+import com.example.lotterysystemproject.views.entrant.EntrantQRActivity;
+import com.example.lotterysystemproject.views.entrant.QRCodeScannerActivity;
 
 public class BottomNavigationHelper {
     
@@ -17,6 +25,93 @@ public class BottomNavigationHelper {
         NOTIFICATIONS,
         PROFILE
     }
+
+    /**
+     * Sets up click listeners for all navigation items
+     * @param activity The current activity
+     * @param bottomNavView The bottom navigation bar view
+     * @param currentItem The currently selected navigation item
+     */
+    public static void setupNavigation(Activity activity, View bottomNavView, NavItem currentItem) {
+        LinearLayout homeLayout = bottomNavView.findViewById(R.id.nav_home);
+        LinearLayout exploreLayout = bottomNavView.findViewById(R.id.nav_explore);
+        LinearLayout qrScannerLayout = bottomNavView.findViewById(R.id.nav_qr_scanner);
+        LinearLayout notificationsLayout = bottomNavView.findViewById(R.id.nav_notifications);
+        LinearLayout profileLayout = bottomNavView.findViewById(R.id.nav_profile);
+
+
+        // Set selected state
+        setSelectedItem(currentItem, homeLayout, exploreLayout, qrScannerLayout, notificationsLayout, profileLayout);
+
+        // Set click listeners
+        setupClickListeners(activity, homeLayout, exploreLayout, qrScannerLayout,
+                notificationsLayout, profileLayout, currentItem);
+
+    }
+
+    /**
+     * Sets up click listeners for navigation items
+     */
+    private static void setupClickListeners(
+            Activity activity,
+            LinearLayout homeLayout,
+            LinearLayout exploreLayout,
+            LinearLayout qrScannerLayout,
+            LinearLayout notificationsLayout,
+            LinearLayout profileLayout,
+            NavItem currentItem) {
+
+        // Home
+        homeLayout.setOnClickListener(v -> {
+            if (currentItem != NavItem.HOME) {
+                Intent intent = new Intent(activity, EntrantMainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+                activity.finish();
+            }
+        });
+
+        // Explore
+        exploreLayout.setOnClickListener(v -> {
+            if (currentItem != NavItem.EXPLORE) {
+                Intent intent = new Intent(activity, EntrantExploreActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+                activity.finish();
+            }
+        });
+
+        // QR Scanner
+        qrScannerLayout.setOnClickListener(v -> {
+            if (currentItem != NavItem.QR_SCANNER) {
+                Intent intent = new Intent(activity, EntrantQRActivity.class);
+                activity.startActivity(intent);
+            }
+        });
+
+        // Notifications
+        notificationsLayout.setOnClickListener(v -> {
+            if (currentItem != NavItem.NOTIFICATIONS) {
+                Intent intent = new Intent(activity, QRCodeScannerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+                activity.finish();
+            }
+        });
+
+        // Profile
+        profileLayout.setOnClickListener(v -> {
+            if (currentItem != NavItem.PROFILE) {
+                Intent intent = new Intent(activity, EntrantProfileActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                activity.startActivity(intent);
+                activity.finish();
+            }
+        });
+
+
+    }
+
     
     /**
      * Sets the selected state for a navigation item

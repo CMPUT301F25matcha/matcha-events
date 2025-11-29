@@ -37,7 +37,6 @@ public class NotificationsActivity extends AppCompatActivity {
                 this,
                 EntrantMainActivity.class,
                 null,
-                null,
                 NotificationsActivity.class,
                 ProfileHostActivity.class
         );

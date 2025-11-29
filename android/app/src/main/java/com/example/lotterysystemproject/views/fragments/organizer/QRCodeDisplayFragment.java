@@ -45,8 +45,6 @@ public class QRCodeDisplayFragment extends Fragment {
     /** ImageView for displaying the promotional QR code. */
     private ImageView promoQrImage;
 
-    /** ImageView for displaying the check-in QR code. */
-    private ImageView checkinQrImage;
 
     /** Button for navigating back to the previous screen. */
     private Button backButton;
@@ -78,7 +76,7 @@ public class QRCodeDisplayFragment extends Fragment {
         backButton = view.findViewById(R.id.back_button);
         eventNameTitle = view.findViewById(R.id.event_name_title);
         promoQrImage = view.findViewById(R.id.promo_qr_image);
-        checkinQrImage = view.findViewById(R.id.checkin_qr_image);
+
 
         // Load event and generate its QR codes
         loadEventAndGenerateQRCodes();
@@ -126,11 +124,6 @@ public class QRCodeDisplayFragment extends Fragment {
             promoQrImage.setImageBitmap(promoQrBitmap);
         }
 
-        // Generate check-in QR code
-        String checkinData = QRCodeGenerator.generateCheckinData(event.getId(), event.getName());
-        Bitmap checkinQrBitmap = QRCodeGenerator.generateQRCode(checkinData, 500, 500);
-        if (checkinQrBitmap != null) {
-            checkinQrImage.setImageBitmap(checkinQrBitmap);
-        }
+
     }
 }

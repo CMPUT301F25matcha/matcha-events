@@ -50,14 +50,37 @@ public class QRCodeGenerator {
         return "PROMO|" + eventId + "|" + eventName;
     }
 
-    /**
-     * Generates encoded QR data for event check-in.
-     *
-     * @param eventId   The event ID.
-     * @param eventName The event name.
-     * @return Encoded check-in data string with timestamp.
-     */
-    public static String generateCheckinData(String eventId, String eventName) {
-        return "CHECKIN|" + eventId + "|" + eventName + "|" + System.currentTimeMillis();
+    /** Parsed QR code structure */
+    public static class QRCodeData {
+        public String type;
+        public String eventId;
+        public String eventName;
+
+        public boolean isPromo() {return "PROMO".equals(type); }
+
     }
+
+    /** Parses QR code text into a structured object */
+    public static QRCodeData parseQRCode(String raw) {
+
+        try {
+            String[] parts = raw.split("\\|");
+            QRCodeData data = new QRCodeData();
+
+            if (!parts[0].equals("PROMO")) {
+                return null;
+            }
+
+            data.type = parts[0];
+            data.eventId = parts[1];
+            data.eventName = parts[2];
+
+            return data;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+
 }

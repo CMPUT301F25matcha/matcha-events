@@ -107,61 +107,6 @@
                 android:textColor="#B6ACAC"
                 android:gravity="center"
                 android:layout_marginBottom="32dp" />
-
-            <!-- Check-in QR Code Section -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Check-in QR Code"
-                android:textSize="16sp"
-                android:fontFamily="@font/anuphan_semibold"
-                android:textColor="#262424"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="(For day of eventAdmin)"
-                android:textSize="12sp"
-                android:fontFamily="@font/anuphan"
-                android:textColor="#B6ACAC"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Check-in QR Code Image -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:id="@+id/checkin_qr_image"
-                        android:layout_width="250dp"
-                        android:layout_height="250dp"
-                        android:contentDescription="Check-in QR Code"
-                        android:background="#F5F5F5" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Use this QR code for attendance tracking on the day of the eventAdmin."
-                android:textSize="14sp"
-                android:fontFamily="@font/anuphan"
-                android:textColor="#B6ACAC"
-                android:gravity="center" />
-
         </LinearLayout>
 
     </LinearLayout>

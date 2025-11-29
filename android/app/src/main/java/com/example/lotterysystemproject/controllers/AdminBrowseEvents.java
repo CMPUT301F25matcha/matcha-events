@@ -51,7 +51,6 @@ public class AdminBrowseEvents extends Fragment {
 
 
 
-
         // Handle back arrow
         binding.backArrow.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminBrowseEvents.this).navigateUp()

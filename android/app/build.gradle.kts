@@ -41,7 +41,14 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation("androidx.camera:camera-core:1.3.0")
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.guava:guava:31.1-android")
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.firestore)
 
     // JUnit
     testImplementation("junit:junit:4.13.2")
@@ -85,4 +92,5 @@ dependencies {
     // QR Code Generation
     implementation("com.google.zxing:core:3.5.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
 }
