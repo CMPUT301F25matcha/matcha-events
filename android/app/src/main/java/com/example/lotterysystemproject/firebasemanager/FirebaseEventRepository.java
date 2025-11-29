@@ -46,6 +46,12 @@ public class FirebaseEventRepository implements EventRepository {
         this.storage = FirebaseStorage.getInstance();
     }
 
+    // TESTING CONSTRUCTOR (mock Firestore & Storage)
+    public FirebaseEventRepository(FirebaseFirestore db, FirebaseStorage storage) {
+        this.db = db;
+        this.storage = storage;
+    }
+
     // ===================== ACCESSORS =====================
 
     @Nullable

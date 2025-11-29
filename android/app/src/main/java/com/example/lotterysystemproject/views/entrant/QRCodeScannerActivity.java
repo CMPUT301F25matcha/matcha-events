@@ -204,26 +204,26 @@ public class QRCodeScannerActivity extends AppCompatActivity {
      */
 
     private void handleScannedQRCode(String qrData) {
-        Log.d(TAG, "Scanned QR code: " + qrData);
 
         runOnUiThread(() -> {
-            // Parse the QR code data
-            QRCodeGenerator.QRCodeData parsedData = QRCodeGenerator.parseQRCode(qrData);
 
-            if (parsedData == null || !parsedData.isPromo()) {
+            String eventId = QRCodeGenerator.extractEventId(qrData);
+
+            if (eventId == null) {
                 Toast.makeText(this, "Invalid event QR code", Toast.LENGTH_SHORT).show();
-                scanned = false; // Allow scanning again
+                scanned = false;
                 return;
             }
-            // Open EventDetailsActivity with the event ID
+
             Intent intent = new Intent(this, EventDetailsActivity.class);
-            intent.putExtra("eventId", parsedData.eventId);
+            intent.putExtra("eventId", eventId);
             startActivity(intent);
-            finish(); // Close scanner
+            finish();
         });
 
-    }
 
+
+    }
 
 
 

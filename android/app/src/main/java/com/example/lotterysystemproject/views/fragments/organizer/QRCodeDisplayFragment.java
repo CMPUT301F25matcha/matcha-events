@@ -118,7 +118,7 @@ public class QRCodeDisplayFragment extends Fragment {
      */
     private void generateAndDisplayQRCodes(Event event) {
         // Generate promotional QR code
-        String promoData = QRCodeGenerator.generatePromoData(event.getId(), event.getName());
+        String promoData = QRCodeGenerator.generatePromoData(event.getId());
         Bitmap promoQrBitmap = QRCodeGenerator.generateQRCode(promoData, 500, 500);
         if (promoQrBitmap != null) {
             promoQrImage.setImageBitmap(promoQrBitmap);

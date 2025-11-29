@@ -2,6 +2,11 @@ package com.example.lotterysystemproject.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -11,6 +16,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * Utility class for generating QR codes for event data and check-in purposes.
  */
 public class QRCodeGenerator {
+
+    private static final String TAG = "QRCodeGenerator";
 
     /**
      * Generates a QR code bitmap from the given text.
@@ -43,44 +50,39 @@ public class QRCodeGenerator {
      * Generates encoded promotional QR data for an event.
      *
      * @param eventId   The unique ID of the event.
-     * @param eventName The name of the event.
      * @return Encoded promo data string.
      */
-    public static String generatePromoData(String eventId, String eventName) {
-        return "PROMO|" + eventId + "|" + eventName;
-    }
-
-    /** Parsed QR code structure */
-    public static class QRCodeData {
-        public String type;
-        public String eventId;
-        public String eventName;
-
-        public boolean isPromo() {return "PROMO".equals(type); }
-
-    }
-
-    /** Parses QR code text into a structured object */
-    public static QRCodeData parseQRCode(String raw) {
-
-        try {
-            String[] parts = raw.split("\\|");
-            QRCodeData data = new QRCodeData();
-
-            if (!parts[0].equals("PROMO")) {
-                return null;
-            }
-
-            data.type = parts[0];
-            data.eventId = parts[1];
-            data.eventName = parts[2];
-
-            return data;
-        } catch (Exception e) {
+    @Nullable
+    public static String generatePromoData(String eventId) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Log.e(TAG, "Cannot generate promo data: eventId is null or empty");
             return null;
         }
 
+        // Use custom URI scheme (works immediately)
+        return new Uri.Builder()
+                .scheme("lotterysystem")
+                .authority("event")
+                .appendQueryParameter("eventId", eventId)
+                .build()
+                .toString();
     }
+
+    public static String extractEventId(String raw) {
+        try {
+            Uri uri = Uri.parse(raw);
+
+            if (!"lotterysystem".equals(uri.getScheme())) {
+                return null;
+            }
+
+            return uri.getQueryParameter("eventId");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 
 
 }
