@@ -120,13 +120,6 @@ public class CreateEventFragment extends Fragment {
         regEndDate = Calendar.getInstance();
 
         initializeViews(view);
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                selectedImageUri = uri;
-                eventPosterPreview.setImageURI(uri);
-                validateForm();
-            }
-        });
         setupListeners();
         setupValidation();
 

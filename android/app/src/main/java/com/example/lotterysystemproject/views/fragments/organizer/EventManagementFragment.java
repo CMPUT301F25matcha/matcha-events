@@ -331,7 +331,6 @@ public class EventManagementFragment extends Fragment {
         dismissLoadingDialog();
     }
 
-}
 
     /**
      * Switches the ViewPager to the "Map" tab.

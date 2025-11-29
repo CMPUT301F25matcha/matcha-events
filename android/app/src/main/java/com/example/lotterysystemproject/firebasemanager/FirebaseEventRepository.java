@@ -149,9 +149,8 @@ public class FirebaseEventRepository implements EventRepository {
                 .whereEqualTo("active", true)
                 .addSnapshotListener((value, error) -> {
 
-                    if(error != null) {
-                        liveData.setValue(null); // or handle error differently
-                        // Optional: log the error
+                    if (error != null) {
+                        liveData.setValue(null);
                         Log.e("Repository", "Error fetching events", error);
                         return;
                     }
@@ -165,11 +164,8 @@ public class FirebaseEventRepository implements EventRepository {
                         }
                     }
                     liveData.setValue(out);
-                })
-                .addOnFailureListener(e -> {
-                    liveData.setValue(null);
-                    Log.e("Repository", "Error fetching events", e);
                 });
+
 
         return liveData;
     }
