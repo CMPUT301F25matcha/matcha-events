@@ -40,6 +40,12 @@ public class FirebaseEventRepository implements EventRepository {
         this.storage = FirebaseStorage.getInstance();
     }
 
+    // TESTING CONSTRUCTOR (mock Firestore & Storage)
+    public FirebaseEventRepository(FirebaseFirestore db, FirebaseStorage storage) {
+        this.db = db;
+        this.storage = storage;
+    }
+
     // ===================== ACCESSORS =====================
 
     @Nullable
@@ -141,10 +147,16 @@ public class FirebaseEventRepository implements EventRepository {
 
         db.collection("events")
                 .whereEqualTo("active", true)
-                .get()
-                .addOnSuccessListener(q -> {
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null) {
+                        liveData.setValue(null);
+                        Log.e("Repository", "Error fetching events", error);
+                        return;
+                    }
+
                     List<Event> out = new ArrayList<>();
-                    for (DocumentSnapshot d : q.getDocuments()) {
+                    for (DocumentSnapshot d : value.getDocuments()) {
                         Event e = d.toObject(Event.class);
                         if (e != null) {
                             e.setId(d.getId());
@@ -152,11 +164,8 @@ public class FirebaseEventRepository implements EventRepository {
                         }
                     }
                     liveData.setValue(out);
-                })
-                .addOnFailureListener(e -> {
-                    liveData.setValue(null);
-                    Log.e("Repository", "Error fetching events", e);
                 });
+
 
         return liveData;
     }

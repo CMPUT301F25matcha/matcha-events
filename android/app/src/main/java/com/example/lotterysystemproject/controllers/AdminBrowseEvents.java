@@ -49,7 +49,6 @@ public class AdminBrowseEvents extends Fragment {
 
         binding.recyclerEvents.setAdapter(adapter);
 
-        // Search bar
 
 
         // Handle back arrow

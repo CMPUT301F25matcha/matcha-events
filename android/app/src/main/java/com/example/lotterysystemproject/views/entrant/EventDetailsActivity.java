@@ -1,5 +1,7 @@
 package com.example.lotterysystemproject.views.entrant;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -65,6 +67,17 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         binding = EventDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent intent = getIntent();
+        eventId = intent.getStringExtra("eventId");
+
+        // just in case we receive from app link
+        if (eventId == null){
+            Uri uri = intent.getData();
+            if(uri != null)
+                eventId = uri.getQueryParameter("eventId");
+        }
 
         // Initialize location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);

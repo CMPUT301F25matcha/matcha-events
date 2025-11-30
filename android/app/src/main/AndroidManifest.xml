@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
 
     <meta-data
         android:name="com.google.android.geo.API_KEY"
@@ -53,7 +59,32 @@
         <activity android:name=".views.entrant.SearchResultsActivity" />
         <activity android:name=".views.entrant.CategoryEventListActivity" />
         <activity android:name=".views.admin.AdminLoginActivity" />
-        <activity android:name=".views.entrant.EventDetailsActivity" />
+        <activity android:name=".views.entrant.EventDetailsActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="cmput301f25matcha.github.io" />
+                <data android:pathPattern="/eventinfo" />
+            </intent-filter>
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="lotterysystem"
+                    android:host="event"
+                    android:pathPattern=".*" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".views.entrant.ProfileHostActivity"
             android:exported="false" />
@@ -64,7 +95,6 @@
             android:name=".views.entrant.NotificationsActivity"
             android:exported="false"
             android:label="Notifications" />
-
 
 
         <activity
@@ -84,6 +114,15 @@
         <activity
             android:name=".views.organizer.OrganizerMainActivity"
             android:exported="false" />
+
+        <!-- QR Code Scanner Activity -->
+        <activity
+            android:name=".views.entrant.QRCodeScannerActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"
+            android:label="Scan QR Code" />
+
+
 
     </application>
 

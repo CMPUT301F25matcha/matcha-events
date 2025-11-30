@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.example.lotterysystemproject.models.Event;
 
 import com.example.lotterysystemproject.R;
@@ -66,6 +67,8 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         /** The name of the event. */
         TextView eventName;
 
+        TextView organizerName;
+
         /** Button allowing the admin to view event details. */
         Button viewEventButton;
 
@@ -79,7 +82,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
             super(itemView);
             eventImage = itemView.findViewById(R.id.event_image);
             eventName = itemView.findViewById(R.id.event_name);
-            //organizerName = itemView.findViewById(R.id.organizer_name);
+            organizerName = itemView.findViewById(R.id.organizer_name);
             viewEventButton = itemView.findViewById(R.id.btn_view_event);
         }
 
@@ -114,9 +117,20 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         Event event = events.get(position);
 
         viewHolder.eventName.setText(event.getName());
-        //viewHolder.organizerName.setText(user.);
+        // Set organizer name with "Hosted by" prefix
+        String organizerText = "Hosted by " + event.getHostName();
+        viewHolder.organizerName.setText(organizerText);
 
 
+        if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(event.getPosterImageUrl())
+                    .centerCrop()
+                    .into(viewHolder.eventImage);
+
+        } else {
+            viewHolder.eventImage.setImageResource(R.drawable.ic_launcher_background);
+        }
         // Handle "View Event" button click
         viewHolder.viewEventButton.setOnClickListener(v -> {
             // Show Event Dialog

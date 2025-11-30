@@ -82,7 +82,14 @@ public class CreateEventFragment extends Fragment {
 
     private Uri selectedImageUri = null;
     private ImageView eventPosterPreview;
-    private ActivityResultLauncher<String> pickImageLauncher;
+    private final ActivityResultLauncher<String> pickImageLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri;
+                    eventPosterPreview.setImageURI(uri);
+                    validateForm();
+                }
+            });
 
     // Google Places & Maps
     private double selectedLatitude = 0.0;
@@ -113,13 +120,6 @@ public class CreateEventFragment extends Fragment {
         regEndDate = Calendar.getInstance();
 
         initializeViews(view);
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                selectedImageUri = uri;
-                eventPosterPreview.setImageURI(uri);
-                validateForm();
-            }
-        });
         setupListeners();
         setupValidation();
 
@@ -402,9 +402,8 @@ public class CreateEventFragment extends Fragment {
 
                 // Generate QR codes
                 String promoQR = generateQRCode(name, "PROMO");
-                String checkinQR = generateQRCode(name, "CHECKIN");
                 newEvent.setPromotionalQrCode(promoQR);
-                newEvent.setCheckInQrCode(checkinQR);
+
 
                 // Start the creation process (Geocoding -> Image Upload -> Save)
                 processEventCreation(newEvent);

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 
+import com.bumptech.glide.Glide;
 import com.example.lotterysystemproject.models.Event;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
@@ -126,8 +127,12 @@ public class EventListHelper {
         // Note: For production, consider using an image loading library like Glide or Picasso
         // For now, we'll use a placeholder. You can implement image loading later.
         if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
-            // TODO: Implement image loading from URL
+
             // For now, the image view will show the placeholder background
+            Glide.with(context)
+                    .load(event.getPosterImageUrl())
+                    .centerCrop()
+                    .into(eventImage);
         }
 
         // Handle join waiting list button click

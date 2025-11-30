@@ -69,14 +69,7 @@ public class EntrantMainActivity extends AppCompatActivity {
         eventListHelper = new EventListHelper(this, binding.eventsListContainer, this, this::setupEventCardListeners);
         eventListHelper.loadEvents();
 
-        NavWiring.wire(
-                this,
-                EntrantMainActivity.class,
-                null,
-                null,
-                NotificationsActivity.class,
-                ProfileHostActivity.class
-        );
+        setupBottomNavigation();
 
         // highlight bottom nav (existing code)
         LinearLayout home  = findViewById(R.id.nav_home);
@@ -306,7 +299,6 @@ public class EntrantMainActivity extends AppCompatActivity {
                 this,
                 EntrantMainActivity.class,   // home
                 null,                        // explore placeholder
-                null,                        // QR placeholder
                 NotificationsActivity.class,
                 ProfileHostActivity.class
         );
