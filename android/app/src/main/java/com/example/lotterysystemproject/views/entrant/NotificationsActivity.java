@@ -1,38 +1,47 @@
 package com.example.lotterysystemproject.views.entrant;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.lotterysystemproject.models.NotificationItem;
 import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.views.entrant.NotificationsAdapter;
+import com.example.lotterysystemproject.firebasemanager.NotificationRepository;
+import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
+import com.example.lotterysystemproject.firebasemanager.RepositoryListener;
+import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
+import com.example.lotterysystemproject.models.DeviceIdentityManager;
+import com.example.lotterysystemproject.models.NotificationItem;
+import com.example.lotterysystemproject.utils.BottomNavigationHelper;
 import com.example.lotterysystemproject.utils.NavWiring;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Displays a scrollable list of all notifications relevant to current entrant.
- */
 public class NotificationsActivity extends AppCompatActivity {
-    private NotificationsAdapter adapter;
-    private final List<NotificationItem> notifications = new ArrayList<>();
 
-    /**
-     * Called when the activity is first created.
-     * Initializes notification list, sets up bottom navigation bar, and populates mock data.
-     * @param savedInstanceState Previous instance state if re-created
-     */
+    private final List<NotificationItem> notifications = new ArrayList<>();
+    private NotificationsAdapter adapter;
+
+    private NotificationRepository notificationRepo;
+    private String currentUserId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notifications); // contains bottom bar include
+        setContentView(R.layout.activity_notifications);
 
-        // Wire the bar for this screen
+        // bottom nav wiring
         NavWiring.wire(
                 this,
                 EntrantMainActivity.class,
@@ -42,16 +51,15 @@ public class NotificationsActivity extends AppCompatActivity {
                 ProfileHostActivity.class
         );
 
-        // Make NOTIFICATIONS look selected
-        LinearLayout home = findViewById(R.id.nav_home);
-        LinearLayout expl = findViewById(R.id.nav_explore);
-        LinearLayout qr = findViewById(R.id.nav_qr_scanner);
+        LinearLayout home  = findViewById(R.id.nav_home);
+        LinearLayout expl  = findViewById(R.id.nav_explore);
+        LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
         LinearLayout notif = findViewById(R.id.nav_notifications);
-        LinearLayout prof = findViewById(R.id.nav_profile);
+        LinearLayout prof  = findViewById(R.id.nav_profile);
 
         if (home != null && expl != null && qr != null && notif != null && prof != null) {
-            com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
-                    com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.NOTIFICATIONS,
+            BottomNavigationHelper.setSelectedItem(
+                    BottomNavigationHelper.NavItem.NOTIFICATIONS,
                     home, expl, qr, notif, prof
             );
         }
@@ -61,44 +69,43 @@ public class NotificationsActivity extends AppCompatActivity {
         adapter = new NotificationsAdapter(notifications);
         rv.setAdapter(adapter);
 
-        seedMock();
-    }
 
-    /**
-     * Called when the activity resumes.
-     * Ensures any updated responses are shown in RecyclerView.
-     */
-    @Override protected void onResume() {
-        super.onResume();
-        // Rebind so persisted responses are applied in onBindViewHolder
-        adapter.notifyDataSetChanged();
+        notificationRepo = RepositoryProvider.getNotificationRepository();
+        currentUserId = DeviceIdentityManager.getUserId(this);
+
+
+        // listen to real Firestore data
+        listenForNotifications();
     }
 
 
-    /**
-     * Generates temporary mock notifs for testing and demos.
-     * Will later be replaced by Firebase data.
-     */
-    // Mock data, replace later with firebase
-    private void seedMock() {
-        long now = System.currentTimeMillis();
-        notifications.clear();
-        notifications.add(new NotificationItem(
-                "event-123:reg-abc",
-                "Event Invitation",
-                "You’ve been selected for Swimming Lessons!",
-                true,
-                now - 2 * 60 * 60 * 1000
-        ));
-        notifications.add(new NotificationItem(
-                "news-451",
-                "Event Invitation",
-                "You’ve been selected for Piano Lessons!",
-                true,
-                now - 10 * 60 * 1000
-        ));
-        adapter.notifyDataSetChanged();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (notificationRepo != null) {
+            notificationRepo.stopListeningUserNotifications();
+        }
     }
 
 
+    private void listenForNotifications() {
+        if (notificationRepo == null || currentUserId == null) return;
+
+        notificationRepo.listenUserNotifications(
+                currentUserId,
+                new RepositoryListener<List<NotificationItem>>() {
+                    @Override
+                    public void onDataChanged(List<NotificationItem> data) {
+                        notifications.clear();
+                        if (data != null) notifications.addAll(data);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e("NotificationsActivity", "Error listening to notifications", e);
+                    }
+                }
+        );
+    }
 }
