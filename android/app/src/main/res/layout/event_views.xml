@@ -35,78 +35,6 @@
                 app:iconifiedByDefault="false"
                 app:queryHint="Search events..." />
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:scrollbars="none"
-                android:fadeScrollbars="false">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/quick_actions_chip_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:chipSpacing="8dp"
-                    app:chipSpacingHorizontal="8dp"
-                    app:singleLine="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_favorites"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Favorites"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/btn_star_big_on"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_history"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="History"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_recent_history"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_following"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Following"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_myplaces"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_upcoming"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Upcoming"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_today"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_nearby"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nearby"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_mylocation"
-                        app:chipIconVisible="true" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </HorizontalScrollView>
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/featured_events_card"
                 android:layout_width="match_parent"
@@ -316,35 +244,6 @@
                 </LinearLayout>
 
             </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/recent_events_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recent Events"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                android:drawableEnd="@drawable/ic_chevron_right"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recent_events_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:overScrollMode="never"
-                android:scrollbars="none"
-                android:orientation="horizontal" />
 
             <LinearLayout
                 android:id="@+id/events_list_container"

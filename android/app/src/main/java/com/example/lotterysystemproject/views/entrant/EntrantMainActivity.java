@@ -47,10 +47,6 @@ public class EntrantMainActivity extends AppCompatActivity {
     private EventViewsBinding binding;
     private EventListHelper eventListHelper;
     private EventRepository eventRepository;
-
-    private RecentEventsManager recentEventsManager;
-    private RecentEventsAdapter recentAdapter;
-
     private FeaturedEventsManager featuredEventsManager;
 
     @Override
@@ -63,13 +59,11 @@ public class EntrantMainActivity extends AppCompatActivity {
         eventRepository = RepositoryProvider.getEventRepository();
 
         // initialize helpers/managers
-        recentEventsManager = new RecentEventsManager(eventRepository);
         featuredEventsManager = new FeaturedEventsManager(this);
 
         setupSearchBar();
         setupCategoryListeners();
         setupFeaturedCard(); // assumes you have featured logic as earlier
-        setupRecentEventsRecycler();
 
         // Setup events list (big list) as before
         eventListHelper = new EventListHelper(this, binding.eventsListContainer, this, this::setupEventCardListeners);
@@ -100,9 +94,6 @@ public class EntrantMainActivity extends AppCompatActivity {
 
         // Load featured events
         loadFeaturedEvents(); // uses FeaturedEventsManager if present
-
-        // Load recent events (top 5, uses RecentEventsManager)
-        loadRecentEvents();
     }
 
     // -------------------------------------------------------------------------
@@ -260,46 +251,6 @@ public class EntrantMainActivity extends AppCompatActivity {
         setupDotsIndicator(events.size());
     }
 
-    //
-    // Setup Recent Event Cards
-    //
-
-    private void setupRecentEventsRecycler() {
-        RecyclerView recycler = findViewById(R.id.recent_events_recycler);
-        if (recycler == null) {
-            Log.w("EntrantMainActivity", "recent_events_recycler not found in layout");
-            return;
-        }
-
-        recycler.setHasFixedSize(true);
-        LinearLayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recycler.setLayoutManager(layout);
-
-        recentAdapter = new RecentEventsAdapter(this, new ArrayList<>(), event -> {
-            if (event != null && event.getId() != null) {
-                launchEventDetails(event.getId());
-            }
-        });
-
-        recycler.setAdapter(recentAdapter);
-    }
-    private void loadRecentEvents() {
-        // load top 5
-        recentEventsManager.loadRecentEvents(5, events -> runOnUiThread(() -> {
-            if (events == null || events.isEmpty()) {
-                // optionally hide the recycler
-                View recycler = findViewById(R.id.recent_events_recycler);
-                if (recycler != null) recycler.setVisibility(View.GONE);
-                return;
-            }
-            recentAdapter.update(events);
-            View recycler = findViewById(R.id.recent_events_recycler);
-            if (recycler != null) recycler.setVisibility(View.VISIBLE);
-        }), e -> runOnUiThread(() -> {
-            Log.e("EntrantMainActivity", "Failed to load recent events", e);
-            Toast.makeText(this, "Failed to load recent events", Toast.LENGTH_SHORT).show();
-        }));
-    }
     // -------------------------------------------------------------------------
     // Dynamic List Card Click Listeners
     // -------------------------------------------------------------------------
