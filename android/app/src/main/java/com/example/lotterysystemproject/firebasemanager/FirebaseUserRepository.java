@@ -205,14 +205,31 @@ public class FirebaseUserRepository implements UserRepository {
                                 // 3) Build a batch delete for notifications, entrants, and the user doc
                                 com.google.firebase.firestore.WriteBatch batch = db.batch();
 
+                                // Track events that user was in
+                                java.util.Set<String> affectedEventIds = new java.util.HashSet<>();
+
                                 // Delete notifications
                                 for (com.google.firebase.firestore.DocumentSnapshot doc : notifSnap.getDocuments()) {
                                     batch.delete(doc.getReference());
                                 }
 
-                                // Delete entrants
+                                // Delete entrants and collect eventIds
                                 for (com.google.firebase.firestore.DocumentSnapshot doc : entrantSnap.getDocuments()) {
                                     batch.delete(doc.getReference());
+
+                                    String eventId = doc.getString("eventId");
+                                    if (eventId != null && !eventId.isEmpty()) {
+                                        affectedEventIds.add(eventId);
+                                    }
+                                }
+
+                                // Remove respective userId from each event waitingList
+                                for (String eventId : affectedEventIds) {
+                                    batch.update(
+                                            db.collection("events").document(eventId),
+                                            "waitingList",
+                                            com.google.firebase.firestore.FieldValue.arrayRemove(userId)
+                                    );
                                 }
 
                                 // Finally delete the user document itself

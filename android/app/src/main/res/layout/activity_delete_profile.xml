@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="This will anonymize your registrations, revoke notifications, and delete your profile. This action cannot be undone."
+        android:text="This will wipe your registrations, revoke notifications, and delete your profile. This action cannot be undone."
         android:paddingBottom="16dp"/>
 
     <LinearLayout

@@ -53,7 +53,7 @@ public class EventHistoryAdapter extends RecyclerView.Adapter<EventHistoryAdapte
         EventHistoryItem item = items.get(position);
         holder.eventName.setText(item.getEventName());
         holder.status.setText("Status: " + item.getStatus());
-        holder.dateTime.setText("Invited: " + item.getDateTime());
+        holder.dateTime.setText("Latest Update: " + item.getDateTime());
     }
 
     /**
