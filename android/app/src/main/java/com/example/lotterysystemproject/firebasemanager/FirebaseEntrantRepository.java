@@ -47,7 +47,10 @@ public class FirebaseEntrantRepository implements EntrantRepository {
     public LiveData<List<Entrant>> getEntrants(String eventId) {
         db.collection("entrants")
                 .whereEqualTo("eventId", eventId)
-                .orderBy("joinedTimestamp", Query.Direction.ASCENDING)
+
+                // REMOVED this line below to avoid needing composite index:
+                //.orderBy("joinedTimestamp", Query.Direction.ASCENDING)
+
                 .addSnapshotListener((snapshots, error) -> {
                     if (error != null) {
                         entrantsLiveData.setValue(new ArrayList<>());
@@ -68,6 +71,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                             }
                         }
                     }
+
                     entrantsLiveData.setValue(entrants);
                 });
 
@@ -82,123 +86,145 @@ public class FirebaseEntrantRepository implements EntrantRepository {
      */
     @Override
     public void drawLottery(String eventId, int count, OnLotteryCompleteListener listener) {
-        db.collection("entrants")
-                .whereEqualTo("eventId", eventId)
-                .whereEqualTo("status", "WAITING")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<Entrant> waitingList = new ArrayList<>();
-                    Map<String, String> entrantToUserId = new HashMap<>();
 
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        Entrant entrant = doc.toObject(Entrant.class);
-                        if (entrant != null) {
-                            entrant.setId(doc.getId());
-                            waitingList.add(entrant);
 
-                            // capture entrantID for notifications
-                            String uid = doc.getString("id");
-                            if (uid != null) {
-                                entrantToUserId.put(entrant.getId(), uid);
-                            }
-                        }
+        // Fetch event to get name
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(eventDoc -> {
+
+                    // Wrap eventName so it can be used inside lambdas
+                    final String[] eventNameHolder = new String[1];
+
+                    String rawName = eventDoc.getString("name");
+                    if (rawName == null || rawName.trim().isEmpty()) {
+                        eventNameHolder[0] = "this";
+                    } else {
+                        eventNameHolder[0] = rawName;
                     }
 
-                    if (waitingList.isEmpty()) {
-                        listener.onFailure("Waiting list is empty");
-                        return;
-                    }
+                    db.collection("entrants")
+                            .whereEqualTo("eventId", eventId)
+                            .whereEqualTo("status", "WAITING")
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                List<Entrant> waitingList = new ArrayList<>();
+                                Map<String, String> entrantToUserId = new HashMap<>();
 
-                    Collections.shuffle(waitingList);
-                    int selected = Math.min(count, waitingList.size());
-                    List<Entrant> winners = new ArrayList<>();
-                    Set<String> winnerIds = new HashSet<>();
+                                for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                                    Entrant entrant = doc.toObject(Entrant.class);
+                                    if (entrant != null) {
+                                        entrant.setId(doc.getId());
+                                        waitingList.add(entrant);
 
-                    long now = System.currentTimeMillis();
-                    NotificationRepository notifRepo = RepositoryProvider.getNotificationRepository();
-
-                    for (int i = 0; i < selected; i++) {
-                        Entrant winner = waitingList.get(i);
-                        String newStatus = (i < selected / 4) ? "ENROLLED" : "INVITED";
-
-                        Map<String, Object> updates = new HashMap<>();
-                        updates.put("status", newStatus);
-                        updates.put("statusTimestamp", System.currentTimeMillis());
-
-                        db.collection("entrants").document(winner.getId()).update(updates);
-
-                        winner.setStatus(Entrant.Status.valueOf(newStatus));
-                        winners.add(winner);
-
-                        // US 01.04.01 - Notify chosen entrants
-                        String uid = entrantToUserId.get(winner.getId());
-                        if (uid != null) {
-                            String notificationId = eventId + ":" + winner.getId();
-                            String title = "You've been invited!";
-                            String message = "You were selected in the lottery for this event.";
-
-                            NotificationItem item = new NotificationItem(
-                                    notificationId,
-                                    NotificationItem.NotificationType.INVITED,
-                                    null,
-                                    uid,
-                                    title,
-                                    message,
-                                    now
-                            );
-                            notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
-                                @Override
-                                public void onSuccess(Void result) {
+                                        // capture entrantID for notifications
+                                        String uid = doc.getString("userId");
+                                        if (uid != null) {
+                                            entrantToUserId.put(entrant.getId(), uid);
+                                        }
+                                    }
                                 }
 
-                                @Override
-                                public void onFailure(Exception e) {
-                                    // log error later
+                                if (waitingList.isEmpty()) {
+                                    listener.onFailure("Waiting list is empty");
+                                    return;
                                 }
-                            });
-                        }
-                    }
 
-                    // US 01.04.02 - Notify entrants who were NOT chosen
-                    for (Entrant entrant : waitingList) {
-                        if (winnerIds.contains(entrant.getId())) {
-                            continue;
-                        }
-                        String uid = entrantToUserId.get(entrant.getId());
-                        if (uid == null) continue;
+                                Collections.shuffle(waitingList);
+                                int selected = Math.min(count, waitingList.size());
+                                List<Entrant> winners = new ArrayList<>();
+                                Set<String> winnerIds = new HashSet<>();
 
-                        String notificationId = eventId + ":" + entrant.getId();
-                        String title = "Not selected in this draw";
-                        String message = "You were not selected in the first draw, " +
-                                "but you may still be chosen if a spot opens.";
+                                long now = System.currentTimeMillis();
+                                NotificationRepository notifRepo = RepositoryProvider.getNotificationRepository();
 
-                        NotificationItem item = new NotificationItem(
-                                notificationId,
-                                NotificationItem.NotificationType.INVITED,
-                                null,
-                                uid,
-                                title,
-                                message,
-                                now
-                        );
+                                for (int i = 0; i < selected; i++) {
+                                    Entrant winner = waitingList.get(i);
+                                    String newStatus = (i < selected / 4) ? "ENROLLED" : "INVITED";
 
-                        notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
-                            @Override
-                            public void onSuccess(Void result) {
-                            }
+                                    Map<String, Object> updates = new HashMap<>();
+                                    updates.put("status", newStatus);
+                                    updates.put("statusTimestamp", System.currentTimeMillis());
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                // log error later
-                            }
-                        });
-                    }
+                                    db.collection("entrants").document(winner.getId()).update(updates);
 
-                    if (listener != null) {
-                        listener.onComplete(winners);
-                    }
+                                    winner.setStatus(Entrant.Status.valueOf(newStatus));
+                                    winners.add(winner);
+                                    winnerIds.add(winner.getId());
+
+                                    // US 01.04.01 - Notify chosen entrants
+                                    String uid = entrantToUserId.get(winner.getId());
+                                    if (uid != null) {
+                                        String notificationId = eventId + ":" + winner.getId();
+                                        String title = "You've been invited to " + eventNameHolder[0] + " event!";
+                                        String message = "You were selected in the lottery for this event.";
+
+                                        NotificationItem item = new NotificationItem(
+                                                notificationId,
+                                                NotificationItem.NotificationType.INVITED,
+                                                null,
+                                                uid,
+                                                title,
+                                                message,
+                                                now
+                                        );
+                                        notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
+                                            @Override
+                                            public void onSuccess(Void result) {
+                                            }
+
+                                            @Override
+                                            public void onFailure(Exception e) {
+                                                // log error later
+                                            }
+                                        });
+                                    }
+                                }
+
+                                // US 01.04.02 - Notify entrants who were NOT chosen
+                                for (Entrant entrant : waitingList) {
+                                    if (winnerIds.contains(entrant.getId())) {
+                                        continue;
+                                    }
+                                    String uid = entrantToUserId.get(entrant.getId());
+                                    if (uid == null) continue;
+
+                                    String notificationId = eventId + ":" + entrant.getId();
+                                    String title = "Not selected in the " + eventNameHolder[0] + " draw.";
+                                    String message = "You were not selected in the first draw, " +
+                                            "but you may still be chosen if a spot opens.";
+
+                                    NotificationItem item = new NotificationItem(
+                                            notificationId,
+                                            NotificationItem.NotificationType.INVITED,
+                                            null,
+                                            uid,
+                                            title,
+                                            message,
+                                            now
+                                    );
+
+                                    notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
+                                        @Override
+                                        public void onSuccess(Void result) {
+                                        }
+
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            // log error later
+                                        }
+                                    });
+                                }
+
+                                if (listener != null) {
+                                    listener.onComplete(winners);
+                                }
+                            })
+                            .addOnFailureListener(e -> listener.onFailure(e.getMessage()));
                 })
-                .addOnFailureListener(e -> listener.onFailure(e.getMessage()));
+                .addOnFailureListener(e -> {
+                    if (listener != null) listener.onFailure(e.getMessage());
+                });
+
     }
 
     /**
@@ -242,42 +268,56 @@ public class FirebaseEntrantRepository implements EntrantRepository {
 
                                 if (finalUserId != null) {
 
-                                    NotificationRepository notifRepo =
-                                            RepositoryProvider.getNotificationRepository();
+                                    // same pattern as drawLottery: holder for event name
+                                    final String[] eventNameHolder = new String[1];
 
-                                    String notificationId =
-                                            (finalEventId != null ? finalEventId : "event")
-                                                    + ":" + entrantId;
-
-                                    String title = "Your registration was cancelled";
-                                    String message = "Your spot for this event has been cancelled.";
-
-                                    NotificationItem item = new NotificationItem(
-                                            notificationId,
-                                            NotificationItem.NotificationType.CANCELLED,
-                                            null,
-                                            finalUserId,
-                                            title,
-                                            message,
-                                            now
-                                    );
-
-                                    notifRepo.createNotification(
-                                            finalUserId,
-                                            item,
-                                            new RepositoryCallback<Void>() {
-                                                @Override
-                                                public void onSuccess(Void result) {
+                                    db.collection("events")
+                                            .document(finalEventId)
+                                            .get()
+                                            .addOnSuccessListener(eventDoc -> {
+                                                String eventName = eventDoc.getString("name");
+                                                if (eventName == null || eventName.trim().isEmpty()) {
+                                                    eventNameHolder[0] = "this";
+                                                } else {
+                                                    eventNameHolder[0] = eventName;
                                                 }
 
-                                                @Override
-                                                public void onFailure(Exception e) {
-                                                    // log error later
-                                                }
-                                            }
-                                    );
+                                                NotificationRepository notifRepo =
+                                                        RepositoryProvider.getNotificationRepository();
+
+                                                String notificationId =
+                                                        (finalEventId != null ? finalEventId : "event")
+                                                                + ":" + entrantId;
+
+                                                String title = "Your registration for " + eventNameHolder[0] + " event was cancelled.";
+                                                String message = "Your spot for this event has been cancelled.";
+
+                                                NotificationItem item = new NotificationItem(
+                                                        notificationId,
+                                                        NotificationItem.NotificationType.CANCELLED,
+                                                        null,
+                                                        finalUserId,
+                                                        title,
+                                                        message,
+                                                        now
+                                                );
+
+                                                notifRepo.createNotification(
+                                                        finalUserId,
+                                                        item,
+                                                        new RepositoryCallback<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void result) {
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Exception e) {
+                                                                // log error later
+                                                            }
+                                                        }
+                                                );
+                                            });
                                 }
-
                                 if (listener != null) listener.onSuccess();
                             })
                             .addOnFailureListener(e -> {
