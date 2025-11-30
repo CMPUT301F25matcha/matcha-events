@@ -9,6 +9,7 @@ public class TestInvitationDecisionRepo {
 
     private String key(String id) { return "resp_" + id; }
 
+    /*
     public void save(String notifId, NotificationItem.InvitationResponse r) {
         kv.putString(key(notifId), r.name());
     }
@@ -21,4 +22,6 @@ public class TestInvitationDecisionRepo {
 
     public void clearOne(String notifId) { kv.remove(key(notifId)); }
     public void clearAll() { kv.clear(); }
+
+     */
 }

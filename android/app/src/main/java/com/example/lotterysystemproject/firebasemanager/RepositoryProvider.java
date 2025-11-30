@@ -13,6 +13,7 @@ public class RepositoryProvider {
     private static AdminRepository adminRepositoryInstance;
     private static EntrantRepository entrantRepositoryInstance;
     private static UserRepository userRepositoryInstance;
+    private static NotificationRepository notificationRepository;
 
 
     /**
@@ -81,6 +82,13 @@ public class RepositoryProvider {
             }
         }
         return entrantRepositoryInstance;
+    }
+
+    public static synchronized NotificationRepository getNotificationRepository() {
+        if (notificationRepository == null) {
+            notificationRepository = new FirebaseNotificationRepository();
+        }
+        return notificationRepository;
     }
 
     /**
