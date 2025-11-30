@@ -2,6 +2,11 @@ package com.example.lotterysystemproject.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -11,6 +16,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * Utility class for generating QR codes for event data and check-in purposes.
  */
 public class QRCodeGenerator {
+
+    private static final String TAG = "QRCodeGenerator";
 
     /**
      * Generates a QR code bitmap from the given text.
@@ -43,21 +50,39 @@ public class QRCodeGenerator {
      * Generates encoded promotional QR data for an event.
      *
      * @param eventId   The unique ID of the event.
-     * @param eventName The name of the event.
      * @return Encoded promo data string.
      */
-    public static String generatePromoData(String eventId, String eventName) {
-        return "PROMO|" + eventId + "|" + eventName;
+    @Nullable
+    public static String generatePromoData(String eventId) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Log.e(TAG, "Cannot generate promo data: eventId is null or empty");
+            return null;
+        }
+
+        // Use custom URI scheme (works immediately)
+        return new Uri.Builder()
+                .scheme("lotterysystem")
+                .authority("event")
+                .appendQueryParameter("eventId", eventId)
+                .build()
+                .toString();
     }
 
-    /**
-     * Generates encoded QR data for event check-in.
-     *
-     * @param eventId   The event ID.
-     * @param eventName The event name.
-     * @return Encoded check-in data string with timestamp.
-     */
-    public static String generateCheckinData(String eventId, String eventName) {
-        return "CHECKIN|" + eventId + "|" + eventName + "|" + System.currentTimeMillis();
+    public static String extractEventId(String raw) {
+        try {
+            Uri uri = Uri.parse(raw);
+
+            if (!"lotterysystem".equals(uri.getScheme())) {
+                return null;
+            }
+
+            return uri.getQueryParameter("eventId");
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+
+
+
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.lotterysystemproject.firebasemanager.AdminRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.models.Event;
@@ -35,28 +37,40 @@ public class AdminEventsDialog extends DialogFragment {
         adminRepository = RepositoryProvider.getAdminRepository();
     }
 
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_event_details, null);
 
+        ImageView eventImage = view.findViewById(R.id.dialog_event_image);
         TextView eventNameText = view.findViewById(R.id.dialog_event_name);
         TextView eventDateText = view.findViewById(R.id.dialog_event_date);
-        //TextView eventOrganizerNameText = view.findViewById(R.id.dialog_organizer_name);
         TextView eventTimeText = view.findViewById(R.id.dialog_event_time);
         TextView eventLocationText = view.findViewById(R.id.dialog_event_location);
         TextView eventDescriptionText = view.findViewById(R.id.dialog_event_description);
         Button removeEventButton = view.findViewById(R.id.dialog_event_remove_button);
         Button closeEventButton = view.findViewById(R.id.dialog_event_close_button);
 
+        // Load event poster using Glide
+        if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(event.getPosterImageUrl())
+                    .centerCrop()
+                    .into(eventImage);
+
+        } else {
+            eventImage.setImageResource(R.drawable.ic_launcher_background);
+        }
+
         // Set event details
         eventNameText.setText(event.getName());
         String formattedDate = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
                 .format(event.getEventDate());
-        eventDateText.setText(formattedDate);
-        eventTimeText.setText(event.getEventTime());
-        eventLocationText.setText(event.getLocation());
+        eventDateText.setText("📅 " + formattedDate);
+        eventTimeText.setText("🕐 " + event.getEventTime());
+        eventLocationText.setText("📍 " + event.getLocation());
         eventDescriptionText.setText(event.getDescription());
 
         // Setup button listeners
@@ -71,21 +85,35 @@ public class AdminEventsDialog extends DialogFragment {
 
     private void setupRemoveButton(Button removeEventButton) {
         removeEventButton.setOnClickListener(v -> {
-            adminRepository.deleteEvent(event.getId(),
-                    new AdminRepository.AdminCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(requireContext(),
-                                    "Event removed successfully", Toast.LENGTH_SHORT).show();
-                            dismiss();
-                        }
+            // Show confirmation dialog
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Remove Event")
+                    .setMessage("Are you sure you want to remove \"" + event.getName() + "\"?")
+                    .setPositiveButton("Remove", (dialog, which) -> {
+                        adminRepository.deleteEvent(event.getId(),
+                                new AdminRepository.AdminCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Toast.makeText(requireContext(), "Event removed successfully",
+                                                Toast.LENGTH_SHORT).show();
+                                        // Dismiss this dialog
+                                        if (getDialog() != null && getDialog().isShowing()) {
+                                            dismiss();
+                                        }
+                                    }
 
-                        @Override
-                        public void onError(Exception e) {
-                            Toast.makeText(requireContext(),
-                                    "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                    @Override
+                                    public void onError(Exception e) {
+                                        Toast.makeText(requireContext(),
+                                                "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
+
         });
     }
 

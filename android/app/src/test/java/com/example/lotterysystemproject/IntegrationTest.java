@@ -72,7 +72,8 @@ public class IntegrationTest {
         CountDownLatch allComplete = new CountDownLatch(4);
 
         // Step 1: Create user
-        User user = new User("device_journey_001", null, null, null);
+        User user = new User("device_journey_001", null, null, null, 0L);
+
         user.setName("Alice");
         user.setEmail("alice@example.com");
 
@@ -143,7 +144,7 @@ public class IntegrationTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         // Setup: Create user
-        User user = new User("device_listener_001", null, null, null);
+        User user = new User("device_listener_001", null, null, null, 0L);
         user.setName("Bob");
         eventRepo.addUser(user, new EventRepository.RepositoryCallback() {
             @Override
@@ -343,7 +344,7 @@ public class IntegrationTest {
                                 idleMainLooperUntilEmpty();
 
                                 // Step 3: Create and join user
-                                User user = new User("discovery_user_001", null, null, null);
+                                User user = new User("discovery_user_001", null, null, null, 0L);
                                 user.setName("Charlie");
                                 eventRepo.addUser(user, new EventRepository.RepositoryCallback() {
                                     @Override
@@ -394,7 +395,7 @@ public class IntegrationTest {
         CountDownLatch allComplete = new CountDownLatch(1);
 
         // Step 1: Create user as entrant
-        User user = new User("organizer_convert_001", null, null , null);
+        User user = new User("organizer_convert_001", null, null , null, 0L);
         user.setName("Diana");
         user.setEmail("diana@example.com");
 
@@ -461,7 +462,7 @@ public class IntegrationTest {
         // Create multiple users concurrently
         for (int i = 0; i < 5; i++) {
             final int index = i;
-            User user = new User("concurrent_user_" + index, null, null, null);
+            User user = new User("concurrent_user_" + index, null, null, null, 0L);
             user.setName("User " + index);
             user.setEmail("user" + index + "@example.com");
 

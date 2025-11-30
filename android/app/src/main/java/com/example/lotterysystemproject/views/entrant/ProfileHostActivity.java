@@ -33,7 +33,6 @@ public class ProfileHostActivity extends AppCompatActivity {
                 this,
                 com.example.lotterysystemproject.views.entrant.EntrantMainActivity.class,
                 null,
-                null,
                 NotificationsActivity.class,
                 ProfileHostActivity.class
         );
