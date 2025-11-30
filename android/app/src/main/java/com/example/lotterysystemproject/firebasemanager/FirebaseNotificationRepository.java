@@ -286,4 +286,30 @@ public class FirebaseNotificationRepository implements NotificationRepository {
 
         return item;
     }
+
+    @Override
+    public void getAllNotifications(RepositoryCallback<List<NotificationItem>> callback) {
+        notifications()
+                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<NotificationItem> items = new ArrayList<>();
+
+                    for (DocumentSnapshot doc: queryDocumentSnapshots.getDocuments()) {
+                        NotificationItem item = fromDoc(doc);
+                        if (item != null) {
+                            items.add(item);
+                        }
+                    }
+
+                    if (callback != null) {
+                        callback.onSuccess(items);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
+                });
+    }
 }

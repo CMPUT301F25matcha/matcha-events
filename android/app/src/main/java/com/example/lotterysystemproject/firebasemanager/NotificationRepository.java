@@ -21,4 +21,6 @@ public interface NotificationRepository {
                             RepositoryCallback<Void> callback);
 
     void stopListeningUserNotifications();
+
+    void getAllNotifications(RepositoryCallback<List<NotificationItem>> callback);
 }
