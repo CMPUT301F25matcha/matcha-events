@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private static final String TAG = "SearchResultsActivity";
 
     // UI Components
+    private ImageButton backButton;
     private TextView queryTextView;
     private TextView resultsCountTextView;
     private LinearLayout resultsContainer;
@@ -83,6 +85,7 @@ public class SearchResultsActivity extends AppCompatActivity {
      * Initialize all view components
      */
     private void initializeViews() {
+        backButton = findViewById(R.id.back_button);
         queryTextView = findViewById(R.id.search_query_text);
         resultsCountTextView = findViewById(R.id.results_count_text);
         resultsContainer = findViewById(R.id.search_results_container);
@@ -91,6 +94,9 @@ public class SearchResultsActivity extends AppCompatActivity {
         filterByDateButton = findViewById(R.id.filter_by_date_button);
         filterByTimeButton = findViewById(R.id.filter_by_time_button);
         clearFiltersButton = findViewById(R.id.clear_filters_button);
+
+        // Setup back button click listener
+        backButton.setOnClickListener(v -> navigateBack());
     }
 
     /**
@@ -450,5 +456,15 @@ public class SearchResultsActivity extends AppCompatActivity {
         noResultsTextView.setVisibility(View.VISIBLE);
         noResultsTextView.setText(message);
         resultsCountTextView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Navigate back to EntrantMainActivity
+     */
+    private void navigateBack() {
+        Intent intent = new Intent(this, EntrantMainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 }
