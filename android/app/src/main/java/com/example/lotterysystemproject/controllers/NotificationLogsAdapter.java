@@ -1,4 +1,4 @@
-package com.example.lotterysystemproject.adapters;
+package com.example.lotterysystemproject.controllers;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -17,86 +17,106 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * RecyclerView adapter responsible for displaying admin notification logs.
+ * <p>
+ * This adapter converts user-facing notification text into admin-readable
+ * context, shows notification metadata, formats timestamps, and color-codes
+ * entries based on the notification type.
+ * </p>
+ */
 public class NotificationLogsAdapter extends RecyclerView.Adapter<NotificationLogsAdapter.LogsViewHolder> {
 
     private final List<NotificationItem> notifications;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
+    private final SimpleDateFormat dateFormat =
+            new SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault());
 
-
+    /**
+     * Constructs a new NotificationLogsAdapter.
+     *
+     * @param notifications List of {@link NotificationItem} objects to display.
+     */
     public NotificationLogsAdapter(List<NotificationItem> notifications) {
         this.notifications = notifications;
     }
 
-
+    /**
+     * Inflates the layout for each notification row item.
+     *
+     * @param parent   The parent ViewGroup
+     * @param viewType Type of the view (only one type is used here)
+     * @return A new {@link LogsViewHolder}
+     */
     @NonNull
     @Override
     public LogsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notification_log, parent, false);
         return new LogsViewHolder(view);
-
     }
 
+    /**
+     * Binds a notification item to UI components in the ViewHolder.
+     *
+     * @param holder   The ViewHolder for the row
+     * @param position Item position in the list
+     */
     @Override
     public void onBindViewHolder(@NonNull LogsViewHolder holder, int position) {
         NotificationItem item = notifications.get(position);
 
-        // Set event title (notification title) - convert to admin perspective
         holder.eventTitle.setText(convertToAdminTitle(item.getTitle()));
-
-        // Set notification type description
         holder.notificationType.setText(getTypeDescription(item.getNotificationType()));
-
-        // Set message - convert to admin perspective
         holder.message.setText(convertToAdminMessage(item.getMessage()));
-
-        // Set timestamp
         holder.timestamp.setText(formatTimeStamp(item.getTimestamp()));
 
-        // Set recipient ID with prefix
         String recipientText = "Sent to: " + (item.getUserId() != null ? item.getUserId() : "Unknown");
         holder.recipientId.setText(recipientText);
 
-        // Set organizer ID if available
+        // Show organizer ID if present
         if (item.getOrganizerId() != null) {
             holder.recipientId.setText(recipientText + " • From: " + item.getOrganizerId());
         }
 
-        // Set type indicator color
         holder.typeIndicator.setBackgroundColor(getColorType(item.getNotificationType()));
     }
 
+    /**
+     * @return The number of notifications in the list
+     */
     @Override
     public int getItemCount() {
         return notifications.size();
     }
 
     /**
-     * Convert user-facing title to admin perspective
+     * Converts a user-facing notification title into an admin-readable perspective.
+     *
+     * @param originalTitle The original user-facing title
+     * @return Admin-friendly rewritten title
      */
     private String convertToAdminTitle(String originalTitle) {
         if (originalTitle == null) return "Notification";
 
-        // Replace "You've" with "User"
-        String adminTitle = originalTitle
+        return originalTitle
                 .replace("You've been invited to", "User invited to")
                 .replace("You've been", "User")
                 .replace("You have been", "User")
                 .replace("You were", "User was")
                 .replace("You joined", "User joined")
                 .replace("Your", "User's");
-
-        return adminTitle;
     }
 
     /**
-     * Convert user-facing message to admin perspective
+     * Converts a user-facing notification message into admin-readable perspective.
+     *
+     * @param originalMessage The original message text
+     * @return Message rewritten in third person for admin viewing
      */
     private String convertToAdminMessage(String originalMessage) {
         if (originalMessage == null) return "";
 
-        // Replace second-person pronouns with third-person
-        String adminMessage = originalMessage
+        return originalMessage
                 .replace("You were selected", "User was selected")
                 .replace("You have been selected", "User was selected")
                 .replace("You joined", "User joined")
@@ -105,12 +125,13 @@ public class NotificationLogsAdapter extends RecyclerView.Adapter<NotificationLo
                 .replace("You are invited", "User was invited")
                 .replace("your", "their")
                 .replace("You", "User");
-
-        return adminMessage;
     }
 
     /**
-     * Get user description for notification type
+     * Converts the notification type into a readable string description.
+     *
+     * @param type The notification type enum
+     * @return Human-readable description for display
      */
     private String getTypeDescription(NotificationItem.NotificationType type) {
         if (type == null) return "Unknown";
@@ -129,7 +150,12 @@ public class NotificationLogsAdapter extends RecyclerView.Adapter<NotificationLo
         }
     }
 
-    /** Choose indicator color based on type */
+    /**
+     * Returns a color value based on the notification type.
+     *
+     * @param type Notification type enum
+     * @return Color integer representing the type category
+     */
     private int getColorType(NotificationItem.NotificationType type) {
         if (type == null) return Color.GRAY;
 
@@ -148,25 +174,32 @@ public class NotificationLogsAdapter extends RecyclerView.Adapter<NotificationLo
     }
 
     /**
-     * Format timestamp from long to readable date string
+     * Formats a timestamp (milliseconds) into a readable date/time string.
+     *
+     * @param timestamp Unix timestamp in milliseconds
+     * @return Formatted date string, or "Unknown date" if parsing fails
      */
     private String formatTimeStamp(long timestamp) {
         try {
-            Date date = new Date(timestamp);
-            return dateFormat.format(date);
+            return dateFormat.format(new Date(timestamp));
         } catch (Exception e) {
             return "Unknown date";
         }
     }
 
-
     /**
-     * ViewHolder class to hold references to views
+     * ViewHolder class used for caching views for each list item.
      */
     public static class LogsViewHolder extends RecyclerView.ViewHolder {
 
         TextView eventTitle, notificationType, message, timestamp, recipientId;
         View typeIndicator;
+
+        /**
+         * Initializes ViewHolder and binds UI elements.
+         *
+         * @param itemView The row item view
+         */
         public LogsViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -179,3 +212,4 @@ public class NotificationLogsAdapter extends RecyclerView.Adapter<NotificationLo
         }
     }
 }
+

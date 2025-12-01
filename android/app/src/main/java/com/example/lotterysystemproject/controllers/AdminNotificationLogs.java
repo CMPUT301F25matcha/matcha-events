@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.lotterysystemproject.adapters.NotificationLogsAdapter;
+import com.example.lotterysystemproject.controllers.NotificationLogsAdapter;
 import com.example.lotterysystemproject.databinding.AdminNotificationLogsBinding;
 import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
@@ -24,6 +24,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment responsible for displaying and managing the admin's notification logs.
+ * <p>
+ * This fragment loads all notifications from the repository, displays them in a
+ * RecyclerView, and provides real-time search filtering based on notification
+ * title, message, or user ID.
+ * </p>
+ */
 public class AdminNotificationLogs extends Fragment {
 
     private AdminNotificationLogsBinding binding;
@@ -31,49 +39,65 @@ public class AdminNotificationLogs extends Fragment {
     private List<NotificationItem> allNotifications = new ArrayList<>();
     private List<NotificationItem> filteredNotifications = new ArrayList<>();
 
+    /**
+     * Inflates the layout for the Admin Notification Logs screen.
+     *
+     * @param inflater  Layout inflater used to inflate views
+     * @param container Parent view that the fragment's UI will attach to
+     * @param savedInstanceState Saved instance state
+     * @return The root view of the inflated binding
+     */
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = AdminNotificationLogsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    /**
+     * Called after the view is created. Sets up UI components such as the RecyclerView,
+     * back button, search field listener, and triggers notification loading.
+     *
+     * @param view The created view
+     * @param savedInstanceState Saved instance state
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         binding.recyclerLogs.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapter = new NotificationLogsAdapter(filteredNotifications);
         binding.recyclerLogs.setAdapter(adapter);
 
+        // Navigate back on arrow click
         binding.backArrow.setOnClickListener(v ->
                 NavHostFragment.findNavController(AdminNotificationLogs.this).navigateUp()
         );
 
+        // Attach search listener
         TextInputEditText searchEventInput = binding.searchInput;
         searchEventInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 filterNotifications(s.toString());
-
             }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
         });
 
         loadAllNotifications();
-
     }
 
+    /**
+     * Loads all notifications from the Firebase repository.
+     * <p>
+     * On success, both the master list ({@code allNotifications}) and the
+     * filtered list shown in the UI ({@code filteredNotifications}) are refreshed.
+     * </p>
+     */
     private void loadAllNotifications() {
         RepositoryProvider.getNotificationRepository().getAllNotifications(
                 new RepositoryCallback<List<NotificationItem>>() {
@@ -83,7 +107,6 @@ public class AdminNotificationLogs extends Fragment {
                         allNotifications.clear();
                         allNotifications.addAll(notifications);
 
-                        // Sync filtered list initially
                         filteredNotifications.clear();
                         filteredNotifications.addAll(notifications);
                         adapter.notifyDataSetChanged();
@@ -91,12 +114,28 @@ public class AdminNotificationLogs extends Fragment {
 
                     @Override
                     public void onFailure(Exception e) {
-                        Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),
+                                "Failed: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
         );
     }
 
+    /**
+     * Filters the list of notifications based on a search query.
+     * <p>
+     * Matches are performed case-insensitively against:
+     * <ul>
+     *     <li>Notification title</li>
+     *     <li>Notification message</li>
+     *     <li>User ID</li>
+     * </ul>
+     * If the query is empty, the full list is restored.
+     * </p>
+     *
+     * @param query The text input used for filtering
+     */
     private void filterNotifications(String query) {
         filteredNotifications.clear();
 
@@ -104,7 +143,6 @@ public class AdminNotificationLogs extends Fragment {
             filteredNotifications.addAll(allNotifications);
         } else {
             String lower = query.toLowerCase();
-
             for (NotificationItem item : allNotifications) {
                 if (item.getTitle().toLowerCase().contains(lower) ||
                         item.getMessage().toLowerCase().contains(lower) ||
@@ -117,6 +155,4 @@ public class AdminNotificationLogs extends Fragment {
 
         adapter.notifyDataSetChanged();
     }
-
-
 }
