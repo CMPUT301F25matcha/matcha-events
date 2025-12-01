@@ -21,7 +21,7 @@ import com.example.lotterysystemproject.utils.AuthState;
 
 /**
  * Screen that lets an entrant permanently delete (deactivate) their profile.
- * - Marks the user document as inactive in Firestore via FirebaseUserRepository.deactivateAccount
+ * - Marks user document as inactive in Firestore
  * - Clears local profile/auth SharedPreferences
  * - Returns RESULT_OK to the calling fragment/activity on success
  */
@@ -33,8 +33,6 @@ public class DeleteProfileActivity extends AppCompatActivity {
 
     private Button btnDelete;
     private Button btnCancel;
-    private ProgressBar progress;
-
     private String userId;
 
     @Override
@@ -42,17 +40,18 @@ public class DeleteProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_profile);
 
-        // --- resolve user id ---
+        // Resolve user id
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
         if (userId == null || userId.trim().isEmpty()) {
             // Fallback to device-based id
             userId = DeviceIdentityManager.getUserId(this);
         }
 
-        // --- wire views (adjust IDs if your XML uses different ones) ---
-        btnDelete = findViewById(R.id.btn_delete);          // e.g. "Delete" button
-        btnCancel = findViewById(R.id.btn_cancel);          // e.g. "Cancel" button
+        // Wire views
+        btnDelete = findViewById(R.id.btn_delete);
+        btnCancel = findViewById(R.id.btn_cancel);
 
+        // Cancel finishes and signals RESULT_CANCELED
         if (btnCancel != null) {
             btnCancel.setOnClickListener(v -> {
                 setResult(RESULT_CANCELED);
@@ -96,7 +95,6 @@ public class DeleteProfileActivity extends AppCompatActivity {
                 // Clear local profile & auth prefs
                 new ProfilePrefs(DeleteProfileActivity.this).deleteUser(userId);
                 AuthState.clearUserPrefs(DeleteProfileActivity.this);
-
                 Toast.makeText(DeleteProfileActivity.this,
                         "Profile deleted.", Toast.LENGTH_LONG).show();
 
@@ -113,7 +111,4 @@ public class DeleteProfileActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }
