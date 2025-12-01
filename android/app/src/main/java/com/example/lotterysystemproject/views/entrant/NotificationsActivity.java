@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity that displays all notifications for the current entrant user.
+ */
 public class NotificationsActivity extends AppCompatActivity {
 
     private final List<NotificationItem> notifications = new ArrayList<>();
@@ -76,7 +79,9 @@ public class NotificationsActivity extends AppCompatActivity {
         listenForNotifications();
     }
 
-
+    /**
+     * Ensures that when the Activity stops, Firestore snapshot listeners are removed.
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -85,13 +90,19 @@ public class NotificationsActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Attaches a Firestore listener that updates UI any time the user's
+     * notification documents change (added, modified, deleted).
+     */
     private void listenForNotifications() {
         if (notificationRepo == null || currentUserId == null) return;
 
         notificationRepo.listenUserNotifications(
                 currentUserId,
                 new RepositoryListener<List<NotificationItem>>() {
+                    /**
+                     * Called whenever Firestore sends new notification data.
+                     */
                     @Override
                     public void onDataChanged(List<NotificationItem> data) {
                         notifications.clear();
@@ -99,6 +110,9 @@ public class NotificationsActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
 
+                    /**
+                     * Called if Firestore listener encounters an error.
+                     */
                     @Override
                     public void onError(Exception e) {
                         Log.e("NotificationsActivity", "Error listening to notifications", e);

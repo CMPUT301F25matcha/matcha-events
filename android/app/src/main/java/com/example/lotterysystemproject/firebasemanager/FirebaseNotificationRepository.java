@@ -20,24 +20,36 @@ import java.util.HashMap;
 
 /**
  * Firestore implementation for notifications
-
  * Each user document has [notificationId1, notificationId2, ...]
  */
 public class FirebaseNotificationRepository implements NotificationRepository {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     @Nullable
     private ListenerRegistration userRegistration;
 
+    /** @return reference to top-level "notifications" collection. */
     private CollectionReference notifications() {
         return db.collection("notifications");
     }
 
+    /**
+     * Gets a reference to the user document.
+     *
+     * @param userId user document ID
+     * @return document reference for that user
+     */
     private DocumentReference userDoc(String userId) {
         return db.collection("users").document(userId);
     }
 
+    /**
+     * Creates and persists a notification for the given user.
+     *
+     * @param userId user receiving the notification
+     * @param item notification to store
+     * @param callback callback for success/failure
+     */
     @Override
     public void createNotification(String userId,
                                    NotificationItem item,
@@ -63,6 +75,7 @@ public class FirebaseNotificationRepository implements NotificationRepository {
 
         Map<String, Object> data = toMapForWrite(docRef.getId(), userId, item);
 
+        // Write notification document
         docRef.set(data)
                 .addOnSuccessListener(v -> {
                     // Add notification id to user's notifications array
@@ -80,6 +93,12 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 });
     }
 
+    /**
+     * Fetches notifications for the given user based on the notifications array stored in the user document.
+     *
+     * @param userId user whose notifications should be loaded
+     * @param callback invoked with a sorted list or error
+     */
     @Override
     public void getNotificationsForUser(String userId,
                                         RepositoryCallback<List<NotificationItem>> callback) {
@@ -99,9 +118,16 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 });
     }
 
+    /**
+     * Attaches a listener to the given user's document and observes changes to notifications array.
+     *
+     * @param userId user to listen for
+     * @param listener listener that receives updated notification lists or errors
+     */
     @Override
     public void listenUserNotifications(String userId,
                                         RepositoryListener<List<NotificationItem>> listener) {
+        // Ensure only one listener active at a time
         stopListeningUserNotifications();
 
         userRegistration = userDoc(userId)
@@ -122,7 +148,7 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                         return;
                     }
 
-                    // Fetch notifications by their IDs
+                    // Optionally limit number of notifications pulled
                     List<String> limitedIds = ids.size() > 10
                             ? ids.subList(ids.size() - 10, ids.size())
                             : ids;
@@ -136,7 +162,7 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                                     NotificationItem item = fromDoc(nDoc);
                                     if (item != null) items.add(item);
                                 }
-                                // sort by timestamp desc
+                                // sort by timestamp desc, newest first
                                 Collections.sort(items, Comparator.comparingLong(NotificationItem::getTimestamp).reversed());
 
                                 if (listener != null) listener.onDataChanged(items);
@@ -147,16 +173,23 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 });
     }
 
+    /**
+     * Deletes a notification document and removes its ID from the user's notifications array.
+     *
+     * @param userId user whose notifications list should be updated
+     * @param notificationId ID of notification to remove
+     * @param callback invoked when both operations complete or upon error
+     */
     @Override
     public void deleteNotification(String userId,
                                    String notificationId,
                                    RepositoryCallback<Void> callback) {
 
-        // First: remove id from the user's notifications array
+        // First: remove id from user notifications array
         userDoc(userId)
                 .update("notifications", FieldValue.arrayRemove(notificationId))
                 .addOnSuccessListener(v -> {
-                    // Second: delete the notification document itself
+                    // Second: delete notification document itself
                     notifications()
                             .document(notificationId)
                             .delete()
@@ -173,6 +206,10 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 });
     }
 
+    /**
+     * Stops the active user notifications listener (if any)
+     * Should be called from the Activity/Fragment lifecycle.
+     */
     @Override
     public void stopListeningUserNotifications() {
         if (userRegistration != null) {
@@ -183,6 +220,12 @@ public class FirebaseNotificationRepository implements NotificationRepository {
 
     // HELPERS
 
+    /**
+     * Extracts list of notification IDs from a user document.
+     *
+     * @param doc snapshot of the user document
+     * @return copy of the stored notifications list
+     */
     @SuppressWarnings("unchecked")
     private List<String> getNotificationIdList(DocumentSnapshot doc) {
         Object raw = doc.get("notifications");
@@ -192,6 +235,12 @@ public class FirebaseNotificationRepository implements NotificationRepository {
         return new ArrayList<>();
     }
 
+    /**
+     * Fetches all NotificationItem instances identified by given ID list.
+     *
+     * @param ids full list of notification IDs from the user document
+     * @param callback callback with sorted items or error
+     */
     private void fetchNotificationsByIds(List<String> ids,
                                          RepositoryCallback<List<NotificationItem>> callback) {
 
@@ -208,6 +257,7 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                         NotificationItem item = fromDoc(nDoc);
                         if (item != null) items.add(item);
                     }
+                    // Sort by timestamp descending
                     Collections.sort(items, Comparator.comparingLong(NotificationItem::getTimestamp).reversed());
                     if (callback != null) callback.onSuccess(items);
                 })
@@ -216,6 +266,15 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 });
     }
 
+    /**
+     * Converts a NotificationItem into a Firestore-friendly map.
+     * Place to define the notification document schema.
+     *
+     * @param id document ID
+     * @param userId receiving user id
+     * @param item source model object
+     * @return map ready for DocumentReference(Object)
+     */
     private Map<String, Object> toMapForWrite(String id,
                                               String userId,
                                               NotificationItem item) {
@@ -232,14 +291,19 @@ public class FirebaseNotificationRepository implements NotificationRepository {
         if (item.getOrganizerId() != null) {
             data.put("organizerId", item.getOrganizerId());
         }
-        // Persist decision
+        // Persist decision for invitation-type notifications
         if (item.getDecision() != null) {
             data.put("decision", item.getDecision().name());
         }
-
         return data;
     }
 
+    /**
+     * Converts a Firestore document in notifications into a NotificationItem instance.
+     *
+     * @param doc Firestore document snapshot
+     * @return a populated NotificationItem or null if required data missing
+     */
     @Nullable
     private NotificationItem fromDoc(DocumentSnapshot doc) {
         String id = doc.getString("id");
@@ -283,7 +347,6 @@ public class FirebaseNotificationRepository implements NotificationRepository {
                 ts
         );
         item.setDecision(decision);
-
         return item;
     }
 

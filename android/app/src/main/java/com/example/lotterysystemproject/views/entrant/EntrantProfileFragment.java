@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -47,8 +46,6 @@ public class EntrantProfileFragment extends Fragment {
                     }
             );
 
-
-
     /**
      * Inflates the fragment’s layout.
      * @param inflater  LayoutInflater used to inflate the layout XML
@@ -70,11 +67,6 @@ public class EntrantProfileFragment extends Fragment {
      */
     @Override
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
-        Button settings = v.findViewById(R.id.btn_settings);
-        settings.setOnClickListener(btn ->
-                androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_profile_to_settings)
-        );
-
         Button editBtn = v.findViewById(R.id.btn_edit_profile);
         editBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), EditProfileActivity.class);
@@ -99,7 +91,7 @@ public class EntrantProfileFragment extends Fragment {
                         @Override
                         public void onSuccess() {
                             Toast.makeText(requireContext(),
-                                    "Successfully updated your role to an organizer, to go back to an Entrant hit ?",
+                                    "Successfully updated your role to an organizer. Swipe right to return.",
                                     Toast.LENGTH_SHORT).show();
                             Log.d("UserRole", "Successfully updated user role to organizer");
                             Intent i = new Intent(requireContext(), OrganizerMainActivity.class);
@@ -119,7 +111,6 @@ public class EntrantProfileFragment extends Fragment {
         });
 
         bindProfileToViews(v);   // load saved data to UI
-
         View historyBtn = v.findViewById(R.id.btn_events_history);
         if (historyBtn != null) {
             historyBtn.setOnClickListener(click ->

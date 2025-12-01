@@ -84,6 +84,10 @@ public class RepositoryProvider {
         return entrantRepositoryInstance;
     }
 
+    /**
+     * Returns the singleton instance of the NotificationRepository.
+     * @return The NotificationRepository instance.
+     */
     public static synchronized NotificationRepository getNotificationRepository() {
         if (notificationRepository == null) {
             notificationRepository = new FirebaseNotificationRepository();

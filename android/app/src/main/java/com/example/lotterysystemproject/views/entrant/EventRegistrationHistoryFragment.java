@@ -25,9 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -53,15 +51,29 @@ public class EventRegistrationHistoryFragment extends Fragment {
         // Required empty constructor
     }
 
+    /**
+     * Inflates the layout for the registration history screen.
+     *
+     * @param inflater LayoutInflater used to inflate view hierarchy
+     * @param container parent ViewGroup containing this fragment's view
+     * @param savedInstanceState previously saved state (if any)
+     * @return root View for this fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Re-use the existing layout you already have
+        // Re-use the existing layout
         return inflater.inflate(R.layout.activity_registration_history, container, false);
     }
 
+    /**
+     * Sets up RecyclerView, back button, and listens to Firestore for current user's entrant records.
+     *
+     * @param view root view returned by onCreateView
+     * @param savedInstanceState previous instance state
+     */
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
@@ -112,12 +124,12 @@ public class EventRegistrationHistoryFragment extends Fragment {
 
                     historyItems.clear();
 
+                    // Error or no results = empty state
                     if (error != null || snapshots == null || snapshots.isEmpty()) {
                         adapter.notifyDataSetChanged();
                         showEmpty();
                         return;
                     }
-
                     buildHistoryFromEntrants(snapshots);
                 });
     }
@@ -132,11 +144,12 @@ public class EventRegistrationHistoryFragment extends Fragment {
         final List<Task<DocumentSnapshot>> eventTasks = new ArrayList<>();
         final List<DocumentSnapshot> entrantDocs = new ArrayList<>();
 
+        // Collect entrants + prepare event fetch operations
         for (DocumentSnapshot doc : snapshots.getDocuments()) {
             Entrant entrant = doc.toObject(Entrant.class);
             if (entrant == null) continue;
 
-            // Ensure we preserve the Firestore document id
+            // Ensure Firestore document id preservation
             entrant.setId(doc.getId());
 
             String eventId = entrant.getEventId();
@@ -147,6 +160,7 @@ public class EventRegistrationHistoryFragment extends Fragment {
             eventTasks.add(db.collection("events").document(eventId).get());
         }
 
+        // If no events show empty state
         if (eventTasks.isEmpty()) {
             historyItems.clear();
             adapter.notifyDataSetChanged();
@@ -215,6 +229,7 @@ public class EventRegistrationHistoryFragment extends Fragment {
                             dateStr = "-";
                         }
 
+                        // Create history entry
                         historyItems.add(
                                 new EventHistoryItem(
                                         eventName,
@@ -234,19 +249,23 @@ public class EventRegistrationHistoryFragment extends Fragment {
                 });
     }
 
+    /** Shows the loading spinner. */
     private void showLoading() {
         if (progress != null) progress.setVisibility(View.VISIBLE);
     }
 
+    /** Hides the loading spinner. */
     private void hideLoading() {
         if (progress != null) progress.setVisibility(View.GONE);
     }
 
+    /** Shows empty-state text and hides RecyclerView. */
     private void showEmpty() {
         if (emptyState != null) emptyState.setVisibility(View.VISIBLE);
         if (recyclerView != null) recyclerView.setVisibility(View.GONE);
     }
 
+    /** Updates which views are visible depending on if history present. */
     private void updateVisibility() {
         if (historyItems.isEmpty()) {
             showEmpty();
@@ -256,6 +275,9 @@ public class EventRegistrationHistoryFragment extends Fragment {
         }
     }
 
+    /**
+     * Removes the Firestore listener when view is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
