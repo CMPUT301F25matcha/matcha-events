@@ -364,19 +364,40 @@ public class EventDetailsActivity extends AppCompatActivity implements OnMapRead
      * @param longitude The longitude where the user joined
      */
     private void saveEntrantGeolocation(String userId, double latitude, double longitude) {
-        // TODO: Implement geolocation save in the repository
-        // This should create a document in a "geolocations" collection with:
-        // - eventId
-        // - userId/entrantId
-        // - latitude
-        // - longitude
-        // - timestamp
+        // Get Firestore instance
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
 
-        // For now, this is a placeholder
-        // The actual implementation will depend on your GeolocationRepository
-        android.util.Log.d("EventDetails",
-                String.format("Saving geolocation for user %s: lat=%f, lng=%f",
-                        userId, latitude, longitude));
+        // Find the entrant document for this specific event and user
+        db.collection("entrants")
+                .whereEqualTo("eventId", event.getId())
+                .whereEqualTo("userId", userId) // Ensure your Entrant documents actually have a "userId" field
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        // Get the document reference
+                        com.google.firebase.firestore.DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+
+                        // Create update map
+                        java.util.Map<String, Object> updates = new java.util.HashMap<>();
+                        updates.put("latitude", latitude);
+                        updates.put("longitude", longitude);
+
+                        // Update the existing entrant document
+                        document.getReference().update(updates)
+                                .addOnSuccessListener(aVoid -> {
+                                    android.util.Log.d("EventDetails", "Geolocation saved successfully");
+                                })
+                                .addOnFailureListener(e -> {
+                                    android.util.Log.e("EventDetails", "Failed to save geolocation", e);
+                                });
+                    } else {
+                        android.util.Log.e("EventDetails", "Entrant not found to save location");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("EventDetails", "Error finding entrant to save location", e);
+                });
     }
 
     /**

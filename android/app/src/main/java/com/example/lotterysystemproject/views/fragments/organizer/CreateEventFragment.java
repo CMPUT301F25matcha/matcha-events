@@ -44,6 +44,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -74,6 +75,7 @@ public class CreateEventFragment extends Fragment {
     private Button uploadPosterButton, createEventButton, backButton;
     private Button categoriesDropdownButton;
     private LinearLayout categoriesCheckboxContainer;
+    private MaterialSwitch geolocationSwitch;
 
     /** ViewModel used to manage event data */
     private EventViewModel eventViewModel;
@@ -203,6 +205,9 @@ public class CreateEventFragment extends Fragment {
         categoriesCheckboxContainer = view.findViewById(R.id.categories_checkbox_container);
 
         eventPosterPreview = view.findViewById(R.id.event_poster_preview);
+
+        // Initialize geolocation switch (default is checked/true)
+        geolocationSwitch = view.findViewById(R.id.geolocation_switch);
 
         updateDateTimeButtons();
     }
@@ -483,6 +488,10 @@ public class CreateEventFragment extends Fragment {
                 // Set categories from checkbox selections
                 List<String> selectedCategories = getSelectedCategories();
                 newEvent.setCategories(selectedCategories);
+
+                // Set geolocation requirement based on switch state
+                boolean requireGeolocation = geolocationSwitch.isChecked();
+                newEvent.setGeolocationRequired(requireGeolocation);
 
                 // Generate QR codes
                 String promoQR = generateQRCode(name, "PROMO");
