@@ -34,16 +34,20 @@ public class EntrantProfileFragment extends Fragment {
 
     // ActivityResultLauncher to handle result from DeleteProfileActivity
     private final ActivityResultLauncher<Intent> deleteProfileLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && getView() != null) {
-                    // Clear the UI or show a toast
-                    TextView name  = getView().findViewById(R.id.profile_name);
-                    TextView email = getView().findViewById(R.id.profile_email);
-                    if (name != null)  name.setText("—");
-                    if (email != null) email.setText("—");
-                    Toast.makeText(requireContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
-                }
-            });
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent i = new Intent(requireActivity(), UserInfoView.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(i);
+                        }
+                    }
+            );
+
+
 
     /**
      * Inflates the fragment’s layout.
@@ -82,7 +86,7 @@ public class EntrantProfileFragment extends Fragment {
         deleteBtn.setOnClickListener(click -> {
             Intent i = new Intent(requireContext(), DeleteProfileActivity.class);
             i.putExtra(DeleteProfileActivity.EXTRA_USER_ID, resolveUserId());
-            startActivity(i); // or use startActivityForResult pattern below if callback wanted
+            deleteProfileLauncher.launch(i); // or use startActivityForResult pattern below if callback wanted
         });
 
         Button organizerSignUpBtn = v.findViewById(R.id.btn_organizer_signup);
@@ -163,16 +167,6 @@ public class EntrantProfileFragment extends Fragment {
      * Uses a mock device ID for local testing purposes.
      */
     private String resolveUserId() {
-        /*
-        try {
-            // Prefers a device ID manager if available:
-            // return DeviceIdentityManager.getInstance(requireContext()).getOrCreateDeviceId();
-            return "device-123"; // fallback for local demo
-        } catch (Exception e) {
-            return "device-123";
-        }
-
-         */
         android.content.SharedPreferences prefs =
                 requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
         return prefs.getString("userId", "unknown");
