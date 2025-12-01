@@ -1,6 +1,9 @@
 package com.example.lotterysystemproject.views.fragments.organizer;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,6 +25,16 @@ import com.example.lotterysystemproject.adapters.EntrantAdapter;
 import com.example.lotterysystemproject.models.Entrant;
 import com.example.lotterysystemproject.firebasemanager.EntrantRepository;
 import com.example.lotterysystemproject.viewmodels.EntrantViewModel;
+import com.example.lotterysystemproject.viewmodels.EventViewModel;
+import com.opencsv.CSVWriter;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * Displays and manages the list of selected entrants for an event.
@@ -33,6 +48,7 @@ public class SelectedListFragment extends Fragment implements EntrantAdapter.OnE
 
     /** Shared ViewModel for managing entrant data. */
     private EntrantViewModel entrantViewModel;
+    private EventViewModel eventViewModel;
 
     /** RecyclerView displaying the list of selected entrants. */
     private RecyclerView recyclerView;
@@ -68,7 +84,9 @@ public class SelectedListFragment extends Fragment implements EntrantAdapter.OnE
         View view = inflater.inflate(R.layout.fragment_selected_list, container, false);
 
         // Get shared ViewModel
-        entrantViewModel = new ViewModelProvider(requireActivity()).get(EntrantViewModel.class);
+        ViewModelProvider provider = new ViewModelProvider(requireActivity());
+        entrantViewModel = provider.get(EntrantViewModel.class);
+        eventViewModel = provider.get(EventViewModel.class);
 
         // Initialize views
         recyclerView = view.findViewById(R.id.selected_recycler_view);
@@ -195,18 +213,91 @@ public class SelectedListFragment extends Fragment implements EntrantAdapter.OnE
         });
     }
 
+    // ##################### CSV Exportational magic #################
+
+    /** Launcher that writes CSV to file after file picking */
+    private final ActivityResultLauncher<Intent> csvDocumentWriteLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    activityResult -> {
+                        // Handle the result (the URI where you will write the CSV)
+                        if (activityResult != null) {
+                            Intent intent = activityResult.getData();
+
+                            if (intent != null) {
+                                Uri uri = intent.getData();
+
+                                if (uri != null) {
+                                    writeCsvFile(uri);
+                                }
+                            }
+                        }
+                    });
+
+    private void openCSVWriteChooser(String defaultFilename) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("text/csv") // e.g., "application/pdf", "text/plain"
+                .putExtra(Intent.EXTRA_TITLE, defaultFilename);
+
+        csvDocumentWriteLauncher.launch(intent);
+    }
+
+
+    private void writeCsvFile(@NonNull Uri uri) {
+        try (OutputStream outputStream = requireContext().getContentResolver().openOutputStream(uri);
+             // 1. Wrap the OutputStream in an OutputStreamWriter to handle character encoding (UTF-8 is best)
+             OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             // 2. Pass the Writer to OpenCSV's CSVWriter
+             CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            // --- Data to be written ---
+
+            List<Entrant> entrants = entrantViewModel.getFilteredSelected(currentFilter).getValue();
+
+            if(entrants == null) {
+                Toast.makeText(getContext(), "Entrants is null", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Write the header
+            csvWriter.writeNext(new String[]{"Name", "Email", "Phone"});
+            for (Entrant e : entrants) {
+                csvWriter.writeNext(new String[]{e.getName(), e.getEmail(), e.getPhone()});
+            }
+
+            Toast.makeText(getContext(),
+                    "Exported CSV",
+                    Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            Log.e("FileHandler", "Error writing CSV file", e);
+            // Handle the exception, perhaps show a Toast to the user
+        } catch (Exception e) {
+            Log.e("FileHandler", "Unexpected error", e);
+        }
+    }
+
     /**
      * Placeholder for exporting the current entrant list to CSV.
      * Currently shows a Toast message indicating the export action.
      */
     private void exportToCsv() {
-        String filterText = currentFilter == null ? "all selected" :
-                currentFilter == Entrant.Status.ENROLLED ? "enrolled" : "cancelled";
+        String filterText = currentFilter == null
+                ? "all selected"
+                : currentFilter == Entrant.Status.ENROLLED
+                    ? "enrolled"
+                    : "cancelled";
+
         Toast.makeText(getContext(),
                 "📥 Exporting " + filterText + " entrants to CSV...",
                 Toast.LENGTH_SHORT).show();
 
-        // TODO: Implement actual CSV export
+        // TODO: Implement actual CSV export with event name
+        String dateNow = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd_hhmmss")
+                .format(ZonedDateTime.now());
+
+        openCSVWriteChooser("list" + "-" + filterText + "_" + dateNow + ".csv");
     }
 
     /**
