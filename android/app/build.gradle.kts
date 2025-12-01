@@ -96,6 +96,7 @@ dependencies {
 
     implementation("com.google.zxing:core:3.5.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(libs.opencsv)
 
     // Mockito for mocking
     testImplementation("org.mockito:mockito-core:5.7.0")
