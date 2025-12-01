@@ -123,17 +123,20 @@ public class EventListHelper {
             eventDate.setText("Date TBD");
         }
 
-        // Load event image if available
-        // Note: For production, consider using an image loading library like Glide or Picasso
-        // For now, we'll use a placeholder. You can implement image loading later.
+        // Load event poster image using Glide (matching FeaturedEventsAdapter implementation)
+        // Load event poster image using Glide
         if (event.getPosterImageUrl() != null && !event.getPosterImageUrl().isEmpty()) {
-
-            // For now, the image view will show the placeholder background
             Glide.with(context)
                     .load(event.getPosterImageUrl())
                     .centerCrop()
+                    .placeholder(R.drawable.ic_placeholder_image) // Optional: add a placeholder
+                    .error(R.drawable.ic_placeholder_image) // Optional: add an error image
                     .into(eventImage);
+        } else {
+            // If no image URL, load a default placeholder
+            eventImage.setImageResource(R.drawable.ic_placeholder_image);
         }
+        // If no URL, the ImageView will show its background from the layout
 
         // Handle join waiting list button click
         String userId = getCurrentUserId();

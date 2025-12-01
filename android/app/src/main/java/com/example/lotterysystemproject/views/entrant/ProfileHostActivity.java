@@ -40,12 +40,11 @@ public class ProfileHostActivity extends AppCompatActivity {
         // Keeps Profile icon selected while in Profile/Settings
         navController.addOnDestinationChangedListener((c, dest, args) -> {
             LinearLayout home  = findViewById(R.id.nav_home);
-            LinearLayout expl  = findViewById(R.id.nav_explore);
             LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
             LinearLayout notif = findViewById(R.id.nav_notifications);
             LinearLayout prof  = findViewById(R.id.nav_profile);
             BottomNavigationHelper.setSelectedItem(
-                    BottomNavigationHelper.NavItem.PROFILE, home, expl, qr, notif, prof
+                    BottomNavigationHelper.NavItem.PROFILE, home, qr, notif, prof
             );
         });
     }

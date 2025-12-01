@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.lotterysystemproject.adapters.RecentEventsAdapter;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.helpers.EventListHelper;
@@ -32,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.example.lotterysystemproject.models.Event;
-import com.example.lotterysystemproject.utils.RecentEventsManager;
-
 /**
  * Serves as the main home screen for entrants in the application.
  * Displays featured and available community events that users can browse, search for,
@@ -74,15 +71,14 @@ public class EntrantMainActivity extends AppCompatActivity {
 
         // highlight bottom nav (existing code)
         LinearLayout home  = findViewById(R.id.nav_home);
-        LinearLayout expl  = findViewById(R.id.nav_explore);
         LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
         LinearLayout notif = findViewById(R.id.nav_notifications);
         LinearLayout prof  = findViewById(R.id.nav_profile);
 
-        if (home != null && expl != null && qr != null && notif != null && prof != null) {
+        if (home != null && qr != null && notif != null && prof != null) {
             com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
                     com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.HOME,
-                    home, expl, qr, notif, prof
+                    home, qr, notif, prof
             );
         }
 
@@ -335,15 +331,14 @@ public class EntrantMainActivity extends AppCompatActivity {
         );
 
         LinearLayout home  = findViewById(R.id.nav_home);
-        LinearLayout expl  = findViewById(R.id.nav_explore);
         LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
         LinearLayout notif = findViewById(R.id.nav_notifications);
         LinearLayout prof  = findViewById(R.id.nav_profile);
 
-        if (home != null && expl != null && qr != null && notif != null && prof != null) {
+        if (home != null && qr != null && notif != null && prof != null) {
             com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
                     com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.HOME,
-                    home, expl, qr, notif, prof
+                    home, qr, notif, prof
             );
         }
     }

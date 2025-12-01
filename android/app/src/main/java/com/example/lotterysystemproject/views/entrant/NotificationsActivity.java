@@ -51,15 +51,14 @@ public class NotificationsActivity extends AppCompatActivity {
         );
 
         LinearLayout home  = findViewById(R.id.nav_home);
-        LinearLayout expl  = findViewById(R.id.nav_explore);
         LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
         LinearLayout notif = findViewById(R.id.nav_notifications);
         LinearLayout prof  = findViewById(R.id.nav_profile);
 
-        if (home != null && expl != null && qr != null && notif != null && prof != null) {
+        if (home != null && qr != null && notif != null && prof != null) {
             BottomNavigationHelper.setSelectedItem(
                     BottomNavigationHelper.NavItem.NOTIFICATIONS,
-                    home, expl, qr, notif, prof
+                    home, qr, notif, prof
             );
         }
 

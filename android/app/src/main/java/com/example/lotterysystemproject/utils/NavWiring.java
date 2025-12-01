@@ -36,7 +36,6 @@ public final class NavWiring {
                             Class<?> profile) {
 
         LinearLayout navHome = a.findViewById(R.id.nav_home);
-        LinearLayout navExplore = a.findViewById(R.id.nav_explore);
         LinearLayout navQR = a.findViewById(R.id.nav_qr_scanner);
         LinearLayout navNotif = a.findViewById(R.id.nav_notifications);
         LinearLayout navProfile = a.findViewById(R.id.nav_profile);
@@ -54,8 +53,7 @@ public final class NavWiring {
         View.OnClickListener go = v -> {
             Class<?> target =
                     v.getId() == R.id.nav_home ? home :
-                            v.getId() == R.id.nav_explore ? explore :
-                                    v.getId() == R.id.nav_notifications ? notif : profile;
+                            v.getId() == R.id.nav_notifications ? notif : profile;
 
             // Toast for activities not yet implemented
             if (target == null) {
@@ -72,7 +70,6 @@ public final class NavWiring {
         };
 
         if (navHome != null) navHome.setOnClickListener(go);
-        if (navExplore != null) navExplore.setOnClickListener(go);
         if (navNotif != null) navNotif.setOnClickListener(go);
         if (navProfile != null) navProfile.setOnClickListener(go);
     }
