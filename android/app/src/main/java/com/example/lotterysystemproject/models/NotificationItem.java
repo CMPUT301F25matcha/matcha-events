@@ -6,7 +6,9 @@ package com.example.lotterysystemproject.models;
  */
 public class NotificationItem {
 
-    // Allowed notification types
+    /**
+     * The type of notification event being represented.
+     */
     public enum NotificationType {
         WAITING,     // "You joined the waiting list"
         INVITED,     // "You were invited to the event"
@@ -14,7 +16,10 @@ public class NotificationItem {
         CANCELLED    // "You were removed from the event"
     }
 
-    // Local decision state for invitations
+    /**
+     * Local decision state for invitation-type notifications.
+     * Persisted in the notification document.
+     */
     public enum Decision {
         NONE,
         ACCEPTED,
@@ -31,11 +36,19 @@ public class NotificationItem {
     private String organizerId;        // sender
     private String userId;             // receiver
 
-    // New: persisted decision state
+    // Persisted decision state
     private Decision decision = Decision.NONE;
 
     /**
-     * Main constructor with all fields.
+     * Constructs a fully populated NotificationItem.
+     *
+     * @param id unique Firestore document ID
+     * @param notificationType type of notification (WAITING, INVITED, etc.)
+     * @param organizerId ID of the organizer who initiated the notification
+     * @param userId ID of the user who receives the notification
+     * @param title short title text
+     * @param message full notification message
+     * @param timestamp creation time in milliseconds
      */
     public NotificationItem(
             String id,
@@ -55,7 +68,7 @@ public class NotificationItem {
         this.timestamp = timestamp;
     }
 
-    // ----- GETTERS -----
+    // GETTERS
 
     public String getId() { return id; }
 
@@ -79,8 +92,7 @@ public class NotificationItem {
 
     public Decision getDecision() { return decision; }
 
-    // ----- SETTERS -----
-
+    // SETTERS
     public void setNotificationType(NotificationType type) {
         this.notificationType = type;
     }

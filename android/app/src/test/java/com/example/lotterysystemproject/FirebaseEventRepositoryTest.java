@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData;
 import com.example.lotterysystemproject.firebasemanager.EventRepository;
 import com.example.lotterysystemproject.firebasemanager.FirebaseEventRepository;
 import com.example.lotterysystemproject.models.Event;
-import com.example.lotterysystemproject.models.Registration;
 import com.example.lotterysystemproject.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

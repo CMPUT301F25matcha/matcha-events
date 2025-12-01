@@ -47,10 +47,6 @@ public class FirebaseEntrantRepository implements EntrantRepository {
     public LiveData<List<Entrant>> getEntrants(String eventId) {
         db.collection("entrants")
                 .whereEqualTo("eventId", eventId)
-
-                // REMOVED this line below to avoid needing composite index:
-                //.orderBy("joinedTimestamp", Query.Direction.ASCENDING)
-
                 .addSnapshotListener((snapshots, error) -> {
                     if (error != null) {
                         entrantsLiveData.setValue(new ArrayList<>());
@@ -66,12 +62,12 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                                     + " status=" + doc.getString("status"));
                             Entrant entrant = doc.toObject(Entrant.class);
                             if (entrant != null) {
+                                // Preserve document ID
                                 entrant.setId(doc.getId());
                                 entrants.add(entrant);
                             }
                         }
                     }
-
                     entrantsLiveData.setValue(entrants);
                 });
 
@@ -86,15 +82,12 @@ public class FirebaseEntrantRepository implements EntrantRepository {
      */
     @Override
     public void drawLottery(String eventId, int count, OnLotteryCompleteListener listener) {
-
-
         // Fetch event to get name
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(eventDoc -> {
 
                     // Wrap eventName so it can be used inside lambdas
                     final String[] eventNameHolder = new String[1];
-
                     String rawName = eventDoc.getString("name");
                     if (rawName == null || rawName.trim().isEmpty()) {
                         eventNameHolder[0] = "this";
@@ -102,6 +95,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                         eventNameHolder[0] = rawName;
                     }
 
+                    // Fetch all WAITING entrants for this event
                     db.collection("entrants")
                             .whereEqualTo("eventId", eventId)
                             .whereEqualTo("status", "WAITING")
@@ -110,7 +104,8 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                                 List<Entrant> waitingList = new ArrayList<>();
                                 Map<String, String> entrantToUserId = new HashMap<>();
 
-                                for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                                // Build local waiting list and map entrantId to userId
+                                for (DocumentSnapshot doc : querySnapshot.getDocuments())    {
                                     Entrant entrant = doc.toObject(Entrant.class);
                                     if (entrant != null) {
                                         entrant.setId(doc.getId());
@@ -129,6 +124,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                                     return;
                                 }
 
+                                // Shuffle to randomize selection
                                 Collections.shuffle(waitingList);
                                 int selected = Math.min(count, waitingList.size());
                                 List<Entrant> winners = new ArrayList<>();
@@ -137,6 +133,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                                 long now = System.currentTimeMillis();
                                 NotificationRepository notifRepo = RepositoryProvider.getNotificationRepository();
 
+                                // Handle winners: update status + send INVITED notifications
                                 for (int i = 0; i < selected; i++) {
                                     Entrant winner = waitingList.get(i);
                                     String newStatus = (i < selected / 4) ? "ENROLLED" : "INVITED";
@@ -174,7 +171,6 @@ public class FirebaseEntrantRepository implements EntrantRepository {
 
                                             @Override
                                             public void onFailure(Exception e) {
-                                                // log error later
                                             }
                                         });
                                     }
@@ -195,7 +191,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
 
                                     NotificationItem item = new NotificationItem(
                                             notificationId,
-                                            NotificationItem.NotificationType.INVITED,
+                                            NotificationItem.NotificationType.WAITING,
                                             null,
                                             uid,
                                             title,
@@ -210,7 +206,6 @@ public class FirebaseEntrantRepository implements EntrantRepository {
 
                                         @Override
                                         public void onFailure(Exception e) {
-                                            // log error later
                                         }
                                     });
                                 }
@@ -249,26 +244,24 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                     // Extract user + event IDs
                     String rawUserId = doc.getString("userId");
                     if (rawUserId == null) {
-                        rawUserId = doc.getString("id");   // fallback
+                        rawUserId = doc.getString("id"); // fallback
                     }
                     final String finalUserId = rawUserId;
-
                     final String finalEventId = doc.getString("eventId");
-
                     long now = System.currentTimeMillis();
 
                     Map<String, Object> updates = new HashMap<>();
                     updates.put("status", "CANCELLED");
                     updates.put("statusTimestamp", now);
 
-                    // Update status
+                    // Update entrant status to CANCELLED
                     db.collection("entrants").document(entrantId)
                             .update(updates)
                             .addOnSuccessListener(aVoid -> {
 
                                 if (finalUserId != null) {
 
-                                    // same pattern as drawLottery: holder for event name
+                                    // Fetch event name for notification text
                                     final String[] eventNameHolder = new String[1];
 
                                     db.collection("events")
@@ -312,7 +305,6 @@ public class FirebaseEntrantRepository implements EntrantRepository {
 
                                                             @Override
                                                             public void onFailure(Exception e) {
-                                                                // log error later
                                                             }
                                                         }
                                                 );
@@ -366,6 +358,7 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                         return;
                     }
 
+                    // Pick a random WAITING entrant
                     Collections.shuffle(waitingList);
                     Entrant replacement = waitingList.get(0);
 
@@ -383,58 +376,78 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                                     // ignore if enum doesn't match
                                 }
 
-                                // US 01.05.01 – notify second chance invitee
-                                String uid = entrantToUserId.get(replacement.getId());
-                                if (uid != null) {
-                                    NotificationRepository notifRepo =
-                                            RepositoryProvider.getNotificationRepository();
+                                // Lookup event name before sending the notification
+                                final String[] eventNameHolder = new String[1];
 
-                                    String notificationId = eventId + ":" + replacement.getId();
-                                    String title = "You’ve been invited from the waiting list!";
-                                    String message = "A spot opened up because someone declined. " +
-                                            "You now have a chance to join this event.";
+                                db.collection("events")
+                                        .document(eventId)
+                                        .get()
+                                        .addOnSuccessListener(eventDoc -> {
 
-                                    NotificationItem item = new NotificationItem(
-                                            notificationId,
-                                            NotificationItem.NotificationType.INVITED,
-                                            null,
-                                            uid,
-                                            title,
-                                            message,
-                                            now
-                                    );
+                                            String raw = eventDoc.getString("name");
+                                            if (raw == null || raw.trim().isEmpty()) {
+                                                eventNameHolder[0] = "this event";
+                                            } else {
+                                                eventNameHolder[0] = raw;
+                                            }
 
-                                    notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
-                                        @Override
-                                        public void onSuccess(Void result) {
-                                        }
+                                            // US 01.05.01 – notify second chance invitee
+                                            String uid = entrantToUserId.get(replacement.getId());
+                                            if (uid != null) {
+                                                NotificationRepository notifRepo =
+                                                        RepositoryProvider.getNotificationRepository();
 
-                                        @Override
-                                        public void onFailure(Exception e) {
-                                            // log error later
-                                        }
-                                    });
-                                }
+                                                String notificationId = eventId + ":" + replacement.getId();
+                                                String title = "You’ve been invited from the waiting list!";
+                                                String message = "A spot opened up because someone declined. " +
+                                                        "You now have a chance to join the " + eventNameHolder[0] + " event.";
 
-                                if (listener != null) {
-                                    listener.onSuccess(replacement);
-                                }
+                                                NotificationItem item = new NotificationItem(
+                                                        notificationId,
+                                                        NotificationItem.NotificationType.INVITED,
+                                                        null,
+                                                        uid,
+                                                        title,
+                                                        message,
+                                                        now
+                                                );
+
+                                                notifRepo.createNotification(uid, item, new RepositoryCallback<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void result) {
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Exception e) {
+                                                            }
+                                                        }
+                                                );
+                                            }
+
+                                            if (listener != null) {
+                                                listener.onSuccess(replacement);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            if (listener != null) {
+                                                listener.onFailure(e.getMessage());
+                                            }
+                                        });
                             })
                             .addOnFailureListener(e -> {
                                 if (listener != null) {
                                     listener.onFailure(e.getMessage());
                                 }
                             });
-                })
-                .addOnFailureListener(e -> {
-                    if (listener != null) {
-                        listener.onFailure(e.getMessage());
-                    }
                 });
     }
 
-
-
+    /**
+     * Helper that looks up the current user document by id field
+     *
+     * @param deviceId device/user identifier to look up.
+     * @param listener callback with id, name, and role if found.
+     */
     @Override
     public void getCurrentUserInfo(String deviceId, OnUserInfoListener listener) {
         db.collection("users")
@@ -454,6 +467,4 @@ public class FirebaseEntrantRepository implements EntrantRepository {
                 })
                 .addOnFailureListener(e -> listener.onFailure(e.getMessage()));
     }
-
-
 }
