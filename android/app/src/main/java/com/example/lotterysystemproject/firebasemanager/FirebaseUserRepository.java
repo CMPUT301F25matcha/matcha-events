@@ -183,15 +183,88 @@ public class FirebaseUserRepository implements UserRepository {
 
     @Override
     public void deactivateAccount(String userId, RepositoryCallback<Void> callback) {
-        db.collection("users").document(userId)
-                .update("isActive", false)
-                .addOnSuccessListener(v -> {
-                    if (callback != null) callback.onSuccess(null);
+        if (userId == null || userId.trim().isEmpty()) {
+            if (callback != null) {
+                callback.onFailure(new IllegalArgumentException("userId is empty"));
+            }
+            return;
+        }
+
+        // 1) Fetch all notifications for this user
+        db.collection("notifications")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(notifSnap -> {
+
+                    // 2) Then fetch all entrants for this user
+                    db.collection("entrants")
+                            .whereEqualTo("userId", userId)
+                            .get()
+                            .addOnSuccessListener(entrantSnap -> {
+
+                                // 3) Build a batch delete for notifications, entrants, and the user doc
+                                com.google.firebase.firestore.WriteBatch batch = db.batch();
+
+                                // Track events that user was in
+                                java.util.Set<String> affectedEventIds = new java.util.HashSet<>();
+
+                                // Delete notifications
+                                for (com.google.firebase.firestore.DocumentSnapshot doc : notifSnap.getDocuments()) {
+                                    batch.delete(doc.getReference());
+                                }
+
+                                // Delete entrants and collect eventIds
+                                for (com.google.firebase.firestore.DocumentSnapshot doc : entrantSnap.getDocuments()) {
+                                    batch.delete(doc.getReference());
+
+                                    String eventId = doc.getString("eventId");
+                                    if (eventId != null && !eventId.isEmpty()) {
+                                        affectedEventIds.add(eventId);
+                                    }
+                                }
+
+                                // Remove respective userId from each event waitingList
+                                for (String eventId : affectedEventIds) {
+                                    batch.update(
+                                            db.collection("events").document(eventId),
+                                            "waitingList",
+                                            com.google.firebase.firestore.FieldValue.arrayRemove(userId)
+                                    );
+                                }
+
+                                // Finally delete the user document itself
+                                com.google.firebase.firestore.DocumentReference userRef =
+                                        db.collection("users").document(userId);
+                                batch.delete(userRef);
+
+                                // 4) Commit the batch
+                                batch.commit()
+                                        .addOnSuccessListener(aVoid -> {
+                                            if (callback != null) {
+                                                callback.onSuccess(null);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            if (callback != null) {
+                                                callback.onFailure(e);
+                                            }
+                                        });
+
+                            })
+                            .addOnFailureListener(e -> {
+                                if (callback != null) {
+                                    callback.onFailure(e);
+                                }
+                            });
+
                 })
                 .addOnFailureListener(e -> {
-                    if (callback != null) callback.onFailure(e);
+                    if (callback != null) {
+                        callback.onFailure(e);
+                    }
                 });
     }
+
 
     @Override
     public void exportUserData(String userId, RepositoryCallback<String> callback) {

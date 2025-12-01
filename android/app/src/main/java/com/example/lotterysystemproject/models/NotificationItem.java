@@ -1,57 +1,103 @@
 package com.example.lotterysystemproject.models;
 
 /**
- * Represents a single notification entry shown to an entrant within
- * notifications screen of Lottery System app.
+ * Represents a single notification entry shown to an entrant
+ * within the notifications screen of the Lottery System app.
  */
 public class NotificationItem {
-    public enum InvitationResponse { NONE, ACCEPTED, DECLINED }
 
-    private final String id;     // stable key (eventId + ":" + registrationId)
-    private final String title;
-    private final String message;
-    private final boolean isInvitation;
-    private final long timestamp;
-    private InvitationResponse response = InvitationResponse.NONE;
+    // Allowed notification types
+    public enum NotificationType {
+        WAITING,     // "You joined the waiting list"
+        INVITED,     // "You were invited to the event"
+        DECLINED,    // "You were not selected"
+        CANCELLED    // "You were removed from the event"
+    }
 
+    // Local decision state for invitations
+    public enum Decision {
+        NONE,
+        ACCEPTED,
+        DECLINED
+    }
+
+    private final String id;           // notification ID / document ID
+    private final long timestamp;      // when it was created
+
+    private String title;              // notification title
+    private String message;            // message text
+
+    private NotificationType notificationType;
+    private String organizerId;        // sender
+    private String userId;             // receiver
+
+    // New: persisted decision state
+    private Decision decision = Decision.NONE;
 
     /**
-     * Constructs a new NotificationItem
-     * @param id           Identifier for this notification
-     * @param title        Title/header of the notification.
-     * @param message      Detailed message text.
-     * @param isInvitation True if notification is an invitation;
-     * @param timestamp    Time notification was created
+     * Main constructor with all fields.
      */
-    public NotificationItem(String id, String title, String message, boolean isInvitation, long timestamp) {
+    public NotificationItem(
+            String id,
+            NotificationType notificationType,
+            String organizerId,
+            String userId,
+            String title,
+            String message,
+            long timestamp
+    ) {
         this.id = id;
+        this.notificationType = notificationType;
+        this.organizerId = organizerId;
+        this.userId = userId;
         this.title = title;
         this.message = message;
-        this.isInvitation = isInvitation;
         this.timestamp = timestamp;
     }
 
-    /** @return Unique stable identifier for this notification. */
+    // ----- GETTERS -----
+
     public String getId() { return id; }
 
-    /** @return Title or short description of this notification. */
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
     public String getTitle() { return title; }
 
-    /** @return Full message text of the notification. */
     public String getMessage() { return message; }
 
-    /** @return true if this notification is an invitation. */
-    public boolean isInvitation() { return isInvitation; }
-
-    /** @return Timestamp (in milliseconds) when this notification was generated. */
     public long getTimestamp() { return timestamp; }
 
-    /** @return User’s response to this invitation. */
-    public InvitationResponse getResponse() { return response; }
+    public Decision getDecision() { return decision; }
 
-    /**
-     * Sets response state for this invitation.
-     * @param r New InvitationResponse value to assign.
-     */
-    public void setResponse(InvitationResponse r) { this.response = r; }
+    // ----- SETTERS -----
+
+    public void setNotificationType(NotificationType type) {
+        this.notificationType = type;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setTitle(String title) { this.title = title; }
+
+    public void setMessage(String message) { this.message = message; }
+
+    public void setDecision(Decision decision) {
+        this.decision = (decision == null) ? Decision.NONE : decision;
+    }
 }

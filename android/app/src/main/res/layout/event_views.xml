@@ -35,78 +35,6 @@
                 app:iconifiedByDefault="false"
                 app:queryHint="Search events..." />
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:scrollbars="none"
-                android:fadeScrollbars="false">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/quick_actions_chip_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:chipSpacing="8dp"
-                    app:chipSpacingHorizontal="8dp"
-                    app:singleLine="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_favorites"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Favorites"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/btn_star_big_on"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_history"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="History"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_recent_history"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_following"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Following"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_myplaces"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_upcoming"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Upcoming"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_today"
-                        app:chipIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_nearby"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nearby"
-                        android:checkable="true"
-                        app:chipIcon="@android:drawable/ic_menu_mylocation"
-                        app:chipIconVisible="true" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </HorizontalScrollView>
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/featured_events_card"
                 android:layout_width="match_parent"
@@ -181,28 +109,7 @@
                     android:paddingEnd="16dp"
                     android:gravity="center_vertical">
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/category_music"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_marginEnd="12dp"
-                        android:clipToPadding="false"
-                        android:clipChildren="true"
-                        app:cardCornerRadius="40dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <ImageView
-                            android:id="@+id/category_music_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Music category"
-                            android:src="@android:drawable/ic_media_play" />
-
-                    </androidx.cardview.widget.CardView>
-
+                    <!-- Sports & Recreation -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/category_sports"
                         android:layout_width="80dp"
@@ -214,39 +121,33 @@
                         app:cardElevation="2dp"
                         app:cardBackgroundColor="@android:color/white">
 
-                        <ImageView
-                            android:id="@+id/category_sports_image"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Sports category"
-                            android:src="@android:drawable/ic_menu_more" />
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#FF6B6B">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚽"
+                                android:textSize="32sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Sports"
+                                android:textSize="12sp"
+                                android:textColor="#FFFFFF"
+                                android:gravity="center"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/category_food"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_marginEnd="12dp"
-                        android:clipToPadding="false"
-                        android:clipChildren="true"
-                        app:cardCornerRadius="40dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <ImageView
-                            android:id="@+id/category_food_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Food category"
-                            android:src="@android:drawable/ic_menu_myplaces" />
-
-                    </androidx.cardview.widget.CardView>
-
+                    <!-- Arts & Culture -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/category_art"
                         android:layout_width="80dp"
@@ -258,39 +159,33 @@
                         app:cardElevation="2dp"
                         app:cardBackgroundColor="@android:color/white">
 
-                        <ImageView
-                            android:id="@+id/category_art_image"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Art category"
-                            android:src="@android:drawable/ic_menu_gallery" />
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#4ECDC4">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🎨"
+                                android:textSize="32sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Arts"
+                                android:textSize="12sp"
+                                android:textColor="#FFFFFF"
+                                android:gravity="center"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/category_tech"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_marginEnd="12dp"
-                        android:clipToPadding="false"
-                        android:clipChildren="true"
-                        app:cardCornerRadius="40dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="@android:color/white">
-
-                        <ImageView
-                            android:id="@+id/category_tech_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Tech category"
-                            android:src="@android:drawable/ic_menu_manage" />
-
-                    </androidx.cardview.widget.CardView>
-
+                    <!-- Education & Learning -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/category_education"
                         android:layout_width="80dp"
@@ -302,14 +197,105 @@
                         app:cardElevation="2dp"
                         app:cardBackgroundColor="@android:color/white">
 
-                        <ImageView
-                            android:id="@+id/category_education_image"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="Education category"
-                            android:src="@android:drawable/ic_menu_agenda" />
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#FFD93D">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="📚"
+                                android:textSize="32sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Education"
+                                android:textSize="12sp"
+                                android:textColor="#FFFFFF"
+                                android:gravity="center"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Health & Wellness -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_health"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#95E1D3">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🧘"
+                                android:textSize="32sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Health"
+                                android:textSize="12sp"
+                                android:textColor="#FFFFFF"
+                                android:gravity="center"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Technology -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/category_tech"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginEnd="12dp"
+                        android:clipToPadding="false"
+                        android:clipChildren="true"
+                        app:cardCornerRadius="40dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#A8E6CF">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="💻"
+                                android:textSize="32sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tech"
+                                android:textSize="12sp"
+                                android:textColor="#FFFFFF"
+                                android:gravity="center"
+                                android:layout_marginTop="4dp" />
+
+                        </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
 

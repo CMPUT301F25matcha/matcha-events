@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -47,6 +49,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,6 +72,8 @@ public class CreateEventFragment extends Fragment {
     private EditText eventNameInput, descriptionInput, capacityInput, maxWaitingListInput, priceInput;
     private Button dateButton, timeButton, regStartButton, regEndButton;
     private Button uploadPosterButton, createEventButton, backButton;
+    private Button categoriesDropdownButton;
+    private LinearLayout categoriesCheckboxContainer;
 
     /** ViewModel used to manage event data */
     private EventViewModel eventViewModel;
@@ -79,6 +84,22 @@ public class CreateEventFragment extends Fragment {
     /** Date/time formats for displaying user-selected values */
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.US);
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
+
+    /** Available categories */
+    private final List<String> availableCategories = List.of(
+            "Sports & Recreation",
+            "Arts & Culture",
+            "Education & Learning",
+            "Health & Wellness",
+            "Technology",
+            "Community Service",
+            "Entertainment",
+            "Professional Development"
+    );
+
+    /** Category checkboxes and dropdown state */
+    private final List<CheckBox> categoryCheckboxes = new ArrayList<>();
+    private boolean categoriesDropdownOpen = false;
 
     private Uri selectedImageUri = null;
     private ImageView eventPosterPreview;
@@ -120,6 +141,7 @@ public class CreateEventFragment extends Fragment {
         regEndDate = Calendar.getInstance();
 
         initializeViews(view);
+        setupCategoryCheckboxes();
         setupListeners();
         setupValidation();
 
@@ -177,9 +199,64 @@ public class CreateEventFragment extends Fragment {
         createEventButton = view.findViewById(R.id.create_event_button);
         backButton = view.findViewById(R.id.back_button);
 
+        categoriesDropdownButton = view.findViewById(R.id.categories_dropdown_button);
+        categoriesCheckboxContainer = view.findViewById(R.id.categories_checkbox_container);
+
         eventPosterPreview = view.findViewById(R.id.event_poster_preview);
 
         updateDateTimeButtons();
+    }
+
+    /**
+     * Dynamically creates and adds checkboxes for each category.
+     */
+    private void setupCategoryCheckboxes() {
+        categoriesCheckboxContainer.removeAllViews();
+
+        for (String category : availableCategories) {
+            CheckBox checkbox = new CheckBox(requireContext());
+            checkbox.setText(category);
+            checkbox.setTextSize(14);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 8, 0, 8);
+            checkbox.setLayoutParams(params);
+
+            categoriesCheckboxContainer.addView(checkbox);
+            categoryCheckboxes.add(checkbox);
+        }
+    }
+
+    /**
+     * Toggles the categories dropdown visibility.
+     */
+    private void toggleCategoriesDropdown() {
+        categoriesDropdownOpen = !categoriesDropdownOpen;
+        if (categoriesDropdownOpen) {
+            categoriesCheckboxContainer.setVisibility(View.VISIBLE);
+            categoriesDropdownButton.setText("Select Categories ▲");
+        } else {
+            categoriesCheckboxContainer.setVisibility(View.GONE);
+            categoriesDropdownButton.setText("Select Categories ▼");
+        }
+    }
+
+    /**
+     * Collects selected categories from checkboxes.
+     *
+     * @return List of selected category names
+     */
+    private List<String> getSelectedCategories() {
+        List<String> selected = new ArrayList<>();
+        for (int i = 0; i < categoryCheckboxes.size(); i++) {
+            if (categoryCheckboxes.get(i).isChecked()) {
+                selected.add(availableCategories.get(i));
+            }
+        }
+        return selected;
     }
 
     private void fetchSuggestions(String query) {
@@ -230,6 +307,9 @@ public class CreateEventFragment extends Fragment {
      */
     private void setupListeners() {
         backButton.setOnClickListener(v -> requireActivity().onBackPressed());
+
+        // Categories dropdown toggle
+        categoriesDropdownButton.setOnClickListener(v -> toggleCategoriesDropdown());
 
         dateButton.setOnClickListener(v -> {
             DatePickerDialog picker = new DatePickerDialog(
@@ -400,10 +480,13 @@ public class CreateEventFragment extends Fragment {
                 newEvent.setLatitude(selectedLatitude);
                 newEvent.setLongitude(selectedLongitude);
 
+                // Set categories from checkbox selections
+                List<String> selectedCategories = getSelectedCategories();
+                newEvent.setCategories(selectedCategories);
+
                 // Generate QR codes
                 String promoQR = generateQRCode(name, "PROMO");
                 newEvent.setPromotionalQrCode(promoQR);
-
 
                 // Start the creation process (Geocoding -> Image Upload -> Save)
                 processEventCreation(newEvent);
@@ -469,8 +552,6 @@ public class CreateEventFragment extends Fragment {
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(getContext(), "Poster upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        // Proceed even if poster fails?
-                        // For now, we stop to let user retry or we could call saveEventToViewModel(event) here too.
                     });
         } else {
             saveEventToViewModel(event);

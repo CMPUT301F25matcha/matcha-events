@@ -97,6 +97,12 @@ public class AdminDashboard extends Fragment {
                     .navigate(R.id.action_adminDashboard_to_adminManageOrganizer);
 
         });
+
+        // Navigate to Review Logs section
+        binding.btnReviewLogs.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AdminDashboard.this)
+                    .navigate(R.id.action_adminDashboard_to_adminNotificationLogs);
+        });
     }
 
     @Override

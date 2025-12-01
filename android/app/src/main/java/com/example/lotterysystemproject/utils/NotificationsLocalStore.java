@@ -16,29 +16,6 @@ public final class NotificationsLocalStore {
     /** Private constructor to prevent instantiation. */
     private NotificationsLocalStore(){}
 
-    /**
-     * Saves user’s response for specific notification.
-     * @param c              Context used to access SharedPreferences.
-     * @param notificationId Unique ID of the notification.
-     * @param r              The InvitationResponse to store.
-     */
-    public static void saveResponse(Context c, String notificationId, NotificationItem.InvitationResponse r) {
-        SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        sp.edit().putString("resp_" + notificationId, r.name()).apply();
-    }
-
-    /**
-     * Loads the stored user response for a given notification.
-     * @param c              Context used to access SharedPreferences.
-     * @param notificationId Unique ID of the notification.
-     * @return Saved NotificationItem.InvitationResponse or NONE if not found.
-     */
-    public static NotificationItem.InvitationResponse loadResponse(Context c, String notificationId) {
-        SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String s = sp.getString("resp_" + notificationId, NotificationItem.InvitationResponse.NONE.name());
-        try { return NotificationItem.InvitationResponse.valueOf(s); }
-        catch (IllegalArgumentException e) { return NotificationItem.InvitationResponse.NONE; }
-    }
 
     /**
      * Clears the stored response for a specific notification.

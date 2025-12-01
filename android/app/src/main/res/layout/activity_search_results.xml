@@ -1,15 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="wrap_content"
+    <!-- Header Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        android:background="@color/primary_color"
+        android:elevation="4dp">
+
+        <!-- Back Button and Title Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back button"
+                android:scaleType="fitCenter"
+                android:padding="8dp"
+                app:tint="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/search_query_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Search Results"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/results_count_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="0 events found"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Filter Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filters"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Filter Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/filter_by_date_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Filter by Date"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/secondary_color"
+                android:textColor="@android:color/white"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+            <Button
+                android:id="@+id/filter_by_time_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Filter by Time"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/secondary_color"
+                android:textColor="@android:color/white"
+                style="@style/Widget.AppCompat.Button.Colored" />
+        </LinearLayout>
+
+        <!-- Clear Filters Button -->
+        <Button
+            android:id="@+id/clear_filters_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Clear All Filters"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/error_color"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            style="@style/Widget.AppCompat.Button.Colored" />
+    </LinearLayout>
+
+    <!-- Results Section -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Loading Indicator -->
+        <ProgressBar
+            android:id="@+id/search_loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- No Results Message -->
+        <TextView
+            android:id="@+id/no_results_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No results found"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary"
+            android:visibility="gone"
+            android:padding="16dp" />
+
+        <!-- Search Results Container -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/search_results_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="visible" />
+        </ScrollView>
+    </FrameLayout>
+
+</LinearLayout>
