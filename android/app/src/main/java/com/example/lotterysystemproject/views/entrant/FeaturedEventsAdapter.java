@@ -3,11 +3,13 @@ package com.example.lotterysystemproject.views.entrant;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.lotterysystemproject.R;
 import com.example.lotterysystemproject.models.Event;
 
@@ -44,6 +46,20 @@ public class FeaturedEventsAdapter extends RecyclerView.Adapter<FeaturedEventsAd
         Event e = events.get(position);
         holder.title.setText(e.getName());
         holder.host.setText(e.getHostName());
+
+        // Load event poster image using Glide
+        if (e.getPosterImageUrl() != null && !e.getPosterImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(e.getPosterImageUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_placeholder_image) // Optional: add a placeholder
+                    .error(R.drawable.ic_placeholder_image) // Optional: add an error image
+                    .into(holder.eventImage);
+        } else {
+            // If no image URL, load a default placeholder
+            holder.eventImage.setImageResource(R.drawable.ic_placeholder_image);
+        }
+
         holder.itemView.setOnClickListener(v -> callback.onClick(e));
     }
 
@@ -55,11 +71,13 @@ public class FeaturedEventsAdapter extends RecyclerView.Adapter<FeaturedEventsAd
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView host;
+        ImageView eventImage;
 
         ViewHolder(View v) {
             super(v);
             title = v.findViewById(R.id.featured_event_title);
             host = v.findViewById(R.id.featured_event_host);
+            eventImage = v.findViewById(R.id.featured_event_image);
         }
     }
 }

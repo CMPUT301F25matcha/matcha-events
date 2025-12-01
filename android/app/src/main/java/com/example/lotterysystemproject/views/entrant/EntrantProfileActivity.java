@@ -33,7 +33,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
         com.example.lotterysystemproject.utils.BottomNavigationHelper.setSelectedItem(
                 com.example.lotterysystemproject.utils.BottomNavigationHelper.NavItem.PROFILE,
                 findViewById(R.id.nav_home),
-                findViewById(R.id.nav_explore),
                 findViewById(R.id.nav_qr_scanner),
                 findViewById(R.id.nav_notifications),
                 findViewById(R.id.nav_profile)

@@ -2,7 +2,9 @@ package com.example.lotterysystemproject.views.entrant;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,16 +12,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lotterysystemproject.R;
+import com.example.lotterysystemproject.views.entrant.NotificationsAdapter;
 import com.example.lotterysystemproject.firebasemanager.NotificationRepository;
+import com.example.lotterysystemproject.firebasemanager.RepositoryCallback;
 import com.example.lotterysystemproject.firebasemanager.RepositoryListener;
 import com.example.lotterysystemproject.firebasemanager.RepositoryProvider;
 import com.example.lotterysystemproject.models.DeviceIdentityManager;
 import com.example.lotterysystemproject.models.NotificationItem;
 import com.example.lotterysystemproject.utils.BottomNavigationHelper;
 import com.example.lotterysystemproject.utils.NavWiring;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity that displays all notifications for the current entrant user.
@@ -28,6 +35,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
     private final List<NotificationItem> notifications = new ArrayList<>();
     private NotificationsAdapter adapter;
+
     private NotificationRepository notificationRepo;
     private String currentUserId;
 
@@ -46,16 +54,14 @@ public class NotificationsActivity extends AppCompatActivity {
         );
 
         LinearLayout home  = findViewById(R.id.nav_home);
-        LinearLayout expl  = findViewById(R.id.nav_explore);
         LinearLayout qr    = findViewById(R.id.nav_qr_scanner);
         LinearLayout notif = findViewById(R.id.nav_notifications);
         LinearLayout prof  = findViewById(R.id.nav_profile);
 
-        // Ensures the notifications tab is visually selected
-        if (home != null && expl != null && qr != null && notif != null && prof != null) {
+        if (home != null && qr != null && notif != null && prof != null) {
             BottomNavigationHelper.setSelectedItem(
                     BottomNavigationHelper.NavItem.NOTIFICATIONS,
-                    home, expl, qr, notif, prof
+                    home, qr, notif, prof
             );
         }
 
@@ -64,8 +70,10 @@ public class NotificationsActivity extends AppCompatActivity {
         adapter = new NotificationsAdapter(notifications);
         rv.setAdapter(adapter);
 
+
         notificationRepo = RepositoryProvider.getNotificationRepository();
         currentUserId = DeviceIdentityManager.getUserId(this);
+
 
         // listen to real Firestore data
         listenForNotifications();
