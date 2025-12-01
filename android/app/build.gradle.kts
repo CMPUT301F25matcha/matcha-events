@@ -55,11 +55,11 @@ android {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
-    implementation("androidx.camera:camera-core:1.3.0")
+    implementation("androidx.camera:camera-core:1.4.0")
     implementation("androidx.camera:camera-camera2:1.3.0")
-    implementation("androidx.camera:camera-lifecycle:1.3.0")
-    implementation("androidx.camera:camera-view:1.3.0")
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("androidx.camera:camera-lifecycle:1.4.0")
+    implementation("androidx.camera:camera-view:1.4.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
     implementation("com.google.guava:guava:31.1-android")
     implementation(libs.firebase.storage)
     implementation(libs.firebase.firestore)
@@ -78,7 +78,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.1.0")
 
     // marker clustering
-    implementation("com.google.maps.android:android-maps-utils:3.8.2")
+    implementation("com.google.maps.android:android-maps-utils:3.9.0")
+
 
     // Location services
     implementation("com.google.android.gms:play-services-location:21.0.1")
