@@ -54,4 +54,6 @@ public interface NotificationRepository {
      * Stops any active real-time listener
      */
     void stopListeningUserNotifications();
+
+    void getAllNotifications(RepositoryCallback<List<NotificationItem>> callback);
 }

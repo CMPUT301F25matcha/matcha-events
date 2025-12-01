@@ -44,13 +44,10 @@ import com.example.lotterysystemproject.utils.RecentEventsManager;
  */
 public class EntrantMainActivity extends AppCompatActivity {
 
+    private static final String TAG = "EntrantMainActivity";
     private EventViewsBinding binding;
     private EventListHelper eventListHelper;
     private EventRepository eventRepository;
-
-    private RecentEventsManager recentEventsManager;
-    private RecentEventsAdapter recentAdapter;
-
     private FeaturedEventsManager featuredEventsManager;
 
     @Override
@@ -63,13 +60,11 @@ public class EntrantMainActivity extends AppCompatActivity {
         eventRepository = RepositoryProvider.getEventRepository();
 
         // initialize helpers/managers
-        recentEventsManager = new RecentEventsManager(eventRepository);
         featuredEventsManager = new FeaturedEventsManager(this);
 
         setupSearchBar();
         setupCategoryListeners();
         setupFeaturedCard(); // assumes you have featured logic as earlier
-        setupRecentEventsRecycler();
 
         // Setup events list (big list) as before
         eventListHelper = new EventListHelper(this, binding.eventsListContainer, this, this::setupEventCardListeners);
@@ -93,9 +88,6 @@ public class EntrantMainActivity extends AppCompatActivity {
 
         // Load featured events
         loadFeaturedEvents(); // uses FeaturedEventsManager if present
-
-        // Load recent events (top 5, uses RecentEventsManager)
-        loadRecentEvents();
     }
 
     // -------------------------------------------------------------------------
@@ -122,23 +114,19 @@ public class EntrantMainActivity extends AppCompatActivity {
     /**
      * Sets click listeners for each category card in the UI.
      * When tapped, launches CategoryEventListActivity showing events from that category.
+     * Top 5 categories: Sports & Recreation, Arts & Culture, Education & Learning,
+     * Health & Wellness, Technology
      */
     private void setupCategoryListeners() {
-
-        // Helper method to bind quickly
-        bindCategoryToLauncher(R.id.category_music,      "Music");
-        bindCategoryToLauncher(R.id.category_sports,     "Sports");
-        bindCategoryToLauncher(R.id.category_art,        "Art");
-        bindCategoryToLauncher(R.id.category_food,       "Food");
-        bindCategoryToLauncher(R.id.category_tech,       "Tech");
-        bindCategoryToLauncher(R.id.category_education,  "Education");
+        bindCategoryToLauncher(R.id.category_sports,          "Sports & Recreation");
+        bindCategoryToLauncher(R.id.category_art,             "Arts & Culture");
+        bindCategoryToLauncher(R.id.category_education,       "Education & Learning");
+        bindCategoryToLauncher(R.id.category_health,          "Health & Wellness");
+        bindCategoryToLauncher(R.id.category_tech,            "Technology");
     }
 
     /**
      * Attaches a click listener to a single category card.
-     *
-     * @param cardId    view ID of the CardView for the category
-     * @param category  category name string
      */
     private void bindCategoryToLauncher(int cardId, String category) {
         CardView card = findViewById(cardId);
@@ -149,9 +137,6 @@ public class EntrantMainActivity extends AppCompatActivity {
 
     /**
      * Launches a dedicated screen that displays events for a given category.
-     * Uses repository only inside that screen for clean separation.
-     *
-     * @param category the selected category
      */
     private void launchCategoryScreen(String category) {
         Intent intent = new Intent(this, CategoryEventListActivity.class);
@@ -175,46 +160,60 @@ public class EntrantMainActivity extends AppCompatActivity {
     }
 
     /**
-     * Loads 5 featured events.
-     * If the device has not updated today, it fetches from repository, randomly selects 5,
-     * saves into SharedPreferences, and binds them.
-     * If already updated today, it loads from SharedPreferences.
+     * Loads 5 featured events with proper validation against Firebase.
+     * Always fetches fresh data to ensure deleted events are removed.
      */
     private void loadFeaturedEvents() {
-    // TODO: eaturedEventsManager.loadFeaturedEvents signature above is assumed
-    //  similar to RecentEventsManager with callbacks.
-    //  If your manager's API differs, adjust accordingly.
-        if (!featuredEventsManager.shouldUpdate()) {
-            // load from cache
-            List<Event> cached = featuredEventsManager.loadFeaturedEvents();
-            if (!cached.isEmpty()) {
-                bindFeaturedEvents(cached);
-                return;
-            }
-        }
+        Log.d(TAG, "Loading featured events");
 
-        // Otherwise fetch active events from repository
+        // Always fetch from Firebase to ensure we have valid, non-deleted events
         eventRepository.getActiveEvents(
                 events -> {
-                    if (events == null || events.isEmpty()) return;
+                    if (events == null || events.isEmpty()) {
+                        Log.w(TAG, "No active events found");
+                        runOnUiThread(() -> binding.featuredEventsCard.setVisibility(View.GONE));
+                        return;
+                    }
 
                     // Shuffle and pick 5
                     Collections.shuffle(events);
-                    List<Event> selected =
-                            events.size() > 5 ? events.subList(0, 5) : events;
+                    List<Event> selected = events.size() > 5 ? events.subList(0, 5) : events;
 
-                    // Save for the day
+                    Log.d(TAG, "Selected " + selected.size() + " featured events");
+
+                    // Save for quick subsequent loads (optional - consider removing if causing issues)
                     featuredEventsManager.saveFeaturedEvents(selected);
 
                     // Bind to UI
-                    runOnUiThread(() -> bindFeaturedEvents(selected));
+                    runOnUiThread(() -> {
+                        bindFeaturedEvents(selected);
+                        binding.featuredEventsCard.setVisibility(View.VISIBLE);
+                    });
                 },
-                error -> Log.e("EntrantMainActivity", "unable to load featured events", error)
+                error -> {
+                    Log.e(TAG, "Failed to load featured events", error);
+                    runOnUiThread(() -> {
+                        binding.featuredEventsCard.setVisibility(View.GONE);
+                        Toast.makeText(this, "Failed to load featured events", Toast.LENGTH_SHORT).show();
+                    });
+                }
         );
     }
 
+    /**
+     * Sets up the dot indicators for the ViewPager2.
+     * Creates a dot for each featured event page.
+     */
     private void setupDotsIndicator(int count) {
         binding.pageIndicator.removeAllViews();
+
+        if (count <= 1) {
+            // Don't show dots if only 1 or 0 pages
+            binding.pageIndicator.setVisibility(View.GONE);
+            return;
+        }
+
+        binding.pageIndicator.setVisibility(View.VISIBLE);
 
         for (int i = 0; i < count; i++) {
             View dot = new View(this);
@@ -228,16 +227,25 @@ public class EntrantMainActivity extends AppCompatActivity {
             binding.pageIndicator.addView(dot);
         }
 
-        binding.featuredEventsViewpager.registerOnPageChangeCallback(
-                new ViewPager2.OnPageChangeCallback() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        highlightDot(position);
-                    }
-                }
-        );
+        // Unregister any existing callbacks to prevent duplicates
+        binding.featuredEventsViewpager.unregisterOnPageChangeCallback(pageChangeCallback);
+
+        // Register the callback
+        binding.featuredEventsViewpager.registerOnPageChangeCallback(pageChangeCallback);
     }
 
+    // Store the callback as a field to allow proper unregistering
+    private final ViewPager2.OnPageChangeCallback pageChangeCallback =
+            new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    highlightDot(position);
+                }
+            };
+
+    /**
+     * Highlights the dot corresponding to the current page.
+     */
     private void highlightDot(int index) {
         for (int i = 0; i < binding.pageIndicator.getChildCount(); i++) {
             View dot = binding.pageIndicator.getChildAt(i);
@@ -245,54 +253,28 @@ public class EntrantMainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Binds the list of featured events to the ViewPager2.
+     */
     private void bindFeaturedEvents(List<Event> events) {
-        FeaturedEventsAdapter adapter = new FeaturedEventsAdapter(events, e -> {
-            launchEventDetails(e.getId());
-        });
-        binding.featuredEventsViewpager.setAdapter(adapter);
-        setupDotsIndicator(events.size());
-    }
-
-    //
-    // Setup Recent Event Cards
-    //
-
-    private void setupRecentEventsRecycler() {
-        RecyclerView recycler = findViewById(R.id.recent_events_recycler);
-        if (recycler == null) {
-            Log.w("EntrantMainActivity", "recent_events_recycler not found in layout");
+        if (events == null || events.isEmpty()) {
+            Log.w(TAG, "No events to bind");
+            binding.featuredEventsCard.setVisibility(View.GONE);
             return;
         }
 
-        recycler.setHasFixedSize(true);
-        LinearLayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recycler.setLayoutManager(layout);
+        Log.d(TAG, "Binding " + events.size() + " events to ViewPager");
 
-        recentAdapter = new RecentEventsAdapter(this, new ArrayList<>(), event -> {
-            if (event != null && event.getId() != null) {
-                launchEventDetails(event.getId());
-            }
+        FeaturedEventsAdapter adapter = new FeaturedEventsAdapter(events, e -> {
+            launchEventDetails(e.getId());
         });
 
-        recycler.setAdapter(recentAdapter);
+        binding.featuredEventsViewpager.setAdapter(adapter);
+
+        // Set up dots indicator AFTER adapter is set
+        binding.featuredEventsViewpager.post(() -> setupDotsIndicator(events.size()));
     }
-    private void loadRecentEvents() {
-        // load top 5
-        recentEventsManager.loadRecentEvents(5, events -> runOnUiThread(() -> {
-            if (events == null || events.isEmpty()) {
-                // optionally hide the recycler
-                View recycler = findViewById(R.id.recent_events_recycler);
-                if (recycler != null) recycler.setVisibility(View.GONE);
-                return;
-            }
-            recentAdapter.update(events);
-            View recycler = findViewById(R.id.recent_events_recycler);
-            if (recycler != null) recycler.setVisibility(View.VISIBLE);
-        }), e -> runOnUiThread(() -> {
-            Log.e("EntrantMainActivity", "Failed to load recent events", e);
-            Toast.makeText(this, "Failed to load recent events", Toast.LENGTH_SHORT).show();
-        }));
-    }
+
     // -------------------------------------------------------------------------
     // Dynamic List Card Click Listeners
     // -------------------------------------------------------------------------

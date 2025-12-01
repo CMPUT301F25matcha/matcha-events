@@ -27,6 +27,10 @@
             android:id="@+id/action_adminDashboard_to_adminManageOrganizer"
             app:destination="@id/adminManageOrganizerFragment" />
 
+        <action
+            android:id="@+id/action_adminDashboard_to_adminNotificationLogs"
+            app:destination="@id/adminNotificationLogsFragment" />
+
     </fragment>
 
     <fragment
@@ -53,5 +57,12 @@
         android:name="com.example.lotterysystemproject.controllers.AdminManageOrganizer"
         android:label="AdminManageOrganizer"
         tools:layout="@layout/admin_manage_organizers" />
+
+    <fragment
+        android:id="@+id/adminNotificationLogsFragment"
+        android:name="com.example.lotterysystemproject.controllers.AdminNotificationLogs"
+        android:label="AdminNotificationLogs"
+        tools:layout="@layout/admin_notification_logs"/>
+
 
 </navigation>
