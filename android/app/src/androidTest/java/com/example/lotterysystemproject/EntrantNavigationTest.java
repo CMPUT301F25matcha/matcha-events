@@ -45,14 +45,15 @@ public class EntrantNavigationTest {
             onView(withId(R.id.nav_profile)).perform(click());
             onView(withId(R.id.profile_name)).check(matches(isDisplayed()));
 
+            // the settings button was determined to be not required
             // Profile → Settings
-            onView(withId(R.id.btn_settings)).check(matches(isDisplayed())).perform(click());
-            onView(withId(R.id.settings_toolbar)).check(matches(isDisplayed()));
+//            onView(withId(R.id.btn_settings)).check(matches(isDisplayed())).perform(click());
+//            onView(withId(R.id.settings_toolbar)).check(matches(isDisplayed()));
 
             // Back to Profile
-            pressBack();
-            onView(withId(R.id.profile_name)).check(matches(isDisplayed()));
-            onView(withId(R.id.btn_settings)).check(matches(isDisplayed()));
+//            pressBack();
+//            onView(withId(R.id.profile_name)).check(matches(isDisplayed()));
+//            onView(withId(R.id.btn_settings)).check(matches(isDisplayed()));
         }
     }
 
@@ -72,10 +73,26 @@ public class EntrantNavigationTest {
             onView(withId(R.id.btn_events_history)).perform(click());
 
             // History list is shown
-            onView(withId(R.id.history_recycler)).check(matches(isDisplayed()));
+            // If empty-state is visible, recycler MUST be GONE
+            try {
+                onView(withId(R.id.empty_state))
+                        .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
 
+                onView(withId(R.id.history_recycler))
+                        .check(matches(withEffectiveVisibility(Visibility.GONE)));
+
+            } catch (AssertionError e) {
+                // Otherwise: recycler is visible, empty-state MUST be GONE
+                onView(withId(R.id.history_recycler))
+                        .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+
+                onView(withId(R.id.empty_state))
+                        .check(matches(withEffectiveVisibility(Visibility.GONE)));
+            }
+
+            // mock item is no longer present
             // Mock item from EventRegistrationHistoryFragment should be visible
-            onView(withText("Piano Lessons")).check(matches(isDisplayed()));
+//            onView(withText("Piano Lessons")).check(matches(isDisplayed()));
         }
     }
 }
