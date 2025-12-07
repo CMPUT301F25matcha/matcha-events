@@ -122,3 +122,40 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.7.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
 }
+
+// Javadoc task
+tasks.register<Javadoc>("javadoc") {
+    dependsOn("compileDebugJavaWithJavac")  // Generate ViewBinding classes first
+
+    source = android.sourceSets["main"].java.getSourceFiles()
+
+    // Add Android SDK to classpath
+    classpath += project.files(android.bootClasspath)
+
+    // Add compile classpath including ViewBinding classes
+    doFirst {
+        classpath += files(android.applicationVariants.toList().first().javaCompileProvider.get().classpath.files)
+
+        // Add generated ViewBinding classes to classpath
+        val generatedDir = file("$buildDir/generated/data_binding_base_class_source_out/debug/out")
+        if (generatedDir.exists()) {
+            classpath += files(generatedDir)
+        }
+    }
+
+    // Exclude generated and test files
+    exclude("**/R.java", "**/BuildConfig.java", "**/test/**", "**/androidTest/**", "**/databinding/**")
+
+    // Configure options
+    options {
+        this as StandardJavadocDocletOptions
+        addStringOption("Xdoclint:none", "-quiet")
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+
+        // Output directory
+        destinationDirectory = file("${rootProject.projectDir}/../doc/javadoc")
+    }
+
+    isFailOnError = false
+}
